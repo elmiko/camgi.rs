@@ -1,3 +1,6 @@
+mod templates;
+
+use askama::Template;
 use clap::Parser;
 use std::fs;
 use std::path::PathBuf;
@@ -17,7 +20,10 @@ fn main() {
         None => panic!("Cannot determine root of must-gather"),
     };
 
-    println!("must-gather path: {:?}", mgpath);
+    println!("Found must-gather root in {:?}", mgpath);
+
+    let index = templates::build_index_template(&mgpath.to_str().unwrap());
+    println!("{}", index.render().unwrap());
 }
 
 /// Find the root of a must-gather directory structure given a path.
