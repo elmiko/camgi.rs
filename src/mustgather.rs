@@ -45,7 +45,8 @@ fn find_must_gather_root(path: String) -> Option<PathBuf> {
     .collect();
 
     if vpath.is_file() || (npath.is_dir() && csrpath.is_dir()) {
-        return Some(orig);
+        let canonical = fs::canonicalize(orig);
+        return Some(canonical.unwrap());
     }
 
     let directories: Vec<PathBuf> = fs::read_dir(orig)
