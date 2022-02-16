@@ -22,7 +22,7 @@ fn main() {
 
     println!("Found must-gather root in {:?}", mgpath);
 
-    let index = templates::build_index_template(&mgpath.to_str().unwrap());
+    let index = templates::build_index_template(mgpath.to_str().unwrap());
     println!("{}", index.render().unwrap());
 }
 
