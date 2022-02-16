@@ -7,7 +7,5 @@ pub struct IndexTemplate<'a> {
 }
 
 pub fn build_index_template(basename: &str) -> IndexTemplate {
-    IndexTemplate {
-        basename: basename,
-    }
+    IndexTemplate { basename: basename }
 }
