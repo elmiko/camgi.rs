@@ -11,7 +11,13 @@ impl MustGather {
     }
 
     /// Build a path to a resource, does not guarantee that it exists.
-    fn _build_manifest_path(&self, name: &str, namespace: &str, kind: &str, group: &str) -> PathBuf {
+    fn _build_manifest_path(
+        &self,
+        name: &str,
+        namespace: &str,
+        kind: &str,
+        group: &str,
+    ) -> PathBuf {
         let mut manifestpath = self.path.clone();
 
         if namespace.is_empty() {
@@ -93,25 +99,57 @@ mod tests {
 
     #[test]
     fn test_build_manifest_path_cluster_scoped() {
-        let mg = MustGather{ path: PathBuf::from("/foo") };
-        assert_eq!(mg._build_manifest_path("", "", "nodes", "core"), PathBuf::from("/foo/cluster-scoped-resources/core/nodes"))
+        let mg = MustGather {
+            path: PathBuf::from("/foo"),
+        };
+        assert_eq!(
+            mg._build_manifest_path("", "", "nodes", "core"),
+            PathBuf::from("/foo/cluster-scoped-resources/core/nodes")
+        )
     }
 
     #[test]
     fn test_build_manifest_path_cluster_scoped_named_resource() {
-        let mg = MustGather{ path: PathBuf::from("/foo") };
-        assert_eq!(mg._build_manifest_path("node1", "", "nodes", "core"), PathBuf::from("/foo/cluster-scoped-resources/core/nodes/node1.yaml"))
+        let mg = MustGather {
+            path: PathBuf::from("/foo"),
+        };
+        assert_eq!(
+            mg._build_manifest_path("node1", "", "nodes", "core"),
+            PathBuf::from("/foo/cluster-scoped-resources/core/nodes/node1.yaml")
+        )
     }
 
     #[test]
     fn test_build_manifest_path_namespace_scoped() {
-        let mg = MustGather{ path: PathBuf::from("/foo") };
-        assert_eq!(mg._build_manifest_path("", "openshift-machine-api", "machines", "machine.openshift.io"), PathBuf::from("/foo/namespaces/openshift-machine-api/machine.openshift.io/machines"))
+        let mg = MustGather {
+            path: PathBuf::from("/foo"),
+        };
+        assert_eq!(
+            mg._build_manifest_path(
+                "",
+                "openshift-machine-api",
+                "machines",
+                "machine.openshift.io"
+            ),
+            PathBuf::from("/foo/namespaces/openshift-machine-api/machine.openshift.io/machines")
+        )
     }
 
     #[test]
     fn test_build_manifest_path_namespace_scoped_named_resource() {
-        let mg = MustGather{ path: PathBuf::from("/foo") };
-        assert_eq!(mg._build_manifest_path("machine1", "openshift-machine-api", "machines", "machine.openshift.io"), PathBuf::from("/foo/namespaces/openshift-machine-api/machine.openshift.io/machines/machine1.yaml"))
+        let mg = MustGather {
+            path: PathBuf::from("/foo"),
+        };
+        assert_eq!(
+            mg._build_manifest_path(
+                "machine1",
+                "openshift-machine-api",
+                "machines",
+                "machine.openshift.io"
+            ),
+            PathBuf::from(
+                "/foo/namespaces/openshift-machine-api/machine.openshift.io/machines/machine1.yaml"
+            )
+        )
     }
 }
