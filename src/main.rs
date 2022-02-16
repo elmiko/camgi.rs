@@ -22,7 +22,7 @@ fn main() {
 
     println!("Found must-gather root in {:?}", mgpath);
 
-    let index = templates::build_index_template(&mgpath.to_str().unwrap());
+    let index = templates::build_index_template(mgpath.to_str().unwrap());
     println!("{}", index.render().unwrap());
 }
 
@@ -37,15 +37,25 @@ fn main() {
 /// 4. return an error
 fn find_must_gather_root(path: String) -> Option<PathBuf> {
     let orig = PathBuf::from(&path);
-    let vpath: PathBuf = [String::from(&path), String::from("version")].iter().collect();
-    let npath: PathBuf = [String::from(&path), String::from("namespaces")].iter().collect();
-    let csrpath : PathBuf = [String::from(&path), String::from("cluster-scoped-resources")].iter().collect();
+    let vpath: PathBuf = [String::from(&path), String::from("version")]
+        .iter()
+        .collect();
+    let npath: PathBuf = [String::from(&path), String::from("namespaces")]
+        .iter()
+        .collect();
+    let csrpath: PathBuf = [
+        String::from(&path),
+        String::from("cluster-scoped-resources"),
+    ]
+    .iter()
+    .collect();
 
     if vpath.is_file() || (npath.is_dir() && csrpath.is_dir()) {
-        return Some(orig)
+        return Some(orig);
     }
 
-    let directories: Vec<PathBuf> = fs::read_dir(orig).unwrap()
+    let directories: Vec<PathBuf> = fs::read_dir(orig)
+        .unwrap()
         .into_iter()
         .filter(|r| r.is_ok())
         .map(|r| r.unwrap().path())
