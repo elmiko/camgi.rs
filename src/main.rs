@@ -16,8 +16,6 @@ fn main() {
 
     let mg = mustgather::build_mustgather(cli.path);
 
-    println!("Found must-gather root in {:?}", &mg.path);
-
     let index = templates::build_index_template(mg);
     println!("{}", index.render().unwrap());
 }
