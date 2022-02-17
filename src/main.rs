@@ -1,6 +1,7 @@
 mod mustgather;
 mod templates;
 
+use anyhow::Result;
 use askama::Template;
 use clap::Parser;
 
@@ -11,11 +12,12 @@ struct Cli {
     path: String,
 }
 
-fn main() {
+fn main() -> Result<()> {
     let cli = Cli::parse();
 
-    let mg = mustgather::build_mustgather(cli.path);
+    let mg = mustgather::build_mustgather(cli.path)?;
 
     let index = templates::build_index_template(mg);
     println!("{}", index.render().unwrap());
+    Ok(())
 }
