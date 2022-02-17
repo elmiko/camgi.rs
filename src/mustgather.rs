@@ -1,3 +1,4 @@
+use anyhow::Result;
 use std::fs;
 use std::path::PathBuf;
 
@@ -41,13 +42,11 @@ impl MustGather {
     }
 }
 
-pub fn build_mustgather(path: String) -> MustGather {
-    let mgpath = match find_must_gather_root(path) {
-        Some(path) => path,
-        None => panic!("Cannot determine root of must-gather"),
-    };
+pub fn build_mustgather(path: String) -> Result<MustGather> {
+    let path = find_must_gather_root(path)
+        .ok_or_else(|| anyhow::anyhow!("Cannot determine root of must-gather"))?;
 
-    MustGather { path: mgpath }
+    Ok(MustGather { path })
 }
 
 /// Find the root of a must-gather directory structure given a path.
