@@ -43,8 +43,7 @@ impl MustGather {
 }
 
 pub fn build_mustgather(path: String) -> Result<MustGather> {
-    let path = find_must_gather_root(path)
-        .ok_or_else(|| anyhow::anyhow!("Cannot determine root of must-gather"))?;
+    let path = find_must_gather_root(path)?;
 
     Ok(MustGather { path })
 }
@@ -58,7 +57,7 @@ pub fn build_mustgather(path: String) -> Result<MustGather> {
 /// 3. if there is a single subdirectory in the path, recursively run this function on it and
 ///    return the result.
 /// 4. return an error
-fn find_must_gather_root(path: String) -> Option<PathBuf> {
+fn find_must_gather_root(path: String) -> Result<PathBuf> {
     let orig = PathBuf::from(&path);
     let vpath: PathBuf = [String::from(&path), String::from("version")]
         .iter()
@@ -74,7 +73,7 @@ fn find_must_gather_root(path: String) -> Option<PathBuf> {
     .collect();
 
     if vpath.is_file() || (npath.is_dir() && csrpath.is_dir()) {
-        return Some(orig.canonicalize().unwrap());
+        return Ok(orig.canonicalize().unwrap());
     }
 
     let directories: Vec<PathBuf> = fs::read_dir(orig)
@@ -88,7 +87,7 @@ fn find_must_gather_root(path: String) -> Option<PathBuf> {
     if directories.len() == 1 {
         find_must_gather_root(String::from(directories[0].to_str().unwrap()))
     } else {
-        None
+        Err(anyhow::anyhow!("Cannot determine root of must-gather"))
     }
 }
 
