@@ -1,7 +1,7 @@
 .PHONY: fmt clippy test
 
 fmt:
-	cargo fmt -- --check
+	cargo fmt -p camgi --check
 
 clippy:
 	cargo clippy -- -Dwarnings
