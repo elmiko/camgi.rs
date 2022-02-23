@@ -1,5 +1,5 @@
-mod mustgather;
 mod html;
+mod mustgather;
 
 use anyhow::Result;
 use clap::Parser;
