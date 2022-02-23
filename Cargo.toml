@@ -7,5 +7,5 @@ edition = "2021"
 
 [dependencies]
 clap = { version = "3.0.14", features = ["derive"] }
-askama = "0.10"
 anyhow = "1.0.53"
+html-builder = "0.3"
