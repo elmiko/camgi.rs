@@ -1,8 +1,7 @@
+mod html;
 mod mustgather;
-mod templates;
 
 use anyhow::Result;
-use askama::Template;
 use clap::Parser;
 
 #[derive(Parser)]
@@ -17,7 +16,7 @@ fn main() -> Result<()> {
 
     let mg = mustgather::build_mustgather(cli.path)?;
 
-    let index = templates::build_index_template(mg);
-    println!("{}", index.render().unwrap());
+    let index = html::build_html(mg)?;
+    println!("{}", index);
     Ok(())
 }

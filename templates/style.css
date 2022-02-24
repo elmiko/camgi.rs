@@ -1,0 +1,15 @@
+div#nav-col ul {
+  list-style: none;
+}
+data {
+  display: none;
+}
+#nav-col {
+  max-width: 200px;
+}
+span.float-right {
+  float: right;
+}
+table {
+  font-size: 8pt;
+}
