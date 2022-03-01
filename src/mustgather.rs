@@ -42,6 +42,7 @@ impl MustGather {
     }
 }
 
+/// Build a MustGather from a path to a directory containing the root.
 pub fn build_mustgather(path: String) -> Result<MustGather> {
     let path = find_must_gather_root(path)?;
 
