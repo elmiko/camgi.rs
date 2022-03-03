@@ -28,11 +28,10 @@ impl Resource {
     }
 
     pub fn name(&self) -> String {
-        if self.yaml["metadata"]["name"].is_badvalue() {
-            return String::new()
+        match self.yaml["metadata"]["name"].as_str() {
+            Some(n) => String::from(n),
+            None => String::new(),
         }
-
-        String::from(self.yaml["metadata"]["name"].as_str().unwrap())
     }
 }
 
@@ -77,5 +76,13 @@ mod tests {
             "testdata/must-gather-valid/sample-openshift-release/cluster-scoped-resources/core/nodes/ip-10-0-0-1.control.plane.yaml"
         )).unwrap().name();
         assert_eq!(observed, String::from("ip-10-0-0-1.control.plane"))
+    }
+
+    #[test]
+    fn test_resource_name_empty() {
+        let observed = Resource::from(PathBuf::from(
+            "testdata/must-gather-invalid/ip-10-0-0-1.control.plane.yaml"
+        )).unwrap().name();
+        assert_eq!(observed, String::new())
     }
 }
