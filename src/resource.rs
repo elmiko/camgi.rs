@@ -1,10 +1,12 @@
 use anyhow::{anyhow, Result};
 use std::fs;
 use std::path::PathBuf;
+use yaml_rust::{Yaml, YamlLoader};
 
 #[derive(Debug)]
 pub struct Resource {
-    pub raw: String,
+    raw: String,
+    yaml: Yaml,
 }
 
 impl Resource {
@@ -16,10 +18,21 @@ impl Resource {
             return Err(anyhow!("Path is a directory {}", path.as_path().display()));
         }
 
+        let raw = fs::read_to_string(path.as_path())?;
+        let mut docs = YamlLoader::load_from_str(&raw)?;
         let res = Resource {
-            raw: fs::read_to_string(path.as_path())?,
+            raw: raw,
+            yaml: docs.remove(0),
         };
         Ok(res)
+    }
+
+    pub fn name(&self) -> String {
+        if self.yaml["metadata"]["name"].is_badvalue() {
+            return String::new()
+        }
+
+        String::from(self.yaml["metadata"]["name"].as_str().unwrap())
     }
 }
 
@@ -56,5 +69,13 @@ mod tests {
             "testdata/must-gather-valid/sample-openshift-release/cluster-scoped-resources/core/nodes/ip-10-0-0-1.control.plane.yaml"
         )).unwrap().raw;
         assert_eq!(observed, expected)
+    }
+
+    #[test]
+    fn test_resource_name() {
+        let observed = Resource::from(PathBuf::from(
+            "testdata/must-gather-valid/sample-openshift-release/cluster-scoped-resources/core/nodes/ip-10-0-0-1.control.plane.yaml"
+        )).unwrap().name();
+        assert_eq!(observed, String::from("ip-10-0-0-1.control.plane"))
     }
 }
