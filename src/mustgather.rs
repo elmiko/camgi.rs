@@ -7,6 +7,15 @@ pub struct MustGather {
 }
 
 impl MustGather {
+    /// Build a MustGather from a path to a directory containing the root.
+    pub fn from(path: String) -> Result<MustGather> {
+        let path = find_must_gather_root(path)?;
+
+        Ok(MustGather { path })
+    }
+}
+
+impl MustGather {
     pub fn title(&self) -> String {
         String::from(self.path.file_name().unwrap().to_str().unwrap())
     }
@@ -40,13 +49,6 @@ impl MustGather {
 
         manifestpath
     }
-}
-
-/// Build a MustGather from a path to a directory containing the root.
-pub fn build_mustgather(path: String) -> Result<MustGather> {
-    let path = find_must_gather_root(path)?;
-
-    Ok(MustGather { path })
 }
 
 /// Find the root of a must-gather directory structure given a path.

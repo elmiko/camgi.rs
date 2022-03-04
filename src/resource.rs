@@ -81,8 +81,10 @@ mod tests {
     #[test]
     fn test_resource_name_empty() {
         let observed = Resource::from(PathBuf::from(
-            "testdata/must-gather-invalid/ip-10-0-0-1.control.plane.yaml"
-        )).unwrap().name();
+            "testdata/must-gather-invalid/ip-10-0-0-1.control.plane.yaml",
+        ))
+        .unwrap()
+        .name();
         assert_eq!(observed, String::new())
     }
 }
