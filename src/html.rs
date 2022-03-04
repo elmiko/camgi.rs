@@ -32,6 +32,15 @@ impl Html {
         let mut html = self.buffer.html();
         let mut body = html.body();
 
+        body.script()
+            .attr("src=\"https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js\"")
+            .attr("integrity=\"sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf\"")
+            .attr("crossorigin=\"anonymous\"");
+        body.script()
+            .attr("src=\"https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js\"");
+        body.script()
+            .write_str(include_str!("files/index_script.js"))?;
+
         Ok(())
     }
 
@@ -46,7 +55,7 @@ impl Html {
             .attr("integrity=\"sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6\"")
             .attr("crossorigin=\"anonymous\"");
         head.style()
-            .write_str(include_str!("../templates/style.css"))?;
+            .write_str(include_str!("files/index_style.css"))?;
         Ok(())
     }
 
