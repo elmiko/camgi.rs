@@ -2,6 +2,7 @@ mod html;
 mod mustgather;
 mod resource;
 
+use crate::html::Html;
 use crate::mustgather::MustGather;
 use anyhow::Result;
 use clap::Parser;
@@ -18,7 +19,7 @@ fn main() -> Result<()> {
 
     let mg = MustGather::from(cli.path)?;
 
-    let index = html::build_html(mg)?;
-    println!("{}", index);
+    let index = Html::from(mg)?;
+    println!("{}", index.render());
     Ok(())
 }
