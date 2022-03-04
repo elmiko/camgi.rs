@@ -32,6 +32,27 @@ impl Html {
         let mut html = self.buffer.html();
         let mut body = html.body();
 
+        // main div
+        let mut app = body
+            .div()
+            .attr("id=\"app\"")
+            .attr("class=\"container-fluid\"");
+        let mut row = app.div().attr("class=\"row mt-2\"");
+        let mut nav = row
+            .div()
+            .attr("class=\"col-2\"")
+            .attr("id=\"nav-col\"")
+            .div()
+            .attr("class=\"list-group\"");
+        row.div()
+            .attr("class=\"col-10\"")
+            .div()
+            .attr("id=\"main-content\"")
+            .attr("class=\"overflow-auto\"")
+            .span()
+            .attr("v-html=\"content\"");
+
+        // scripts
         body.script()
             .attr("src=\"https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js\"")
             .attr("integrity=\"sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf\"")
