@@ -14,6 +14,7 @@ impl Html {
 
         add_head(&mut html, &mustgather)?;
         add_body(&mut html, &mustgather)?;
+        // add_summary_data(&mut html, &mustgather)?;
 
         Ok(Html { buffer: buffer })
     }
@@ -54,6 +55,9 @@ fn add_body(parent: &mut Node, mustgather: &MustGather) -> Result<()> {
         .span()
         .attr("v-html=\"content\"");
 
+    // add data sections
+    add_summary_data(&mut body, &mustgather)?;
+
     // scripts
     body.script()
         .attr("src=\"https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js\"")
@@ -78,5 +82,29 @@ fn add_head(parent: &mut Node, mustgather: &MustGather) -> Result<()> {
         .attr("crossorigin=\"anonymous\"");
     head.style()
         .write_str(include_str!("files/index_style.css"))?;
+    Ok(())
+}
+
+fn add_summary_data(parent: &mut Node, mustgather: &MustGather) -> Result<()> {
+    let mut data = parent.data().attr("id=\"summary-data\"");
+    data.h1()
+        .write_str("Summary")?;
+    data.hr();
+    let mut dl = data.dl();
+    dl.dt()
+        .attr("class=\"text-light bg-secondary ps-1 mb-1\"")
+        .write_str("Cluster")?;
+    let mut dd = dl.dd();
+    let mut table = dd.table()
+        .attr("class=\"table table-sm table-striped font-monospace\"");
+    let mut tbody = table.tbody();
+    let mut tr = tbody.tr();
+    tr.th().attr("scope=\"col\"").write_str("OpenShift version")?;
+    tr.td().write_str("X.Y.Z")?;
+
+
+
+
+
     Ok(())
 }
