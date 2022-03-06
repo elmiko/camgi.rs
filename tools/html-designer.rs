@@ -44,9 +44,6 @@ async fn main() {
     // A list of web client to notify on file change.
     let users: Users = Arc::new(Mutex::new(std::collections::HashMap::new()));
 
-    // TODO: add a direct render mode to the cli to write PATH with a sample output
-    // TODO: spawn a cargo watch command to regenerate the sample output on code change
-
     // Helper function to read the file
     let load_file = |shared: SharedFile| async move {
         let mut content = shared.lock().unwrap();
@@ -87,30 +84,55 @@ async fn main() {
         warp::serve(routes).run(([0, 0, 0, 0], 3030)).await;
     });
 
-    // TODO: spawn an xdg-open http://localhost:3030 command
+    tokio::spawn(async {
+        tokio::process::Command::new("xdg-open")
+            .arg("http://localhost:3030")
+            .spawn()
+            .expect("Failed to run xdg-open http://localhost:3030");
+    });
 
     // Watch file changes
     let (tx, rx) = std::sync::mpsc::channel();
     let mut watcher = notify::watcher(tx, std::time::Duration::from_secs(0)).unwrap();
     watcher.watch(PATH, RecursiveMode::NonRecursive).unwrap();
+    watcher
+        .watch("src/html.rs", RecursiveMode::NonRecursive)
+        .unwrap();
 
     println!("Watching files...");
     loop {
         let ev = rx.recv();
         match ev {
             Ok(notify::DebouncedEvent::NoticeWrite(path)) => {
-                tokio::spawn({
+                let path = path.as_path().to_str().unwrap_or("");
+                println!("Reloading {:?}...", path);
+                if path.ends_with("html.rs") {
+                    tokio::spawn(async {
+                        let mut child = tokio::process::Command::new("cargo")
+                            .arg("run")
+                            .arg("--")
+                            .arg("demo")
+                            .spawn()?;
+
+                        // Await until the command completes
+                        let status = child.wait().await?;
+                        println!("Build status: {}", status);
+                        let result: Result<(), std::io::Error> = Ok(());
+                        result
+                    });
+                } else {
                     let shared = Arc::clone(&html_content);
                     let users = Arc::clone(&users);
-                    async move {
-                        println!("Reloading {:?}...", path);
-                        load_file(shared.clone()).await;
-                        users.lock().unwrap().retain(|uid, tx| {
-                            println!("Sending event to {}", uid);
-                            tx.send(()).is_ok()
-                        });
-                    }
-                });
+                    tokio::spawn({
+                        async move {
+                            load_file(shared.clone()).await;
+                            users.lock().unwrap().retain(|uid, tx| {
+                                println!("Sending event to {}", uid);
+                                tx.send(()).is_ok()
+                            });
+                        }
+                    });
+                }
             }
             Ok(_) => {}
             Err(e) => println!("watch error: {:?}", e),
