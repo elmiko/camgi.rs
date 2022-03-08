@@ -14,7 +14,6 @@ impl Html {
 
         add_head(&mut html, &mustgather)?;
         add_body(&mut html, &mustgather)?;
-        // add_summary_data(&mut html, &mustgather)?;
 
         Ok(Html { buffer: buffer })
     }
