@@ -87,24 +87,39 @@ fn add_head(parent: &mut Node, mustgather: &MustGather) -> Result<()> {
 
 fn add_summary_data(parent: &mut Node, mustgather: &MustGather) -> Result<()> {
     let mut data = parent.data().attr("id=\"summary-data\"");
-    data.h1()
-        .write_str("Summary")?;
+    data.h1().write_str("Summary")?;
     data.hr();
     let mut dl = data.dl();
     dl.dt()
         .attr("class=\"text-light bg-secondary ps-1 mb-1\"")
         .write_str("Cluster")?;
     let mut dd = dl.dd();
-    let mut table = dd.table()
+
+    add_table(&mut dd, Vec::new(), vec!["OpenShift Version", "X.Y.Z"])?;
+
+    Ok(())
+}
+
+fn add_table(parent: &mut Node, head: Vec<&str>, body: Vec<&str>) -> Result<()> {
+    let mut table = parent
+        .table()
         .attr("class=\"table table-sm table-striped font-monospace\"");
+
+    if head.len() > 0 {
+        let mut thead = table.thead();
+        let mut tr = thead.tr();
+        for i in 0..head.len() {
+            let mut t = if i == 0 { tr.th() } else { tr.td() };
+            t.attr("scope=\"col\"").write_str(&head[i])?;
+        }
+    }
+
     let mut tbody = table.tbody();
     let mut tr = tbody.tr();
-    tr.th().attr("scope=\"col\"").write_str("OpenShift version")?;
-    tr.td().write_str("X.Y.Z")?;
-
-
-
-
+    for i in 0..body.len() {
+        let mut t = if i == 0 { tr.th() } else { tr.td() };
+        t.attr("scope=\"col\"").write_str(&body[i])?;
+    }
 
     Ok(())
 }
