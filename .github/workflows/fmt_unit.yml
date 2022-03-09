@@ -1,4 +1,4 @@
-name: Rust Example
+name: Rust fmt and unit test
 
 on: [push]
 
