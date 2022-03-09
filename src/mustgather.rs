@@ -1,3 +1,4 @@
+use crate::resource::Resource;
 use anyhow::Result;
 use std::fs;
 use std::path::PathBuf;
@@ -5,6 +6,7 @@ use std::path::PathBuf;
 pub struct MustGather {
     pub path: PathBuf,
     pub title: String,
+    pub version: String,
 }
 
 impl MustGather {
@@ -12,8 +14,9 @@ impl MustGather {
     pub fn from(path: String) -> Result<MustGather> {
         let path = find_must_gather_root(path)?;
         let title = String::from(path.file_name().unwrap().to_str().unwrap());
+        let version = get_cluster_version(&path);
 
-        Ok(MustGather { path, title })
+        Ok(MustGather { path, title, version })
     }
 }
 
@@ -48,6 +51,21 @@ fn build_manifest_path(
     }
 
     manifestpath
+}
+
+/// Get the version string.
+/// If unable to determine the version, "Unknown" will be returned.
+fn get_cluster_version(path: &PathBuf) -> String {
+    let mut manifestpath = build_manifest_path(path, "", "", "clusterversions", "config.openshift.io");
+    manifestpath.push("version.yaml");
+    let version = match Resource::from(manifestpath) {
+        Ok(v) => v,
+        Err(_) => return String::from("Unknown"),
+    };
+    match version.yaml["status"]["desired"]["version"].as_str() {
+        Some(v) => String::from(v),
+        None => String::from("Unknown"),
+    }
 }
 
 /// Find the root of a must-gather directory structure given a path.
@@ -140,6 +158,14 @@ mod tests {
             PathBuf::from(
                 "/foo/namespaces/openshift-machine-api/machine.openshift.io/machines/machine1.yaml"
             )
+        )
+    }
+
+    #[test]
+    fn test_get_cluster_version() {
+        assert_eq!(
+            get_cluster_version(&PathBuf::from("testdata/must-gather-valid/sample-openshift-release")),
+            "X.Y.Z-fake-test"
         )
     }
 }

@@ -6,7 +6,7 @@ use yaml_rust::{Yaml, YamlLoader};
 #[derive(Debug)]
 pub struct Resource {
     raw: String,
-    yaml: Yaml,
+    pub yaml: Yaml,
 }
 
 impl Resource {
