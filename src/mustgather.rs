@@ -4,20 +4,16 @@ use std::path::PathBuf;
 
 pub struct MustGather {
     pub path: PathBuf,
+    pub title: String,
 }
 
 impl MustGather {
     /// Build a MustGather from a path to a directory containing the root.
     pub fn from(path: String) -> Result<MustGather> {
         let path = find_must_gather_root(path)?;
+        let title = String::from(path.file_name().unwrap().to_str().unwrap());
 
-        Ok(MustGather { path })
-    }
-}
-
-impl MustGather {
-    pub fn title(&self) -> String {
-        String::from(self.path.file_name().unwrap().to_str().unwrap())
+        Ok(MustGather { path, title })
     }
 }
 
