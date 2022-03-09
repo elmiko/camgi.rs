@@ -72,7 +72,7 @@ fn add_body(parent: &mut Node, mustgather: &MustGather) -> Result<()> {
 
 fn add_head(parent: &mut Node, mustgather: &MustGather) -> Result<()> {
     let mut head = parent.head();
-    head.title().write_str(mustgather.title().as_str())?;
+    head.title().write_str(mustgather.title.as_str())?;
     head.meta().attr("charset='utf-8'");
     head.link()
         .attr("href=\"https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css\"")
@@ -108,7 +108,7 @@ fn add_table(parent: &mut Node, head: Vec<&str>, body: Vec<&str>) -> Result<()> 
         let mut thead = table.thead();
         let mut tr = thead.tr();
         for i in 0..head.len() {
-            let mut t = if i == 0 { tr.th() } else { tr.td() };
+            let t = if i == 0 { tr.th() } else { tr.td() };
             t.attr("scope=\"col\"").write_str(&head[i])?;
         }
     }
@@ -116,7 +116,7 @@ fn add_table(parent: &mut Node, head: Vec<&str>, body: Vec<&str>) -> Result<()> 
     let mut tbody = table.tbody();
     let mut tr = tbody.tr();
     for i in 0..body.len() {
-        let mut t = if i == 0 { tr.th() } else { tr.td() };
+        let t = if i == 0 { tr.th() } else { tr.td() };
         t.attr("scope=\"col\"").write_str(&body[i])?;
     }
 
