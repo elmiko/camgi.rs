@@ -21,7 +21,7 @@ impl Resource {
         let raw = fs::read_to_string(path.as_path())?;
         let mut docs = YamlLoader::load_from_str(&raw)?;
         let res = Resource {
-            raw: raw,
+            raw,
             yaml: docs.remove(0),
         };
         Ok(res)
@@ -59,7 +59,6 @@ mod tests {
         assert!(observed.is_err())
     }
 
-    #[test]
     fn test_resource_new_raw() {
         let expected = include_str!(
             "../testdata/must-gather-valid/sample-openshift-release/cluster-scoped-resources/core/nodes/ip-10-0-0-1.control.plane.yaml"

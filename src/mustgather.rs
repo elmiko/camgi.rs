@@ -1,7 +1,7 @@
 use crate::resource::Resource;
 use anyhow::Result;
 use std::fs;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 pub struct MustGather {
     pub path: PathBuf,
@@ -29,13 +29,13 @@ impl MustGather {
 /// an empty string the path will be to the directory containing the resource
 /// manifest yaml files.
 fn build_manifest_path(
-    path: &PathBuf,
+    path: &Path,
     name: &str,
     namespace: &str,
     kind: &str,
     group: &str,
 ) -> PathBuf {
-    let mut manifestpath = path.clone();
+    let mut manifestpath = path.to_path_buf();
 
     if namespace.is_empty() {
         manifestpath.push("cluster-scoped-resources");
@@ -59,7 +59,7 @@ fn build_manifest_path(
 
 /// Get the version string.
 /// If unable to determine the version, "Unknown" will be returned.
-fn get_cluster_version(path: &PathBuf) -> String {
+fn get_cluster_version(path: &Path) -> String {
     let mut manifestpath =
         build_manifest_path(path, "", "", "clusterversions", "config.openshift.io");
     manifestpath.push("version.yaml");

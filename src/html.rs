@@ -15,13 +15,13 @@ impl Html {
         add_head(&mut html, &mustgather)?;
         add_body(&mut html, &mustgather)?;
 
-        Ok(Html { buffer: buffer })
+        Ok(Html { buffer })
     }
 }
 
 impl Html {
     pub fn render(self) -> String {
-        String::from(self.buffer.finish())
+        self.buffer.finish()
     }
 }
 
@@ -108,20 +108,20 @@ fn add_table(parent: &mut Node, head: Vec<&str>, body: Vec<&str>) -> Result<()> 
         .table()
         .attr("class=\"table table-sm table-striped font-monospace\"");
 
-    if head.len() > 0 {
+    if !head.is_empty() {
         let mut thead = table.thead();
         let mut tr = thead.tr();
-        for i in 0..head.len() {
+        for (i, item) in head.iter().enumerate() {
             let t = if i == 0 { tr.th() } else { tr.td() };
-            t.attr("scope=\"col\"").write_str(&head[i])?;
+            t.attr("scope=\"col\"").write_str(item)?;
         }
     }
 
     let mut tbody = table.tbody();
     let mut tr = tbody.tr();
-    for i in 0..body.len() {
+    for (i, item) in body.iter().enumerate() {
         let t = if i == 0 { tr.th() } else { tr.td() };
-        t.attr("scope=\"col\"").write_str(&body[i])?;
+        t.attr("scope=\"col\"").write_str(item)?;
     }
 
     Ok(())
