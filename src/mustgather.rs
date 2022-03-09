@@ -19,36 +19,39 @@ impl MustGather {
     pub fn title(&self) -> String {
         String::from(self.path.file_name().unwrap().to_str().unwrap())
     }
+}
 
-    /// Build a path to a resource, does not guarantee that it exists.
-    fn _build_manifest_path(
-        &self,
-        name: &str,
-        namespace: &str,
-        kind: &str,
-        group: &str,
-    ) -> PathBuf {
-        let mut manifestpath = self.path.clone();
+/// Build a path to a resource, does not guarantee that it exists.
+/// If a name is provided the path will include a yaml file. If the name is
+/// an empty string the path will be to the directory containing the resource
+/// manifest yaml files.
+fn build_manifest_path(
+    path: &PathBuf,
+    name: &str,
+    namespace: &str,
+    kind: &str,
+    group: &str,
+) -> PathBuf {
+    let mut manifestpath = path.clone();
 
-        if namespace.is_empty() {
-            manifestpath.push("cluster-scoped-resources");
-        } else {
-            manifestpath.push("namespaces");
-            manifestpath.push(namespace);
-        }
-
-        if !group.is_empty() {
-            manifestpath.push(group);
-        }
-
-        manifestpath.push(kind);
-
-        if !name.is_empty() {
-            manifestpath.push(format!("{}.yaml", name));
-        }
-
-        manifestpath
+    if namespace.is_empty() {
+        manifestpath.push("cluster-scoped-resources");
+    } else {
+        manifestpath.push("namespaces");
+        manifestpath.push(namespace);
     }
+
+    if !group.is_empty() {
+        manifestpath.push(group);
+    }
+
+    manifestpath.push(kind);
+
+    if !name.is_empty() {
+        manifestpath.push(format!("{}.yaml", name));
+    }
+
+    manifestpath
 }
 
 /// Find the root of a must-gather directory structure given a path.
@@ -100,33 +103,25 @@ mod tests {
 
     #[test]
     fn test_build_manifest_path_cluster_scoped() {
-        let mg = MustGather {
-            path: PathBuf::from("/foo"),
-        };
         assert_eq!(
-            mg._build_manifest_path("", "", "nodes", "core"),
+            build_manifest_path(&PathBuf::from("/foo"), "", "", "nodes", "core"),
             PathBuf::from("/foo/cluster-scoped-resources/core/nodes")
         )
     }
 
     #[test]
     fn test_build_manifest_path_cluster_scoped_named_resource() {
-        let mg = MustGather {
-            path: PathBuf::from("/foo"),
-        };
         assert_eq!(
-            mg._build_manifest_path("node1", "", "nodes", "core"),
+            build_manifest_path(&PathBuf::from("/foo"), "node1", "", "nodes", "core"),
             PathBuf::from("/foo/cluster-scoped-resources/core/nodes/node1.yaml")
         )
     }
 
     #[test]
     fn test_build_manifest_path_namespace_scoped() {
-        let mg = MustGather {
-            path: PathBuf::from("/foo"),
-        };
         assert_eq!(
-            mg._build_manifest_path(
+            build_manifest_path(
+                &PathBuf::from("/foo"),
                 "",
                 "openshift-machine-api",
                 "machines",
@@ -138,11 +133,9 @@ mod tests {
 
     #[test]
     fn test_build_manifest_path_namespace_scoped_named_resource() {
-        let mg = MustGather {
-            path: PathBuf::from("/foo"),
-        };
         assert_eq!(
-            mg._build_manifest_path(
+            build_manifest_path(
+                &PathBuf::from("/foo"),
                 "machine1",
                 "openshift-machine-api",
                 "machines",
