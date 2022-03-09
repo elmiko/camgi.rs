@@ -94,7 +94,11 @@ fn add_summary_data(parent: &mut Node, mustgather: &MustGather) -> Result<()> {
         .write_str("Cluster")?;
     let mut dd = dl.dd();
 
-    add_table(&mut dd, Vec::new(), vec!["OpenShift Version", mustgather.version.as_str()])?;
+    add_table(
+        &mut dd,
+        Vec::new(),
+        vec!["OpenShift Version", mustgather.version.as_str()],
+    )?;
 
     Ok(())
 }

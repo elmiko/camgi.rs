@@ -16,7 +16,11 @@ impl MustGather {
         let title = String::from(path.file_name().unwrap().to_str().unwrap());
         let version = get_cluster_version(&path);
 
-        Ok(MustGather { path, title, version })
+        Ok(MustGather {
+            path,
+            title,
+            version,
+        })
     }
 }
 
@@ -56,7 +60,8 @@ fn build_manifest_path(
 /// Get the version string.
 /// If unable to determine the version, "Unknown" will be returned.
 fn get_cluster_version(path: &PathBuf) -> String {
-    let mut manifestpath = build_manifest_path(path, "", "", "clusterversions", "config.openshift.io");
+    let mut manifestpath =
+        build_manifest_path(path, "", "", "clusterversions", "config.openshift.io");
     manifestpath.push("version.yaml");
     let version = match Resource::from(manifestpath) {
         Ok(v) => v,
@@ -164,7 +169,9 @@ mod tests {
     #[test]
     fn test_get_cluster_version() {
         assert_eq!(
-            get_cluster_version(&PathBuf::from("testdata/must-gather-valid/sample-openshift-release")),
+            get_cluster_version(&PathBuf::from(
+                "testdata/must-gather-valid/sample-openshift-release"
+            )),
             "X.Y.Z-fake-test"
         )
     }
