@@ -29,6 +29,10 @@ impl Manifest {
             }),
         }
     }
+
+    pub fn as_yaml(&self) -> &Yaml {
+        &self.yaml
+    }
 }
 
 #[cfg(test)]
@@ -59,5 +63,15 @@ mod tests {
     fn test_manifest_from_empty_file() {
         let observed = Manifest::from(PathBuf::from("testdata/must-gather-invalid/empty.yaml"));
         assert!(observed.is_err())
+    }
+
+    #[test]
+    fn test_manifest_as_yaml() {
+        let expected = "Node";
+        let manifest = Manifest::from(PathBuf::from(
+            "testdata/must-gather-valid/sample-openshift-release/cluster-scoped-resources/core/nodes/ip-10-0-0-1.control.plane.yaml"
+        )).unwrap();
+        let observed = &manifest.as_yaml()["kind"];
+        assert_eq!(observed.as_str().unwrap(), expected)
     }
 }

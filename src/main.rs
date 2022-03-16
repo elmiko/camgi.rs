@@ -1,7 +1,6 @@
 mod html;
 mod manifest;
 mod mustgather;
-mod resource;
 
 use crate::html::Html;
 use crate::mustgather::MustGather;

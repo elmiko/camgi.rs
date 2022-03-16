@@ -1,4 +1,4 @@
-use crate::resource::Resource;
+use crate::manifest::Manifest;
 use anyhow::Result;
 use std::fs;
 use std::path::{Path, PathBuf};
@@ -63,11 +63,11 @@ fn get_cluster_version(path: &Path) -> String {
     let mut manifestpath =
         build_manifest_path(path, "", "", "clusterversions", "config.openshift.io");
     manifestpath.push("version.yaml");
-    let version = match Resource::from(manifestpath) {
+    let version = match Manifest::from(manifestpath) {
         Ok(v) => v,
         Err(_) => return String::from("Unknown"),
     };
-    match version.yaml["status"]["desired"]["version"].as_str() {
+    match version.as_yaml()["status"]["desired"]["version"].as_str() {
         Some(v) => String::from(v),
         None => String::from("Unknown"),
     }
