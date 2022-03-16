@@ -52,22 +52,6 @@ fn build_manifest_path(
     manifestpath
 }
 
-/// Get the version string.
-/// If unable to determine the version, "Unknown" will be returned.
-fn get_cluster_version(path: &Path) -> String {
-    let mut manifestpath =
-        build_manifest_path(path, "", "", "clusterversions", "config.openshift.io");
-    manifestpath.push("version.yaml");
-    let version = match Manifest::from(manifestpath) {
-        Ok(v) => v,
-        Err(_) => return String::from("Unknown"),
-    };
-    match version.as_yaml()["status"]["desired"]["version"].as_str() {
-        Some(v) => String::from(v),
-        None => String::from("Unknown"),
-    }
-}
-
 /// Find the root of a must-gather directory structure given a path.
 ///
 /// Finding the root of the must-gather is accomplished through the following steps:
@@ -108,6 +92,22 @@ fn find_must_gather_root(path: String) -> Result<PathBuf> {
         find_must_gather_root(String::from(directories[0].to_str().unwrap()))
     } else {
         Err(anyhow::anyhow!("Cannot determine root of must-gather"))
+    }
+}
+
+/// Get the version string.
+/// If unable to determine the version, "Unknown" will be returned.
+fn get_cluster_version(path: &Path) -> String {
+    let mut manifestpath =
+        build_manifest_path(path, "", "", "clusterversions", "config.openshift.io");
+    manifestpath.push("version.yaml");
+    let version = match Manifest::from(manifestpath) {
+        Ok(v) => v,
+        Err(_) => return String::from("Unknown"),
+    };
+    match version.as_yaml()["status"]["desired"]["version"].as_str() {
+        Some(v) => String::from(v),
+        None => String::from("Unknown"),
     }
 }
 
