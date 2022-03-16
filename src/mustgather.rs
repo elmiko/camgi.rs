@@ -4,7 +4,6 @@ use std::fs;
 use std::path::{Path, PathBuf};
 
 pub struct MustGather {
-    pub path: PathBuf,
     pub title: String,
     pub version: String,
 }
@@ -16,11 +15,7 @@ impl MustGather {
         let title = String::from(path.file_name().unwrap().to_str().unwrap());
         let version = get_cluster_version(&path);
 
-        Ok(MustGather {
-            path,
-            title,
-            version,
-        })
+        Ok(MustGather { title, version })
     }
 }
 
