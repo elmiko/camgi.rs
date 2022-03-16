@@ -1,4 +1,5 @@
 mod html;
+mod manifest;
 mod mustgather;
 mod resource;
 
