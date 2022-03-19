@@ -2,9 +2,14 @@ mod html;
 mod manifest;
 mod mustgather;
 
-use crate::html::Html;
-use crate::mustgather::MustGather;
-use anyhow::Result;
+mod prelude {
+    pub use crate::html::*;
+    pub use crate::manifest::*;
+    pub use crate::mustgather::*;
+    pub use anyhow::{anyhow, Result};
+}
+use crate::prelude::*;
+
 use clap::Parser;
 
 #[derive(Parser)]

@@ -1,10 +1,11 @@
-use anyhow::{anyhow, Result};
+use crate::prelude::*;
 use std::fs;
 use std::path::PathBuf;
 use yaml_rust::{Yaml, YamlLoader};
 
 #[derive(Debug)]
 pub struct Manifest {
+    raw: String,
     yaml: Yaml,
 }
 
@@ -25,6 +26,7 @@ impl Manifest {
                 path.as_path().display()
             )),
             false => Ok(Manifest {
+                raw,
                 yaml: docs.remove(0),
             }),
         }
@@ -73,5 +75,16 @@ mod tests {
         )).unwrap();
         let observed = &manifest.as_yaml()["kind"];
         assert_eq!(observed.as_str().unwrap(), expected)
+    }
+
+    #[test]
+    fn test_manifest_raw() {
+        let expected = include_str!(
+            "../testdata/must-gather-valid/sample-openshift-release/cluster-scoped-resources/core/nodes/ip-10-0-0-1.control.plane.yaml");
+        let manifest = Manifest::from(PathBuf::from(
+            "testdata/must-gather-valid/sample-openshift-release/cluster-scoped-resources/core/nodes/ip-10-0-0-1.control.plane.yaml"
+        )).unwrap();
+        let observed = manifest.raw;
+        assert_eq!(observed, expected)
     }
 }
