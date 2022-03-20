@@ -50,6 +50,16 @@ fn add_body(parent: &mut Node, mustgather: &MustGather) -> Result<()> {
         .attr("v-on:click=\"changeContent('nodes')\"")
         .attr("class=\"list-group-item list-group-item-action\"")
         .write_str("Nodes")?;
+    // github link should go last
+    navlist
+        .a()
+        .attr("href=\"https://github.com/elmiko/camgi.rs\"")
+        .attr("class=\"list-group-item list-group-item-action text-center\"")
+        .attr("target=\"_blank\"")
+        .img()
+        .attr("src=\"https://github.com/favicon.ico\"")
+        .attr("alt=\"GitHub logo\"")
+        .attr("title=\"Found a bug or issue? Visit this project's git repo.\"");
 
     // content
     let mut content = row.div().attr("class=\"col-10\"");
