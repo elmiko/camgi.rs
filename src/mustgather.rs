@@ -125,7 +125,23 @@ fn get_cluster_version(path: &Path) -> String {
 
 /// Get all the Nodes in the cluster.
 fn get_nodes(path: &Path) -> Vec<Node> {
-    Vec::new()
+    let mut nodes = Vec::new();
+    let manifestpath = build_manifest_path(path, "", "", "nodes", "core");
+    let yamlfiles: Vec<PathBuf> = fs::read_dir(&manifestpath)
+        .unwrap()
+        .into_iter()
+        .filter(|m| m.is_ok())
+        .map(|m| m.unwrap().path())
+        .filter(|m| m.extension().unwrap() == "yaml")
+        .collect();
+
+    for path in yamlfiles {
+        match Manifest::from(path) {
+            Ok(m) => nodes.push(Node::from(m)),
+            Err(_) => continue,
+        }
+    }
+    nodes
 }
 
 #[cfg(test)]
@@ -185,6 +201,17 @@ mod tests {
                 "testdata/must-gather-valid/sample-openshift-release"
             )),
             "X.Y.Z-fake-test"
+        )
+    }
+
+    #[test]
+    fn test_get_nodes() {
+        assert_eq!(
+            get_nodes(&PathBuf::from(
+                "testdata/must-gather-valid/sample-openshift-release"
+            ))
+            .len(),
+            1
         )
     }
 }
