@@ -1,10 +1,12 @@
 use crate::prelude::*;
+use crate::resources::Node;
 use std::fs;
 use std::path::{Path, PathBuf};
 
 pub struct MustGather {
     pub title: String,
     pub version: String,
+    pub nodes: Vec<Node>,
 }
 
 impl MustGather {
@@ -13,8 +15,13 @@ impl MustGather {
         let path = find_must_gather_root(path)?;
         let title = String::from(path.file_name().unwrap().to_str().unwrap());
         let version = get_cluster_version(&path);
+        let nodes = get_nodes(&path);
 
-        Ok(MustGather { title, version })
+        Ok(MustGather {
+            title,
+            version,
+            nodes,
+        })
     }
 }
 
@@ -22,6 +29,12 @@ impl MustGather {
 /// If a name is provided the path will include a yaml file. If the name is
 /// an empty string the path will be to the directory containing the resource
 /// manifest yaml files.
+/// If the namespace is an emptry string then the path will be to cluster
+/// scoped resources.
+/// Example - finding node resources
+/// build_manifest_path(mgroot, "", "", "nodes", "core")
+/// Example - finding a specific machine
+/// build_manifest_path(mgroot, "machine-name", "openshift-machine-api", "machines", "machine.openshift.io")
 fn build_manifest_path(
     path: &Path,
     name: &str,
@@ -108,6 +121,11 @@ fn get_cluster_version(path: &Path) -> String {
         Some(v) => String::from(v),
         None => String::from("Unknown"),
     }
+}
+
+/// Get all the Nodes in the cluster.
+fn get_nodes(path: &Path) -> Vec<Node> {
+    Vec::new()
 }
 
 #[cfg(test)]

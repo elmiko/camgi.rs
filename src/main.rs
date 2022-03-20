@@ -7,7 +7,6 @@ mod prelude {
     pub use crate::html::*;
     pub use crate::manifest::*;
     pub use crate::mustgather::*;
-    pub use crate::resources::*;
     pub use anyhow::{anyhow, Result};
 }
 use crate::prelude::*;
