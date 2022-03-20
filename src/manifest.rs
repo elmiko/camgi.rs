@@ -35,6 +35,10 @@ impl Manifest {
     pub fn as_yaml(&self) -> &Yaml {
         &self.yaml
     }
+
+    pub fn as_raw(&self) -> String {
+        self.raw.clone()
+    }
 }
 
 #[cfg(test)]
@@ -78,13 +82,13 @@ mod tests {
     }
 
     #[test]
-    fn test_manifest_raw() {
+    fn test_manifest_as_raw() {
         let expected = include_str!(
             "../testdata/must-gather-valid/sample-openshift-release/cluster-scoped-resources/core/nodes/ip-10-0-0-1.control.plane.yaml");
         let manifest = Manifest::from(PathBuf::from(
             "testdata/must-gather-valid/sample-openshift-release/cluster-scoped-resources/core/nodes/ip-10-0-0-1.control.plane.yaml"
         )).unwrap();
-        let observed = manifest.raw;
+        let observed = manifest.as_raw();
         assert_eq!(observed, expected)
     }
 }
