@@ -43,6 +43,12 @@ fn add_body(parent: &mut Node, mustgather: &MustGather) -> Result<()> {
         .attr("v-on:click=\"changeContent('summary')\"")
         .attr("class=\"list-group-item list-group-item-action\"")
         .write_str("Summary")?;
+    navlist
+        .a()
+        .attr("href=\"#\"")
+        .attr("v-on:click=\"changeContent('nodes')\"")
+        .attr("class=\"list-group-item list-group-item-action\"")
+        .write_str("Nodes")?;
 
     // content
     let mut content = row.div().attr("class=\"col-10\"");
@@ -55,6 +61,7 @@ fn add_body(parent: &mut Node, mustgather: &MustGather) -> Result<()> {
 
     // add data sections
     add_summary_data(&mut body, &mustgather)?;
+    add_nodes_data(&mut body, &mustgather)?;
 
     // scripts
     body.script()
@@ -83,21 +90,63 @@ fn add_head(parent: &mut Node, mustgather: &MustGather) -> Result<()> {
     Ok(())
 }
 
+fn add_nodes_data(parent: &mut Node, mustgather: &MustGather) -> Result<()> {
+    let mut data = parent.data().attr("id=\"nodes-data\"");
+    data.h1().write_str("Nodes")?;
+    let mut div = data
+        .div()
+        .attr("class=\"accordion\"")
+        .attr("id=\"nodes-accordion\"");
+    for node in &mustgather.nodes {
+        let mut itemdiv = div.div().attr("class=\"accordion-item\"");
+        itemdiv
+            .h2()
+            .attr("class=\"accordion-header\"")
+            .attr(format!("id=\"heading-{}\"", &node.safename).as_str())
+            .button()
+            .attr("class=\"accordion-button collapsed p-2\"")
+            .attr("type=\"button\"")
+            .attr("data-bs-toggle=\"collapse\"")
+            .attr(format!("data-bs-target=\"#collapse-{}\"", &node.safename).as_str())
+            .attr("aria-exapnded=\"false\"")
+            .attr(format!("aria-controls=\"collapse-{}\"", &node.safename).as_str())
+            .write_str(&node.name)?;
+        itemdiv
+            .div()
+            .attr(format!("id=\"collapse-{}\"", &node.safename).as_str())
+            .attr("class=\"accordion-collapse collapse\"")
+            .attr(format!("aria-labelledby=\"heading-{}\"", &node.safename).as_str())
+            .attr("data-bs-parents=\"nodes-accordion\"")
+            .div()
+            .attr("class=\"accordion-body fs-6\"")
+            .pre()
+            .write_str(&node.raw)?;
+    }
+
+    Ok(())
+}
+
 fn add_summary_data(parent: &mut Node, mustgather: &MustGather) -> Result<()> {
     let mut data = parent.data().attr("id=\"summary-data\"");
     data.h1().write_str("Summary")?;
     data.hr();
     let mut dl = data.dl();
+
     dl.dt()
         .attr("class=\"text-light bg-secondary ps-1 mb-1\"")
         .write_str("Cluster")?;
     let mut dd = dl.dd();
-
     add_table(
         &mut dd,
         Vec::new(),
         vec!["OpenShift Version", mustgather.version.as_str()],
     )?;
+
+    dl.dt()
+        .attr("class=\"text-light bg-secondary ps-1 mb-1\"")
+        .write_str(format!("{} Nodes", mustgather.nodes.len()).as_str())?;
+    let mut dd = dl.dd();
+    dd.write_str("All nodes ready")?;
 
     Ok(())
 }
