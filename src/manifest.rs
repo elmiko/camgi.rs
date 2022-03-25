@@ -39,6 +39,13 @@ impl Manifest {
     pub fn as_raw(&self) -> String {
         self.raw.clone()
     }
+
+    pub fn name(&self) -> String {
+        match self.as_yaml()["metadata"]["name"].as_str() {
+            Some(n) => String::from(n),
+            None => String::from("Unknown"),
+        }
+    }
 }
 
 #[cfg(test)]
@@ -90,5 +97,14 @@ mod tests {
         )).unwrap();
         let observed = manifest.as_raw();
         assert_eq!(observed, expected)
+    }
+
+    #[test]
+    fn test_manifest_name() {
+        let expected = String::from("ip-10-0-0-1.control.plane");
+        let manifest = Manifest::from(PathBuf::from(
+            "testdata/must-gather-valid/sample-openshift-release/cluster-scoped-resources/core/nodes/ip-10-0-0-1.control.plane.yaml"
+        )).unwrap();
+        assert_eq!(manifest.name(), expected)
     }
 }
