@@ -6,4 +6,5 @@ pub trait Resource {
     fn name(&self) -> &String;
     fn raw(&self) -> &String;
     fn safename(&self) -> &String;
+    fn is_error(&self) -> bool;
 }

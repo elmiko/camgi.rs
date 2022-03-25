@@ -211,7 +211,7 @@ mod tests {
                 "testdata/must-gather-valid/sample-openshift-release"
             ))
             .len(),
-            1
+            2
         )
     }
 }
