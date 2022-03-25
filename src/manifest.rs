@@ -46,6 +46,10 @@ impl Manifest {
             None => String::from("Unknown"),
         }
     }
+
+    pub fn safename(&self) -> String {
+        self.name().replace('.', "-")
+    }
 }
 
 #[cfg(test)]
@@ -106,5 +110,14 @@ mod tests {
             "testdata/must-gather-valid/sample-openshift-release/cluster-scoped-resources/core/nodes/ip-10-0-0-1.control.plane.yaml"
         )).unwrap();
         assert_eq!(manifest.name(), expected)
+    }
+
+    #[test]
+    fn test_manifest_safename() {
+        let expected = String::from("ip-10-0-0-1-control-plane");
+        let manifest = Manifest::from(PathBuf::from(
+            "testdata/must-gather-valid/sample-openshift-release/cluster-scoped-resources/core/nodes/ip-10-0-0-1.control.plane.yaml"
+        )).unwrap();
+        assert_eq!(manifest.safename(), expected)
     }
 }
