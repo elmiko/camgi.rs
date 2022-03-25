@@ -1,4 +1,5 @@
 use crate::prelude::*;
+pub use crate::resources::Resource;
 use html_builder::*;
 use std::fmt::Write;
 
@@ -102,25 +103,25 @@ fn add_nodes_data(parent: &mut Node, mustgather: &MustGather) -> Result<()> {
         itemdiv
             .h2()
             .attr("class=\"accordion-header\"")
-            .attr(format!("id=\"heading-{}\"", &node.safename).as_str())
+            .attr(format!("id=\"heading-{}\"", &node.safename()).as_str())
             .button()
             .attr("class=\"accordion-button collapsed p-2\"")
             .attr("type=\"button\"")
             .attr("data-bs-toggle=\"collapse\"")
-            .attr(format!("data-bs-target=\"#collapse-{}\"", &node.safename).as_str())
+            .attr(format!("data-bs-target=\"#collapse-{}\"", &node.safename()).as_str())
             .attr("aria-exapnded=\"false\"")
-            .attr(format!("aria-controls=\"collapse-{}\"", &node.safename).as_str())
-            .write_str(&node.name)?;
+            .attr(format!("aria-controls=\"collapse-{}\"", &node.safename()).as_str())
+            .write_str(&node.name())?;
         itemdiv
             .div()
-            .attr(format!("id=\"collapse-{}\"", &node.safename).as_str())
+            .attr(format!("id=\"collapse-{}\"", &node.safename()).as_str())
             .attr("class=\"accordion-collapse collapse\"")
-            .attr(format!("aria-labelledby=\"heading-{}\"", &node.safename).as_str())
+            .attr(format!("aria-labelledby=\"heading-{}\"", &node.safename()).as_str())
             .attr("data-bs-parents=\"nodes-accordion\"")
             .div()
             .attr("class=\"accordion-body fs-6\"")
             .pre()
-            .write_str(&node.raw)?;
+            .write_str(&node.raw())?;
     }
 
     Ok(())
