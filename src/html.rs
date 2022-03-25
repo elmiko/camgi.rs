@@ -62,7 +62,7 @@ fn add_body(parent: &mut Node, mustgather: &MustGather) -> Result<()> {
 
     // add data sections
     add_summary_data(&mut body, &mustgather)?;
-    add_nodes_data(&mut body, &mustgather)?;
+    add_resource_data(&mut body, &mustgather.nodes)?;
 
     // scripts
     body.script()
@@ -91,37 +91,37 @@ fn add_head(parent: &mut Node, mustgather: &MustGather) -> Result<()> {
     Ok(())
 }
 
-fn add_nodes_data(parent: &mut Node, mustgather: &MustGather) -> Result<()> {
+fn add_resource_data(parent: &mut Node, resources: &Vec<impl Resource>) -> Result<()> {
     let mut data = parent.data().attr("id=\"nodes-data\"");
     data.h1().write_str("Nodes")?;
     let mut div = data
         .div()
         .attr("class=\"accordion\"")
         .attr("id=\"nodes-accordion\"");
-    for node in &mustgather.nodes {
+    for res in resources {
         let mut itemdiv = div.div().attr("class=\"accordion-item\"");
         itemdiv
             .h2()
             .attr("class=\"accordion-header\"")
-            .attr(format!("id=\"heading-{}\"", &node.safename()).as_str())
+            .attr(format!("id=\"heading-{}\"", &res.safename()).as_str())
             .button()
             .attr("class=\"accordion-button collapsed p-2\"")
             .attr("type=\"button\"")
             .attr("data-bs-toggle=\"collapse\"")
-            .attr(format!("data-bs-target=\"#collapse-{}\"", &node.safename()).as_str())
+            .attr(format!("data-bs-target=\"#collapse-{}\"", &res.safename()).as_str())
             .attr("aria-exapnded=\"false\"")
-            .attr(format!("aria-controls=\"collapse-{}\"", &node.safename()).as_str())
-            .write_str(&node.name())?;
+            .attr(format!("aria-controls=\"collapse-{}\"", &res.safename()).as_str())
+            .write_str(&res.name())?;
         itemdiv
             .div()
-            .attr(format!("id=\"collapse-{}\"", &node.safename()).as_str())
+            .attr(format!("id=\"collapse-{}\"", &res.safename()).as_str())
             .attr("class=\"accordion-collapse collapse\"")
-            .attr(format!("aria-labelledby=\"heading-{}\"", &node.safename()).as_str())
+            .attr(format!("aria-labelledby=\"heading-{}\"", &res.safename()).as_str())
             .attr("data-bs-parents=\"nodes-accordion\"")
             .div()
             .attr("class=\"accordion-body fs-6\"")
             .pre()
-            .write_str(&node.raw())?;
+            .write_str(&res.raw())?;
     }
 
     Ok(())
