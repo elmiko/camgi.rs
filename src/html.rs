@@ -1,5 +1,5 @@
 use crate::prelude::*;
-pub use crate::resources::Resource;
+use crate::resources::Resource;
 use html_builder::*;
 use std::fmt::Write;
 
@@ -38,14 +38,15 @@ fn add_body(parent: &mut Node, mustgather: &MustGather) -> Result<()> {
     // nav list
     let mut nav = row.div().attr("class=\"col-2\"").attr("id=\"nav-col\"");
     let mut navlist = nav.div().attr("class=\"list-group\"");
-    for heading in ["Summary", "Nodes"] {
-        navlist
-            .a()
-            .attr("href=\"#\"")
-            .attr(format!("v-on:click=\"changeContent('{}')\"", heading.to_lowercase()).as_str())
-            .attr("class=\"list-group-item list-group-item-action\"")
-            .write_str(heading)?;
-    }
+
+    navlist
+        .a()
+        .attr("href=\"#\"")
+        .attr("v-on:click=\"changeContent('summary')\"")
+        .attr("class=\"list-group-item list-group-item-action\"")
+        .write_str("Summary")?;
+
+    add_navlist_entry(&mut navlist, "Nodes", &mustgather.nodes)?;
 
     // github link should go last
     navlist
@@ -98,6 +99,23 @@ fn add_head(parent: &mut Node, mustgather: &MustGather) -> Result<()> {
     Ok(())
 }
 
+fn add_navlist_entry(parent: &mut Node, title: &str, resources: &Vec<impl Resource>) -> Result<()> {
+    let mut a = parent
+        .a()
+        .attr("href=\"#\"")
+        .attr(format!("v-on:click=\"changeContent('{}')\"", title.to_lowercase()).as_str())
+        .attr("class=\"list-group-item list-group-item-action\"");
+    a.write_str(title)?;
+
+    let errors = resources.iter().filter(|r| r.is_error()).count();
+    if errors > 0 {
+        a.span()
+            .attr("class=\"badge bg-danger float-right\"")
+            .write_str(format!("{}", errors).as_str())?;
+    }
+    Ok(())
+}
+
 fn add_resource_data(parent: &mut Node, kind: &str, resources: &Vec<impl Resource>) -> Result<()> {
     let mut data = parent
         .data()
@@ -109,12 +127,17 @@ fn add_resource_data(parent: &mut Node, kind: &str, resources: &Vec<impl Resourc
         .attr(format!("id=\"{}-accordion\"", kind.to_lowercase()).as_str());
     for res in resources {
         let mut itemdiv = div.div().attr("class=\"accordion-item\"");
+        let buttonclass = if res.is_error() {
+            " bg-danger text-white"
+        } else {
+            ""
+        };
         itemdiv
             .h2()
             .attr("class=\"accordion-header\"")
             .attr(format!("id=\"heading-{}\"", &res.safename()).as_str())
             .button()
-            .attr("class=\"accordion-button collapsed p-2\"")
+            .attr(format!("class=\"accordion-button collapsed p-2{}\"", buttonclass).as_str())
             .attr("type=\"button\"")
             .attr("data-bs-toggle=\"collapse\"")
             .attr(format!("data-bs-target=\"#collapse-{}\"", &res.safename()).as_str())
@@ -156,7 +179,22 @@ fn add_summary_data(parent: &mut Node, mustgather: &MustGather) -> Result<()> {
         .attr("class=\"text-light bg-secondary ps-1 mb-1\"")
         .write_str(format!("{} Nodes", mustgather.nodes.len()).as_str())?;
     let mut dd = dl.dd();
-    dd.write_str("All nodes ready")?;
+    let notready: Vec<String> = mustgather
+        .nodes
+        .iter()
+        .filter(|n| n.is_error())
+        .map(|n| n.name())
+        .cloned()
+        .collect();
+    if notready.len() > 0 {
+        add_table(
+            &mut dd,
+            vec!["Nodes not ready"],
+            notready.iter().map(|n| n.as_str()).collect(),
+        )?;
+    } else {
+        dd.write_str("All nodes ready")?;
+    }
 
     Ok(())
 }

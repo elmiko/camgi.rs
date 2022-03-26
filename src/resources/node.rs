@@ -1,4 +1,5 @@
 use crate::prelude::*;
+use crate::resources::Resource;
 use yaml_rust::Yaml;
 
 pub struct Node {
@@ -22,7 +23,7 @@ impl Node {
 
 impl Resource for Node {
     fn is_error(&self) -> bool {
-        self.ready
+        !self.ready
     }
 
     fn name(&self) -> &String {

@@ -19,28 +19,28 @@ metadata:
     failure-domain.beta.kubernetes.io/region: region-1
     failure-domain.beta.kubernetes.io/zone: zone-1
     kubernetes.io/arch: amd64
-    kubernetes.io/hostname: ip-10-0-0-1.control.plane
+    kubernetes.io/hostname: ip-10-0-0-2.control.plane
     kubernetes.io/os: linux
     node-role.kubernetes.io/master: ""
     node.kubernetes.io/instance-type: xlarge
     node.openshift.io/os_id: rhcos
     topology.kubernetes.io/region: region-1
     topology.kubernetes.io/zone: zone-1
-  name: ip-10-0-0-1.control.plane
+  name: ip-10-0-0-2.control.plane
   resourceVersion: "89485"
   uid: 00000000-0000-0000-0000-000000000000
 spec:
-  providerID: fake://ip-10-0-0-1.control.plane
+  providerID: fake://ip-10-0-0-2.control.plane
   taints:
   - effect: NoSchedule
     key: node-role.kubernetes.io/master
 status:
   addresses:
-  - address: 10.0.0.1
+  - address: 10.0.0.2
     type: InternalIP
-  - address: ip-10-0-0-1.control.plane
+  - address: ip-10-0-0-2.control.plane
     type: Hostname
-  - address: ip-10-0-0-1.control.plane
+  - address: ip-10-0-0-2.control.plane
     type: InternalDNS
   allocatable:
     cpu: 3500m
