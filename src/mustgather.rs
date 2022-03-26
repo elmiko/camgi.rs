@@ -138,10 +138,14 @@ fn get_cluster_version(path: &Path) -> String {
 }
 
 /// Get all the resources of a given type.
+/// If the resource path does not exist, will return an empty list.
 fn get_resources<T: Resource>(path: &Path) -> Vec<T> {
     let mut resources = Vec::new();
-    let yamlfiles: Vec<PathBuf> = fs::read_dir(&path)
-        .unwrap()
+    let files = match fs::read_dir(&path) {
+        Ok(p) => p,
+        Err(_) => return resources,
+    };
+    let yamlfiles: Vec<PathBuf> = files
         .into_iter()
         .filter(|m| m.is_ok())
         .map(|m| m.unwrap().path())
