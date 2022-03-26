@@ -39,6 +39,7 @@ fn add_body(parent: &mut Node, mustgather: &MustGather) -> Result<()> {
     let mut nav = row.div().attr("class=\"col-2\"").attr("id=\"nav-col\"");
     let mut navlist = nav.div().attr("class=\"list-group\"");
 
+    // summary nav entry
     navlist
         .a()
         .attr("href=\"#\"")
@@ -46,6 +47,7 @@ fn add_body(parent: &mut Node, mustgather: &MustGather) -> Result<()> {
         .attr("class=\"list-group-item list-group-item-action\"")
         .write_str("Summary")?;
 
+    // nav entries for resources
     add_navlist_entry(&mut navlist, "Nodes", &mustgather.nodes)?;
 
     // github link should go last
@@ -59,7 +61,7 @@ fn add_body(parent: &mut Node, mustgather: &MustGather) -> Result<()> {
         .attr("alt=\"GitHub logo\"")
         .attr("title=\"Found a bug or issue? Visit this project's git repo.\"");
 
-    // content
+    // main-content div
     let mut content = row.div().attr("class=\"col-10\"");
     content
         .div()
@@ -69,6 +71,8 @@ fn add_body(parent: &mut Node, mustgather: &MustGather) -> Result<()> {
         .attr("v-html=\"content\"");
 
     // add data sections
+    // data sections are used by the nav list and vue app to change the content
+    // in the div#main-content element.
     add_summary_data(&mut body, &mustgather)?;
     add_resource_data(&mut body, "Nodes", &mustgather.nodes)?;
 
