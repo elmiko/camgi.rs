@@ -6,8 +6,10 @@ pub mod node;
 
 pub use crate::resources::machine::Machine;
 pub use crate::resources::node::Node;
+use crate::Manifest;
 
 pub trait Resource {
+    fn from(manifest: Manifest) -> Self;
     fn name(&self) -> &String;
     fn raw(&self) -> &String;
     fn safename(&self) -> &String;

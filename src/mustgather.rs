@@ -2,8 +2,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 use crate::prelude::*;
-use crate::resources::Machine;
-use crate::resources::Node;
+use crate::resources::{Machine, Node, Resource};
 use std::fs;
 use std::path::{Path, PathBuf};
 
@@ -20,8 +19,16 @@ impl MustGather {
         let path = find_must_gather_root(path)?;
         let title = String::from(path.file_name().unwrap().to_str().unwrap());
         let version = get_cluster_version(&path);
-        let machines = get_machines(&path);
-        let nodes = get_nodes(&path);
+        let manifestpath = build_manifest_path(
+            &path,
+            "",
+            "openshift-machine-api",
+            "machines",
+            "machine.openshift.io",
+        );
+        let machines = get_resources::<Machine>(&manifestpath);
+        let manifestpath = build_manifest_path(&path, "", "", "nodes", "core");
+        let nodes = get_resources::<Node>(&manifestpath);
 
         Ok(MustGather {
             title,
@@ -130,17 +137,10 @@ fn get_cluster_version(path: &Path) -> String {
     }
 }
 
-/// Get all the machines in the cluster.
-fn get_machines(path: &Path) -> Vec<Machine> {
-    let mut machines = Vec::new();
-    let manifestpath = build_manifest_path(
-        path,
-        "",
-        "openshift-machine-api",
-        "machines",
-        "machine.openshift.io",
-    );
-    let yamlfiles: Vec<PathBuf> = fs::read_dir(&manifestpath)
+/// Get all the resources of a given type.
+fn get_resources<T: Resource>(path: &Path) -> Vec<T> {
+    let mut resources = Vec::new();
+    let yamlfiles: Vec<PathBuf> = fs::read_dir(&path)
         .unwrap()
         .into_iter()
         .filter(|m| m.is_ok())
@@ -150,32 +150,11 @@ fn get_machines(path: &Path) -> Vec<Machine> {
 
     for path in yamlfiles {
         match Manifest::from(path) {
-            Ok(m) => machines.push(Machine::from(m)),
+            Ok(m) => resources.push(T::from(m)),
             Err(_) => continue,
         }
     }
-    machines
-}
-
-/// Get all the Nodes in the cluster.
-fn get_nodes(path: &Path) -> Vec<Node> {
-    let mut nodes = Vec::new();
-    let manifestpath = build_manifest_path(path, "", "", "nodes", "core");
-    let yamlfiles: Vec<PathBuf> = fs::read_dir(&manifestpath)
-        .unwrap()
-        .into_iter()
-        .filter(|m| m.is_ok())
-        .map(|m| m.unwrap().path())
-        .filter(|m| m.extension().unwrap() == "yaml")
-        .collect();
-
-    for path in yamlfiles {
-        match Manifest::from(path) {
-            Ok(m) => nodes.push(Node::from(m)),
-            Err(_) => continue,
-        }
-    }
-    nodes
+    resources
 }
 
 #[cfg(test)]
@@ -239,24 +218,9 @@ mod tests {
     }
 
     #[test]
-    fn test_get_machines() {
-        assert_eq!(
-            get_machines(&PathBuf::from(
-                "testdata/must-gather-valid/sample-openshift-release"
-            ))
-            .len(),
-            2
-        )
-    }
-
-    #[test]
-    fn test_get_nodes() {
-        assert_eq!(
-            get_nodes(&PathBuf::from(
-                "testdata/must-gather-valid/sample-openshift-release"
-            ))
-            .len(),
-            2
-        )
+    fn test_get_resources() {
+        let path = PathBuf::from("testdata/must-gather-valid/sample-openshift-release");
+        let manifestpath = build_manifest_path(&path, "", "", "nodes", "core");
+        assert_eq!(get_resources::<Node>(&manifestpath).len(), 2)
     }
 }

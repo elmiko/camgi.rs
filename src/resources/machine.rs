@@ -9,14 +9,12 @@ pub struct Machine {
     running: bool,
 }
 
-impl Machine {
-    pub fn from(manifest: Manifest) -> Machine {
+impl Resource for Machine {
+    fn from(manifest: Manifest) -> Machine {
         let running = is_running_phase(&manifest);
         Machine { manifest, running }
     }
-}
 
-impl Resource for Machine {
     fn is_error(&self) -> bool {
         !self.running
     }

@@ -10,14 +10,12 @@ pub struct Node {
     ready: bool,
 }
 
-impl Node {
-    pub fn from(manifest: Manifest) -> Node {
+impl Resource for Node {
+    fn from(manifest: Manifest) -> Node {
         let ready = is_ready_condition(&manifest);
         Node { manifest, ready }
     }
-}
 
-impl Resource for Node {
     fn is_error(&self) -> bool {
         !self.ready
     }
