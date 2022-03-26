@@ -1,3 +1,6 @@
+// Copyright (C) 2022 Red Hat
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 pub mod node;
 
 pub use crate::resources::node::Node;

@@ -1,3 +1,6 @@
+// Copyright (C) 2022 Red Hat
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 use crate::prelude::*;
 use std::fs;
 use std::path::PathBuf;
