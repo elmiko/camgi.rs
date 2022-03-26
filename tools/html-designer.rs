@@ -11,15 +11,16 @@
 use notify::{RecursiveMode, Watcher};
 use std::collections::HashMap;
 use std::convert::Infallible;
+use std::path::PathBuf;
 use std::sync::{Arc, Mutex};
 use warp::Filter;
 
-type SharedFile = Arc<Mutex<String>>;
+type SharedFile = Arc<Mutex<(PathBuf, String)>>;
 type Users = Arc<Mutex<HashMap<usize, tokio::sync::mpsc::UnboundedSender<()>>>>;
 
 static NEXT_USER_ID: std::sync::atomic::AtomicUsize = std::sync::atomic::AtomicUsize::new(1);
-const PATH: &str = "./target/html/index.html";
 
+use anyhow::{Context, Result};
 use warp::sse::Event;
 use warp::Stream;
 
@@ -38,17 +39,27 @@ fn event_stream(users: Users) -> impl Stream<Item = Result<Event, Infallible>> +
 }
 
 #[tokio::main]
-async fn main() {
+async fn main() -> Result<()> {
+    let mut args = std::env::args().skip(1);
+    let html_path = if let Some(path) = args.next() {
+        path
+    } else {
+        "./target/html/index.html".to_string()
+    };
+    let html_path = std::path::Path::new(&html_path).to_path_buf();
+    let rs_path = "src/html.rs";
+
     // A shared String for the index.html file.
-    let html_content: SharedFile = Arc::new(Mutex::new(String::new()));
+    let html_content: SharedFile = Arc::new(Mutex::new((html_path.clone(), String::new())));
     // A list of web client to notify on file change.
     let users: Users = Arc::new(Mutex::new(std::collections::HashMap::new()));
 
     // Helper function to read the file
     let load_file = |shared: SharedFile| async move {
-        let mut content = shared.lock().unwrap();
-        content.clear();
-        content.push_str(&std::fs::read_to_string(PATH).expect("oops"));
+        let mut content = shared.lock().expect("Can't acquire the shared file lock");
+        content.1.clear();
+        let new_content = std::fs::read_to_string(&content.0).expect("Can't read the file");
+        content.1.push_str(&new_content);
     };
 
     load_file(html_content.clone()).await;
@@ -60,7 +71,7 @@ async fn main() {
             let html_content = html_content.clone();
             warp::http::Response::builder()
                 .header("content-type", "text/html; charset=utf-8")
-                .body(format!("{}{}", html_content.lock().unwrap(), JS))
+                .body(format!("{}{}", html_content.lock().unwrap().1, JS))
         }
     });
 
@@ -93,13 +104,16 @@ async fn main() {
 
     // Watch file changes
     let (tx, rx) = std::sync::mpsc::channel();
-    let mut watcher = notify::watcher(tx, std::time::Duration::from_secs(0)).unwrap();
-    watcher.watch(PATH, RecursiveMode::NonRecursive).unwrap();
+    let mut watcher = notify::watcher(tx, std::time::Duration::from_secs(0))
+        .context("Failed to create notify watcher")?;
     watcher
-        .watch("src/html.rs", RecursiveMode::NonRecursive)
-        .unwrap();
+        .watch(&html_path, RecursiveMode::NonRecursive)
+        .context("Failed to watch demo html")?;
+    watcher
+        .watch(rs_path, RecursiveMode::NonRecursive)
+        .context("Failed to watch html.rs module")?;
 
-    println!("Watching files...");
+    println!("Watching {:?} and {:?}...", &html_path, rs_path);
     loop {
         let ev = rx.recv();
         match ev {
