@@ -1,0 +1,54 @@
+---
+apiVersion: machine.openshift.io/v1beta1
+kind: Machine
+metadata:
+  annotations:
+    machine.openshift.io/instance-state: running
+  creationTimestamp: "2022-01-01T00:00:00Z"
+  finalizers:
+  - machine.machine.openshift.io
+  generation: 2
+  labels:
+    machine.openshift.io/cluster-api-cluster: testdata
+    machine.openshift.io/cluster-api-machine-role: master
+    machine.openshift.io/cluster-api-machine-type: master
+    machine.openshift.io/instance-type: xlarge
+    machine.openshift.io/region: region-1
+    machine.openshift.io/zone: zone-2
+  name: testdata-control-plane-1
+  namespace: openshift-machine-api
+  resourceVersion: "16606"
+  uid: 00000000-0000-0000-0000-000000000000
+spec:
+  metadata: {}
+  providerID: fake://ip-10-0-0-2.control.plane
+  providerSpec:
+    value: {}
+status:
+  addresses:
+  - address: 10.0.0.2
+    type: InternalIP
+  - address: ip-10-0-0-2.control.plane
+    type: InternalDNS
+  - address: ip-10-0-0-2.control.plane
+    type: Hostname
+  conditions:
+  - lastTransitionTime: "2022-01-01T00:00:00Z"
+    status: "True"
+    type: InstanceExists
+  lastUpdated: "2022-01-01T00:00:00Z"
+  nodeRef:
+    kind: Node
+    name: ip-10-0-0-2.control.plane
+    uid: 00000000-0000-0000-0000-000000000000
+  phase: Failed
+  providerStatus:
+    conditions:
+    - lastProbeTime: "2022-01-01T00:00:00Z"
+      lastTransitionTime: "2022-01-01T00:00:00Z"
+      message: Machine successfully created
+      reason: MachineCreationSucceeded
+      status: "True"
+      type: MachineCreation
+    instanceId: 10.0.0.2.control.plane
+    instanceState: failed

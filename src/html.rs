@@ -52,6 +52,7 @@ fn add_body(parent: &mut Node, mustgather: &MustGather) -> Result<()> {
 
     // nav entries for resources
     add_navlist_entry(&mut navlist, "Nodes", &mustgather.nodes)?;
+    add_navlist_entry(&mut navlist, "Machines", &mustgather.machines)?;
 
     // github link should go last
     navlist
@@ -78,6 +79,7 @@ fn add_body(parent: &mut Node, mustgather: &MustGather) -> Result<()> {
     // in the div#main-content element.
     add_summary_data(&mut body, &mustgather)?;
     add_resource_data(&mut body, "Nodes", &mustgather.nodes)?;
+    add_resource_data(&mut body, "Machines", &mustgather.machines)?;
 
     // scripts
     body.script()
@@ -182,6 +184,7 @@ fn add_summary_data(parent: &mut Node, mustgather: &MustGather) -> Result<()> {
         vec!["OpenShift Version", mustgather.version.as_str()],
     )?;
 
+    // Nodes section
     dl.dt()
         .attr("class=\"text-light bg-secondary ps-1 mb-1\"")
         .write_str(format!("{} Nodes", mustgather.nodes.len()).as_str())?;
@@ -201,6 +204,28 @@ fn add_summary_data(parent: &mut Node, mustgather: &MustGather) -> Result<()> {
         )?;
     } else {
         dd.write_str("All nodes ready")?;
+    }
+
+    // Machines section
+    dl.dt()
+        .attr("class=\"text-light bg-secondary ps-1 mb-1\"")
+        .write_str(format!("{} Machines", mustgather.machines.len()).as_str())?;
+    let mut dd = dl.dd();
+    let notrunning: Vec<String> = mustgather
+        .machines
+        .iter()
+        .filter(|n| n.is_error())
+        .map(|n| n.name())
+        .cloned()
+        .collect();
+    if notrunning.len() > 0 {
+        add_table(
+            &mut dd,
+            vec!["Machines not in Running phase"],
+            notrunning.iter().map(|n| n.as_str()).collect(),
+        )?;
+    } else {
+        dd.write_str("All Machines in Running phase")?;
     }
 
     Ok(())
