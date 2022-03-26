@@ -38,18 +38,15 @@ fn add_body(parent: &mut Node, mustgather: &MustGather) -> Result<()> {
     // nav list
     let mut nav = row.div().attr("class=\"col-2\"").attr("id=\"nav-col\"");
     let mut navlist = nav.div().attr("class=\"list-group\"");
-    navlist
-        .a()
-        .attr("href=\"#\"")
-        .attr("v-on:click=\"changeContent('summary')\"")
-        .attr("class=\"list-group-item list-group-item-action\"")
-        .write_str("Summary")?;
-    navlist
-        .a()
-        .attr("href=\"#\"")
-        .attr("v-on:click=\"changeContent('nodes')\"")
-        .attr("class=\"list-group-item list-group-item-action\"")
-        .write_str("Nodes")?;
+    for heading in ["Summary", "Nodes"] {
+        navlist
+            .a()
+            .attr("href=\"#\"")
+            .attr(format!("v-on:click=\"changeContent('{}')\"", heading.to_lowercase()).as_str())
+            .attr("class=\"list-group-item list-group-item-action\"")
+            .write_str(heading)?;
+    }
+
     // github link should go last
     navlist
         .a()
@@ -72,7 +69,7 @@ fn add_body(parent: &mut Node, mustgather: &MustGather) -> Result<()> {
 
     // add data sections
     add_summary_data(&mut body, &mustgather)?;
-    add_resource_data(&mut body, &mustgather.nodes)?;
+    add_resource_data(&mut body, "Nodes", &mustgather.nodes)?;
 
     // scripts
     body.script()
@@ -101,13 +98,15 @@ fn add_head(parent: &mut Node, mustgather: &MustGather) -> Result<()> {
     Ok(())
 }
 
-fn add_resource_data(parent: &mut Node, resources: &Vec<impl Resource>) -> Result<()> {
-    let mut data = parent.data().attr("id=\"nodes-data\"");
-    data.h1().write_str("Nodes")?;
+fn add_resource_data(parent: &mut Node, kind: &str, resources: &Vec<impl Resource>) -> Result<()> {
+    let mut data = parent
+        .data()
+        .attr(format!("id=\"{}-data\"", kind.to_lowercase()).as_str());
+    data.h1().write_str(kind)?;
     let mut div = data
         .div()
         .attr("class=\"accordion\"")
-        .attr("id=\"nodes-accordion\"");
+        .attr(format!("id=\"{}-accordion\"", kind.to_lowercase()).as_str());
     for res in resources {
         let mut itemdiv = div.div().attr("class=\"accordion-item\"");
         itemdiv
@@ -127,7 +126,7 @@ fn add_resource_data(parent: &mut Node, resources: &Vec<impl Resource>) -> Resul
             .attr(format!("id=\"collapse-{}\"", &res.safename()).as_str())
             .attr("class=\"accordion-collapse collapse\"")
             .attr(format!("aria-labelledby=\"heading-{}\"", &res.safename()).as_str())
-            .attr("data-bs-parents=\"nodes-accordion\"")
+            .attr(format!("data-bs-parents=\"{}-accordion\"", kind.to_lowercase()).as_str())
             .div()
             .attr("class=\"accordion-body fs-6\"")
             .pre()
