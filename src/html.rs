@@ -182,6 +182,7 @@ fn add_summary_data(parent: &mut Node, mustgather: &MustGather) -> Result<()> {
         &mut dd,
         Vec::new(),
         vec!["OpenShift Version", mustgather.version.as_str()],
+        2,
     )?;
 
     // Nodes section
@@ -201,6 +202,7 @@ fn add_summary_data(parent: &mut Node, mustgather: &MustGather) -> Result<()> {
             &mut dd,
             vec!["Nodes not ready"],
             notready.iter().map(|n| n.as_str()).collect(),
+            1,
         )?;
     } else {
         dd.write_str("All nodes ready")?;
@@ -223,6 +225,7 @@ fn add_summary_data(parent: &mut Node, mustgather: &MustGather) -> Result<()> {
             &mut dd,
             vec!["Machines not in Running phase"],
             notrunning.iter().map(|n| n.as_str()).collect(),
+            1,
         )?;
     } else {
         dd.write_str("All Machines in Running phase")?;
@@ -231,7 +234,7 @@ fn add_summary_data(parent: &mut Node, mustgather: &MustGather) -> Result<()> {
     Ok(())
 }
 
-fn add_table(parent: &mut Node, head: Vec<&str>, body: Vec<&str>) -> Result<()> {
+fn add_table(parent: &mut Node, head: Vec<&str>, body: Vec<&str>, width: usize) -> Result<()> {
     let mut table = parent
         .table()
         .attr("class=\"table table-sm table-striped font-monospace\"");
@@ -246,10 +249,24 @@ fn add_table(parent: &mut Node, head: Vec<&str>, body: Vec<&str>) -> Result<()> 
     }
 
     let mut tbody = table.tbody();
-    let mut tr = tbody.tr();
-    for (i, item) in body.iter().enumerate() {
-        let t = if i == 0 { tr.th() } else { tr.td() };
-        t.attr("scope=\"col\"").write_str(item)?;
+
+    let mut rows: Vec<Vec<&str>> = Vec::new();
+    let mut row: Vec<&str> = Vec::new();
+    for (i, _) in body.iter().enumerate() {
+        row.push(&body[i]);
+        // make news rows when appropriate, but not the first time
+        if (i + 1) % width == 0 && i < body.len() {
+            rows.push(row);
+            row = Vec::new();
+        }
+    }
+
+    for (_i, item) in rows.iter().enumerate() {
+        let mut tr = tbody.tr();
+        for (ii, iitem) in item.iter().enumerate() {
+            let t = if ii == 0 { tr.th() } else { tr.td() };
+            t.attr("scope=\"col\"").write_str(iitem)?;
+        }
     }
 
     Ok(())
