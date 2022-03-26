@@ -6,21 +6,14 @@ use crate::resources::Resource;
 use yaml_rust::Yaml;
 
 pub struct Node {
-    raw: String,
-    name: String,
-    safename: String,
+    manifest: Manifest,
     ready: bool,
 }
 
 impl Node {
     pub fn from(manifest: Manifest) -> Node {
         let ready = is_ready_condition(&manifest);
-        Node {
-            raw: manifest.as_raw(),
-            name: manifest.name(),
-            safename: manifest.safename(),
-            ready,
-        }
+        Node { manifest, ready }
     }
 }
 
@@ -30,15 +23,15 @@ impl Resource for Node {
     }
 
     fn name(&self) -> &String {
-        &self.name
+        &self.manifest.name
     }
 
     fn raw(&self) -> &String {
-        &self.raw
+        &self.manifest.as_raw()
     }
 
     fn safename(&self) -> &String {
-        &self.safename
+        &self.manifest.safename
     }
 }
 

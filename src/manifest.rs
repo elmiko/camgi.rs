@@ -8,6 +8,8 @@ use yaml_rust::{Yaml, YamlLoader};
 
 #[derive(Debug)]
 pub struct Manifest {
+    pub name: String,
+    pub safename: String,
     raw: String,
     yaml: Yaml,
 }
@@ -23,15 +25,25 @@ impl Manifest {
 
         let raw = fs::read_to_string(path.as_path())?;
         let mut docs = YamlLoader::load_from_str(&raw)?;
-        match docs.is_empty() {
-            true => Err(anyhow!(
+
+        if docs.is_empty() {
+            Err(anyhow!(
                 "No YAML documents found in path {}",
                 path.as_path().display()
-            )),
-            false => Ok(Manifest {
+            ))
+        } else {
+            let yaml = docs.remove(0);
+            let name = match yaml["metadata"]["name"].as_str() {
+                Some(n) => String::from(n),
+                None => String::from("Unknown"),
+            };
+            let safename = name.replace('.', "-");
+            Ok(Manifest {
+                name,
                 raw,
-                yaml: docs.remove(0),
-            }),
+                safename,
+                yaml,
+            })
         }
     }
 
@@ -39,19 +51,8 @@ impl Manifest {
         &self.yaml
     }
 
-    pub fn as_raw(&self) -> String {
-        self.raw.clone()
-    }
-
-    pub fn name(&self) -> String {
-        match self.as_yaml()["metadata"]["name"].as_str() {
-            Some(n) => String::from(n),
-            None => String::from("Unknown"),
-        }
-    }
-
-    pub fn safename(&self) -> String {
-        self.name().replace('.', "-")
+    pub fn as_raw(&self) -> &String {
+        &self.raw
     }
 }
 
@@ -112,7 +113,7 @@ mod tests {
         let manifest = Manifest::from(PathBuf::from(
             "testdata/must-gather-valid/sample-openshift-release/cluster-scoped-resources/core/nodes/ip-10-0-0-1.control.plane.yaml"
         )).unwrap();
-        assert_eq!(manifest.name(), expected)
+        assert_eq!(manifest.name, expected)
     }
 
     #[test]
@@ -121,6 +122,6 @@ mod tests {
         let manifest = Manifest::from(PathBuf::from(
             "testdata/must-gather-valid/sample-openshift-release/cluster-scoped-resources/core/nodes/ip-10-0-0-1.control.plane.yaml"
         )).unwrap();
-        assert_eq!(manifest.safename(), expected)
+        assert_eq!(manifest.safename, expected)
     }
 }
