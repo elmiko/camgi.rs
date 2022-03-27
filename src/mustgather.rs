@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 use crate::prelude::*;
-use crate::resources::{Machine, Node, Resource};
+use crate::resources::*;
 use std::fs;
 use std::path::{Path, PathBuf};
 
@@ -10,6 +10,7 @@ pub struct MustGather {
     pub title: String,
     pub version: String,
     pub machines: Vec<Machine>,
+    pub machinesets: Vec<MachineSet>,
     pub nodes: Vec<Node>,
 }
 
@@ -27,6 +28,14 @@ impl MustGather {
             "machine.openshift.io",
         );
         let machines = get_resources::<Machine>(&manifestpath);
+        let manifestpath = build_manifest_path(
+            &path,
+            "",
+            "openshift-machine-api",
+            "machinesets",
+            "machine.openshift.io",
+        );
+        let machinesets = get_resources::<MachineSet>(&manifestpath);
         let manifestpath = build_manifest_path(&path, "", "", "nodes", "core");
         let nodes = get_resources::<Node>(&manifestpath);
 
@@ -34,6 +43,7 @@ impl MustGather {
             title,
             version,
             machines,
+            machinesets,
             nodes,
         })
     }

@@ -2,9 +2,11 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 pub mod machine;
+pub mod machineset;
 pub mod node;
 
 pub use crate::resources::machine::Machine;
+pub use crate::resources::machineset::MachineSet;
 pub use crate::resources::node::Node;
 use crate::Manifest;
 

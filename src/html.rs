@@ -53,6 +53,7 @@ fn add_body(parent: &mut Node, mustgather: &MustGather) -> Result<()> {
     // nav entries for resources
     add_navlist_entry(&mut navlist, "Nodes", &mustgather.nodes)?;
     add_navlist_entry(&mut navlist, "Machines", &mustgather.machines)?;
+    add_navlist_entry(&mut navlist, "MachineSets", &mustgather.machinesets)?;
 
     // github link should go last
     navlist
@@ -80,6 +81,7 @@ fn add_body(parent: &mut Node, mustgather: &MustGather) -> Result<()> {
     add_summary_data(&mut body, &mustgather)?;
     add_resource_data(&mut body, "Nodes", &mustgather.nodes)?;
     add_resource_data(&mut body, "Machines", &mustgather.machines)?;
+    add_resource_data(&mut body, "MachineSets", &mustgather.machinesets)?;
 
     // scripts
     body.script()
@@ -240,6 +242,11 @@ fn add_summary_data(parent: &mut Node, mustgather: &MustGather) -> Result<()> {
     } else {
         dd.write_str("All Machines in Running phase")?;
     }
+
+    // MachineSets section
+    dl.dt()
+        .attr("class=\"text-light bg-secondary ps-1 mb-1\"")
+        .write_str(format!("{} MachineSets", mustgather.machinesets.len()).as_str())?;
 
     Ok(())
 }
