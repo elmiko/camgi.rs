@@ -232,9 +232,16 @@ mod tests {
     }
 
     #[test]
-    fn test_get_resources() {
+    fn test_get_resources_success() {
         let path = PathBuf::from("testdata/must-gather-valid/sample-openshift-release");
         let manifestpath = build_manifest_path(&path, "", "", "nodes", "core");
         assert_eq!(get_resources::<Node>(&manifestpath).len(), 2)
+    }
+
+    #[test]
+    fn test_get_resources_non_existant() {
+        let path = PathBuf::from("testdata/must-gather-invalid/sample-openshift-release");
+        let manifestpath = build_manifest_path(&path, "", "fake", "kind", "group");
+        assert_eq!(get_resources::<Node>(&manifestpath).len(), 0)
     }
 }
