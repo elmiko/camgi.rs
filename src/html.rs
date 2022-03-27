@@ -198,9 +198,14 @@ fn add_summary_data(parent: &mut Node, mustgather: &MustGather) -> Result<()> {
         .cloned()
         .collect();
     if notready.len() > 0 {
+        dd.write_str("The following")?;
+        dd.span()
+            .attr("class=\"badge bg-danger\"")
+            .write_str(format!("{}", notready.len()).as_str())?;
+        dd.write_str("Nodes do not have a true Ready condition")?;
         add_table(
             &mut dd,
-            vec!["Nodes not ready"],
+            Vec::new(),
             notready.iter().map(|n| n.as_str()).collect(),
             1,
         )?;
@@ -221,9 +226,14 @@ fn add_summary_data(parent: &mut Node, mustgather: &MustGather) -> Result<()> {
         .cloned()
         .collect();
     if notrunning.len() > 0 {
+        dd.write_str("The following")?;
+        dd.span()
+            .attr("class=\"badge bg-danger\"")
+            .write_str(format!("{}", notrunning.len()).as_str())?;
+        dd.write_str("Machines not in Running phase")?;
         add_table(
             &mut dd,
-            vec!["Machines not in Running phase"],
+            Vec::new(),
             notrunning.iter().map(|n| n.as_str()).collect(),
             1,
         )?;
