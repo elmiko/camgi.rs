@@ -29,7 +29,7 @@ impl Html {
 }
 
 fn add_body(parent: &mut Node, mustgather: &MustGather) -> Result<()> {
-    let mut body = parent.body();
+    let mut body = parent.body().attr("class=\"bg-secondary\"");
 
     // main div
     let mut app = body
@@ -66,7 +66,7 @@ fn add_body(parent: &mut Node, mustgather: &MustGather) -> Result<()> {
         .attr("title=\"Found a bug or issue? Visit this project's git repo.\"");
 
     // main-content div
-    let mut content = row.div().attr("class=\"col-10\"");
+    let mut content = row.div().attr("class=\"col-10 bg-white rounded\"");
     content
         .div()
         .attr("id=\"main-content\"")
