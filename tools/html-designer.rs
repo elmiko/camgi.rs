@@ -41,12 +41,23 @@ fn event_stream(users: Users) -> impl Stream<Item = Result<Event, Infallible>> +
 #[tokio::main]
 async fn main() -> Result<()> {
     let mut args = std::env::args().skip(1);
-    let html_path = if let Some(path) = args.next() {
-        path
+    let path = if let Some(arg) = args.next() {
+        arg
     } else {
         "./target/html/index.html".to_string()
     };
-    let html_path = std::path::Path::new(&html_path).to_path_buf();
+    let path = std::path::Path::new(&path);
+
+    // Ensure the html file exists
+    if !path.exists() {
+        match path.parent() {
+            Some(path) => std::fs::create_dir_all(path).context("Can't create parent directory")?,
+            None => {}
+        };
+        std::fs::write(path, format!("Waiting for {:?}", path)).context("Can't create file")?;
+    }
+
+    let html_path = path.to_path_buf();
     let rs_path = "src/html.rs";
 
     // A shared String for the index.html file.
@@ -58,8 +69,10 @@ async fn main() -> Result<()> {
     let load_file = |shared: SharedFile| async move {
         let mut content = shared.lock().expect("Can't acquire the shared file lock");
         content.1.clear();
-        let new_content = std::fs::read_to_string(&content.0).expect("Can't read the file");
-        content.1.push_str(&new_content);
+        match std::fs::read_to_string(&content.0) {
+            Err(e) => content.1.push_str(&format!("Can't read {}", e)),
+            Ok(new_content) => content.1.push_str(&new_content),
+        }
     };
 
     load_file(html_content.clone()).await;
@@ -99,7 +112,10 @@ async fn main() -> Result<()> {
         tokio::process::Command::new("xdg-open")
             .arg("http://localhost:3030")
             .spawn()
-            .expect("Failed to run xdg-open http://localhost:3030");
+            .map_or_else(
+                |e| println!("Failed to run `xdg-open http://localhost:3030` {}", e),
+                |_| (),
+            );
     });
 
     // Watch file changes
