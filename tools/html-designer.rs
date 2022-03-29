@@ -58,7 +58,7 @@ async fn main() -> Result<()> {
     }
 
     let html_path = path.to_path_buf();
-    let rs_path = "src/html.rs";
+    let rs_path = "src/";
 
     // A shared String for the index.html file.
     let html_content: SharedFile = Arc::new(Mutex::new((html_path.clone(), String::new())));
@@ -126,7 +126,7 @@ async fn main() -> Result<()> {
         .watch(&html_path, RecursiveMode::NonRecursive)
         .context("Failed to watch demo html")?;
     watcher
-        .watch(rs_path, RecursiveMode::NonRecursive)
+        .watch(rs_path, RecursiveMode::Recursive)
         .context("Failed to watch html.rs module")?;
 
     println!("Watching {:?} and {:?}...", &html_path, rs_path);
@@ -136,7 +136,7 @@ async fn main() -> Result<()> {
             Ok(notify::DebouncedEvent::NoticeWrite(path)) => {
                 let path = path.as_path().to_str().unwrap_or("");
                 println!("Reloading {:?}...", path);
-                if path.ends_with("html.rs") {
+                if path.ends_with(".rs") {
                     tokio::spawn(async {
                         let mut child = tokio::process::Command::new("cargo")
                             .arg("run")
