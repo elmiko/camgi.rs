@@ -199,7 +199,7 @@ fn add_summary_data(parent: &mut Node, mustgather: &MustGather) -> Result<()> {
         .map(|n| n.name())
         .cloned()
         .collect();
-    if notready.is_empty() {
+    if !notready.is_empty() {
         dd.write_str("The following")?;
         dd.span()
             .attr("class=\"badge bg-danger\"")
