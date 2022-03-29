@@ -3,10 +3,10 @@ apiVersion: v1
 kind: Node
 metadata:
   annotations:
-    machine.openshift.io/machine: openshift-machine-api/testdata-control-plane-1
+    machine.openshift.io/machine: openshift-machine-api/testdata-compute-0
     machineconfiguration.openshift.io/controlPlaneTopology: HighlyAvailable
-    machineconfiguration.openshift.io/currentConfig: rendered-master-0
-    machineconfiguration.openshift.io/desiredConfig: rendered-master-0
+    machineconfiguration.openshift.io/currentConfig: rendered-worker-0
+    machineconfiguration.openshift.io/desiredConfig: rendered-worker-0
     machineconfiguration.openshift.io/reason: ""
     machineconfiguration.openshift.io/state: Done
     nfd.node.kubernetes.io/master.version: "1.16"
@@ -14,33 +14,30 @@ metadata:
   creationTimestamp: "2022-01-01T00:00:00Z"
   labels:
     beta.kubernetes.io/arch: amd64
-    beta.kubernetes.io/instance-type: xlarge
+    beta.kubernetes.io/instance-type: xxlarge
     beta.kubernetes.io/os: linux
     failure-domain.beta.kubernetes.io/region: region-1
     failure-domain.beta.kubernetes.io/zone: zone-1
     kubernetes.io/arch: amd64
-    kubernetes.io/hostname: ip-10-0-0-2.control.plane
+    kubernetes.io/hostname: ip-10-0-1-1.compute.plane
     kubernetes.io/os: linux
-    node-role.kubernetes.io/master: ""
-    node.kubernetes.io/instance-type: xlarge
+    node-role.kubernetes.io/worker: ""
+    node.kubernetes.io/instance-type: xxlarge
     node.openshift.io/os_id: rhcos
     topology.kubernetes.io/region: region-1
     topology.kubernetes.io/zone: zone-1
-  name: ip-10-0-0-2.control.plane
+  name: ip-10-0-1-1.compute.plane
   resourceVersion: "89485"
   uid: 00000000-0000-0000-0000-000000000000
 spec:
-  providerID: fake://ip-10-0-0-2.control.plane
-  taints:
-  - effect: NoSchedule
-    key: node-role.kubernetes.io/master
+  providerID: fake://ip-10-0-1-1.compute.plane
 status:
   addresses:
-  - address: 10.0.0.2
+  - address: 10.0.1.1.
     type: InternalIP
-  - address: ip-10-0-0-2.control.plane
+  - address: ip-10-0-1-1.compute.plane
     type: Hostname
-  - address: ip-10-0-0-2.control.plane
+  - address: ip-10-0-1-1.compute.plane
     type: InternalDNS
   allocatable:
     cpu: 3500m

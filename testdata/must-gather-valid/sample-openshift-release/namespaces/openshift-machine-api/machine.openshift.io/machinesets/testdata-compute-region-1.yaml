@@ -1,0 +1,39 @@
+---
+apiVersion: machine.openshift.io/v1beta1
+kind: MachineSet
+metadata:
+  annotations:
+    machine.openshift.io/GPU: "0"
+    machine.openshift.io/memoryMb: "8192"
+    machine.openshift.io/vCPU: "2"
+  creationTimestamp: "2022-01-01T00:00:00Z"
+  generation: 1
+  labels:
+    machine.openshift.io/cluster-api-cluster: testdata
+  name: testdata-compute-region-1
+  namespace: openshift-machine-api
+  resourceVersion: "38123"
+  uid: 00000000-0000-0000-0000-000000000000
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      machine.openshift.io/cluster-api-cluster: testdata
+      machine.openshift.io/cluster-api-machineset: testdata-compute-region-1
+  template:
+    metadata:
+      labels:
+        machine.openshift.io/cluster-api-cluster: testdata
+        machine.openshift.io/cluster-api-machine-role: worker
+        machine.openshift.io/cluster-api-machine-type: worker
+        machine.openshift.io/cluster-api-machineset: testdata-compute-region-1
+    spec:
+      metadata: {}
+      providerSpec:
+        value: {}
+status:
+  availableReplicas: 1
+  fullyLabeledReplicas: 1
+  observedGeneration: 1
+  readyReplicas: 1
+  replicas: 1

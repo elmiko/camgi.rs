@@ -1,0 +1,62 @@
+---
+apiVersion: machine.openshift.io/v1beta1
+kind: Machine
+metadata:
+  annotations:
+    machine.openshift.io/instance-state: running
+  creationTimestamp: "2022-01-01T00:00:00Z"
+  finalizers:
+  - machine.machine.openshift.io
+  generation: 2
+  labels:
+    machine.openshift.io/cluster-api-cluster: testdata
+    machine.openshift.io/cluster-api-machine-role: worker
+    machine.openshift.io/cluster-api-machine-type: worker
+    machine.openshift.io/cluster-api-machineset: testdata-compute-region-1
+    machine.openshift.io/instance-type: xxlarge
+    machine.openshift.io/region: region-1
+    machine.openshift.io/zone: zone-1
+  name: testdata-compute-0
+  namespace: openshift-machine-api
+  ownerReferences:
+  - apiVersion: machine.openshift.io/v1beta1
+    blockOwnerDeletion: true
+    controller: true
+    kind: MachineSet
+    name: testdata-compute-region-1
+    uid: 00000000-0000-0000-0000-000000000000
+  resourceVersion: "38121"
+  uid: 00000000-0000-0000-0000-000000000000
+spec:
+  metadata: {}
+  providerID: fake://ip-10-0-1-1.compute.plane
+  providerSpec:
+    value: {}
+status:
+  addresses:
+  - address: 10.0.1.1
+    type: InternalIP
+  - address: ip-10-0-1-1.compute.plane
+    type: InternalDNS
+  - address: ip-10-0-1-1.compute.plane
+    type: Hostname
+  conditions:
+  - lastTransitionTime: "2022-01-01T00:00:00Z"
+    status: "True"
+    type: InstanceExists
+  lastUpdated: "2022-01-01T00:00:00Z"
+  nodeRef:
+    kind: Node
+    name: ip-10-0-1-1.compute.plane
+    uid: 00000000-0000-0000-0000-000000000000
+  phase: Running
+  providerStatus:
+    conditions:
+    - lastProbeTime: "2022-01-01T00:00:00Z"
+      lastTransitionTime: "2022-01-01T00:00:00Z"
+      message: Machine successfully created
+      reason: MachineCreationSucceeded
+      status: "True"
+      type: MachineCreation
+    instanceId: 10.0.1.1.compute.plane
+    instanceState: running
