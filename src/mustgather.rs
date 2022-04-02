@@ -1,4 +1,4 @@
-// Copyright (C) 2022 Red Hat
+// Copyright (C) 2022 Red Hat, Inc.
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 use crate::prelude::*;
