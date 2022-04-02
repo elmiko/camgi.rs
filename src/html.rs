@@ -240,7 +240,16 @@ fn add_summary_data_machinesets_section(parent: &mut Node, mustgather: &MustGath
         .cloned()
         .collect();
     if !autoscaling.is_empty() {
-        dd.write_str(format!("{} participating in autoscaling", autoscaling.len()).as_str())?;
+        dd.span()
+            .attr("class=\"badge bg-secondary\"")
+            .write_str(format!("{}", autoscaling.len()).as_str())?;
+        dd.write_str("participating in autoscaling")?;
+        add_table(
+            &mut dd,
+            vec!["Name"],
+            autoscaling.iter().map(|m| m.as_str()).collect(),
+            1,
+        )?;
     } else {
         dd.write_str("None participating in autoscaling")?;
     }
