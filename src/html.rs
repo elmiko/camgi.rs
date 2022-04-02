@@ -51,9 +51,9 @@ fn add_body(parent: &mut Node, mustgather: &MustGather) -> Result<()> {
         .write_str("Summary")?;
 
     // nav entries for resources
-    add_navlist_entry(&mut navlist, "Nodes", &mustgather.nodes)?;
-    add_navlist_entry(&mut navlist, "Machines", &mustgather.machines)?;
     add_navlist_entry(&mut navlist, "MachineSets", &mustgather.machinesets)?;
+    add_navlist_entry(&mut navlist, "Machines", &mustgather.machines)?;
+    add_navlist_entry(&mut navlist, "Nodes", &mustgather.nodes)?;
 
     // github link should go last
     navlist
@@ -187,39 +187,19 @@ fn add_summary_data(parent: &mut Node, mustgather: &MustGather) -> Result<()> {
         2,
     )?;
 
-    // Nodes section
-    dl.dt()
-        .attr("class=\"text-light bg-secondary ps-1 mb-1\"")
-        .write_str(format!("{} Nodes", mustgather.nodes.len()).as_str())?;
-    let mut dd = dl.dd();
-    let notready: Vec<String> = mustgather
-        .nodes
-        .iter()
-        .filter(|n| n.is_error())
-        .map(|n| n.name())
-        .cloned()
-        .collect();
-    if !notready.is_empty() {
-        dd.write_str("The following")?;
-        dd.span()
-            .attr("class=\"badge bg-danger\"")
-            .write_str(format!("{}", notready.len()).as_str())?;
-        dd.write_str("Nodes do not have a true Ready condition")?;
-        add_table(
-            &mut dd,
-            Vec::new(),
-            notready.iter().map(|n| n.as_str()).collect(),
-            1,
-        )?;
-    } else {
-        dd.write_str("All nodes ready")?;
-    }
+    add_summary_data_machinesets_section(&mut dl, &mustgather)?;
+    add_summary_data_machines_section(&mut dl, &mustgather)?;
+    add_summary_data_nodes_section(&mut dl, &mustgather)?;
 
-    // Machines section
-    dl.dt()
+    Ok(())
+}
+
+fn add_summary_data_machines_section(parent: &mut Node, mustgather: &MustGather) -> Result<()> {
+    parent
+        .dt()
         .attr("class=\"text-light bg-secondary ps-1 mb-1\"")
         .write_str(format!("{} Machines", mustgather.machines.len()).as_str())?;
-    let mut dd = dl.dd();
+    let mut dd = parent.dd();
     let notrunning: Vec<String> = mustgather
         .machines
         .iter()
@@ -243,10 +223,47 @@ fn add_summary_data(parent: &mut Node, mustgather: &MustGather) -> Result<()> {
         dd.write_str("All Machines in Running phase")?;
     }
 
-    // MachineSets section
-    dl.dt()
+    Ok(())
+}
+
+fn add_summary_data_machinesets_section(parent: &mut Node, mustgather: &MustGather) -> Result<()> {
+    parent
+        .dt()
         .attr("class=\"text-light bg-secondary ps-1 mb-1\"")
         .write_str(format!("{} MachineSets", mustgather.machinesets.len()).as_str())?;
+
+    Ok(())
+}
+
+fn add_summary_data_nodes_section(parent: &mut Node, mustgather: &MustGather) -> Result<()> {
+    // Nodes section
+    parent
+        .dt()
+        .attr("class=\"text-light bg-secondary ps-1 mb-1\"")
+        .write_str(format!("{} Nodes", mustgather.nodes.len()).as_str())?;
+    let mut dd = parent.dd();
+    let notready: Vec<String> = mustgather
+        .nodes
+        .iter()
+        .filter(|n| n.is_error())
+        .map(|n| n.name())
+        .cloned()
+        .collect();
+    if !notready.is_empty() {
+        dd.write_str("The following")?;
+        dd.span()
+            .attr("class=\"badge bg-danger\"")
+            .write_str(format!("{}", notready.len()).as_str())?;
+        dd.write_str("Nodes do not have a true Ready condition")?;
+        add_table(
+            &mut dd,
+            Vec::new(),
+            notready.iter().map(|n| n.as_str()).collect(),
+            1,
+        )?;
+    } else {
+        dd.write_str("All nodes ready")?;
+    }
 
     Ok(())
 }
