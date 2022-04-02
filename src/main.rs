@@ -26,9 +26,19 @@ struct Cli {
 fn main() -> Result<()> {
     let cli = Cli::parse();
 
-    let mg = MustGather::from(cli.path)?;
+    if cli.path == "demo" {
+        // Special case to render a demo report
+        let mg =
+            MustGather::from("testdata/must-gather-valid/sample-openshift-release/".to_string())?;
+        let index = Html::from(mg)?;
 
-    let index = Html::from(mg)?;
-    println!("{}", index.render());
+        std::fs::create_dir_all("target/html")?;
+        std::fs::write("target/html/index.html", index.render())?;
+    } else {
+        let mg = MustGather::from(cli.path)?;
+
+        let index = Html::from(mg)?;
+        println!("{}", index.render());
+    }
     Ok(())
 }
