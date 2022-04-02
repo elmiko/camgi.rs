@@ -231,6 +231,19 @@ fn add_summary_data_machinesets_section(parent: &mut Node, mustgather: &MustGath
         .dt()
         .attr("class=\"text-light bg-secondary ps-1 mb-1\"")
         .write_str(format!("{} MachineSets", mustgather.machinesets.len()).as_str())?;
+    let mut dd = parent.dd();
+    let autoscaling: Vec<String> = mustgather
+        .machinesets
+        .iter()
+        .filter(|m| m.is_autoscaling())
+        .map(|m| m.name())
+        .cloned()
+        .collect();
+    if !autoscaling.is_empty() {
+        dd.write_str(format!("{} participating in autoscaling", autoscaling.len()).as_str())?;
+    } else {
+        dd.write_str("None participating in autoscaling")?;
+    }
 
     Ok(())
 }
