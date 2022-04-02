@@ -208,7 +208,6 @@ fn add_summary_data_machines_section(parent: &mut Node, mustgather: &MustGather)
         .cloned()
         .collect();
     if !notrunning.is_empty() {
-        dd.write_str("The following")?;
         dd.span()
             .attr("class=\"badge bg-danger\"")
             .write_str(format!("{}", notrunning.len()).as_str())?;
@@ -272,11 +271,10 @@ fn add_summary_data_nodes_section(parent: &mut Node, mustgather: &MustGather) ->
         .cloned()
         .collect();
     if !notready.is_empty() {
-        dd.write_str("The following")?;
         dd.span()
             .attr("class=\"badge bg-danger\"")
             .write_str(format!("{}", notready.len()).as_str())?;
-        dd.write_str("Nodes do not have a true Ready condition")?;
+        dd.write_str("Nodes do not have a Ready condition")?;
         add_table(
             &mut dd,
             Vec::new(),
