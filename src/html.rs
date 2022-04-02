@@ -29,6 +29,50 @@ impl Html {
     }
 }
 
+fn add_accordion_section(
+    parent: &mut Node,
+    kind: &str,
+    resources: &Vec<impl Resource>,
+) -> Result<()> {
+    parent.h1().write_str(kind)?;
+    let mut div = parent
+        .div()
+        .attr("class=\"accordion\"")
+        .attr(format!("id=\"{}-accordion\"", kind.to_lowercase()).as_str());
+    for res in resources {
+        let mut itemdiv = div.div().attr("class=\"accordion-item\"");
+        let buttonclass = if res.is_error() {
+            " bg-danger text-white"
+        } else {
+            ""
+        };
+        itemdiv
+            .h2()
+            .attr("class=\"accordion-header\"")
+            .attr(format!("id=\"heading-{}\"", &res.safename()).as_str())
+            .button()
+            .attr(format!("class=\"accordion-button collapsed p-2{}\"", buttonclass).as_str())
+            .attr("type=\"button\"")
+            .attr("data-bs-toggle=\"collapse\"")
+            .attr(format!("data-bs-target=\"#collapse-{}\"", &res.safename()).as_str())
+            .attr("aria-exapnded=\"false\"")
+            .attr(format!("aria-controls=\"collapse-{}\"", &res.safename()).as_str())
+            .write_str(&res.name())?;
+        itemdiv
+            .div()
+            .attr(format!("id=\"collapse-{}\"", &res.safename()).as_str())
+            .attr("class=\"accordion-collapse collapse\"")
+            .attr(format!("aria-labelledby=\"heading-{}\"", &res.safename()).as_str())
+            .attr(format!("data-bs-parents=\"{}-accordion\"", kind.to_lowercase()).as_str())
+            .div()
+            .attr("class=\"accordion-body fs-6\"")
+            .pre()
+            .write_str(&res.raw())?;
+    }
+
+    Ok(())
+}
+
 fn add_body(parent: &mut Node, mustgather: &MustGather) -> Result<()> {
     let mut body = parent.body().attr("class=\"bg-secondary\"");
 
@@ -132,43 +176,7 @@ fn add_resource_data(parent: &mut Node, kind: &str, resources: &Vec<impl Resourc
     let mut data = parent
         .data()
         .attr(format!("id=\"{}-data\"", kind.to_lowercase()).as_str());
-    data.h1().write_str(kind)?;
-    let mut div = data
-        .div()
-        .attr("class=\"accordion\"")
-        .attr(format!("id=\"{}-accordion\"", kind.to_lowercase()).as_str());
-    for res in resources {
-        let mut itemdiv = div.div().attr("class=\"accordion-item\"");
-        let buttonclass = if res.is_error() {
-            " bg-danger text-white"
-        } else {
-            ""
-        };
-        itemdiv
-            .h2()
-            .attr("class=\"accordion-header\"")
-            .attr(format!("id=\"heading-{}\"", &res.safename()).as_str())
-            .button()
-            .attr(format!("class=\"accordion-button collapsed p-2{}\"", buttonclass).as_str())
-            .attr("type=\"button\"")
-            .attr("data-bs-toggle=\"collapse\"")
-            .attr(format!("data-bs-target=\"#collapse-{}\"", &res.safename()).as_str())
-            .attr("aria-exapnded=\"false\"")
-            .attr(format!("aria-controls=\"collapse-{}\"", &res.safename()).as_str())
-            .write_str(&res.name())?;
-        itemdiv
-            .div()
-            .attr(format!("id=\"collapse-{}\"", &res.safename()).as_str())
-            .attr("class=\"accordion-collapse collapse\"")
-            .attr(format!("aria-labelledby=\"heading-{}\"", &res.safename()).as_str())
-            .attr(format!("data-bs-parents=\"{}-accordion\"", kind.to_lowercase()).as_str())
-            .div()
-            .attr("class=\"accordion-body fs-6\"")
-            .pre()
-            .write_str(&res.raw())?;
-    }
-
-    Ok(())
+    add_accordion_section(&mut data, &kind, &resources)
 }
 
 fn add_summary_data(parent: &mut Node, mustgather: &MustGather) -> Result<()> {
