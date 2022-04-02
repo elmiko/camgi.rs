@@ -7,20 +7,27 @@ use crate::resources::Resource;
 pub struct MachineSet {
     manifest: Manifest,
     autoscaling: bool,
+    replicas: i64,
 }
 
 impl MachineSet {
     pub fn is_autoscaling(&self) -> bool {
         self.autoscaling
     }
+
+    pub fn replicas(&self) -> i64 {
+        self.replicas
+    }
 }
 
 impl Resource for MachineSet {
     fn from(manifest: Manifest) -> MachineSet {
         let autoscaling = has_autoscaling_annotations(&manifest);
+        let replicas = status_replicas(&manifest);
         MachineSet {
             manifest,
             autoscaling,
+            replicas,
         }
     }
 
@@ -55,6 +62,17 @@ fn has_autoscaling_annotations(manifest: &Manifest) -> bool {
     }
 }
 
+fn status_replicas(manifest: &Manifest) -> i64 {
+    if manifest.as_yaml()["status"]["replicas"].is_badvalue() {
+        -1
+    } else {
+        match manifest.as_yaml()["status"]["replicas"].as_i64() {
+            Some(v) => v,
+            None => -1,
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -75,5 +93,13 @@ mod tests {
             "testdata/must-gather-valid/sample-openshift-release/namespaces/openshift-machine-api/machine.openshift.io/machinesets/testdata-compute-region-1.yaml",
         )).unwrap();
         assert_eq!(has_autoscaling_annotations(&manifest), false)
+    }
+
+    #[test]
+    fn test_machineset_status_replicas() {
+        let manifest = Manifest::from(PathBuf::from(
+            "testdata/must-gather-valid/sample-openshift-release/namespaces/openshift-machine-api/machine.openshift.io/machinesets/testdata-compute-region-2.yaml",
+        )).unwrap();
+        assert_eq!(status_replicas(&manifest), 0)
     }
 }
