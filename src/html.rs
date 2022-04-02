@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 use crate::prelude::*;
+use crate::resources;
 use crate::resources::Resource;
 use html_builder::*;
 use std::fmt::Write;
@@ -183,8 +184,7 @@ fn add_summary_data(parent: &mut Node, mustgather: &MustGather) -> Result<()> {
     add_table(
         &mut dd,
         Vec::new(),
-        vec!["OpenShift Version", mustgather.version.as_str()],
-        2,
+        vec![vec!["OpenShift Version", mustgather.version.as_str()]],
     )?;
 
     add_summary_data_machinesets_section(&mut dl, &mustgather)?;
@@ -200,11 +200,10 @@ fn add_summary_data_machines_section(parent: &mut Node, mustgather: &MustGather)
         .attr("class=\"text-light bg-secondary ps-1 mb-1\"")
         .write_str(format!("{} Machines", mustgather.machines.len()).as_str())?;
     let mut dd = parent.dd();
-    let notrunning: Vec<String> = mustgather
+    let notrunning: Vec<resources::Machine> = mustgather
         .machines
         .iter()
-        .filter(|n| n.is_error())
-        .map(|n| n.name())
+        .filter(|m| m.is_error())
         .cloned()
         .collect();
     if !notrunning.is_empty() {
@@ -215,8 +214,7 @@ fn add_summary_data_machines_section(parent: &mut Node, mustgather: &MustGather)
         add_table(
             &mut dd,
             Vec::new(),
-            notrunning.iter().map(|n| n.as_str()).collect(),
-            1,
+            notrunning.iter().map(|m| vec![m.name().as_str()]).collect(),
         )?;
     } else {
         dd.write_str("All Machines in Running phase")?;
@@ -231,11 +229,10 @@ fn add_summary_data_machinesets_section(parent: &mut Node, mustgather: &MustGath
         .attr("class=\"text-light bg-secondary ps-1 mb-1\"")
         .write_str(format!("{} MachineSets", mustgather.machinesets.len()).as_str())?;
     let mut dd = parent.dd();
-    let autoscaling: Vec<String> = mustgather
+    let autoscaling: Vec<resources::MachineSet> = mustgather
         .machinesets
         .iter()
         .filter(|m| m.is_autoscaling())
-        .map(|m| m.name())
         .cloned()
         .collect();
     if !autoscaling.is_empty() {
@@ -245,9 +242,11 @@ fn add_summary_data_machinesets_section(parent: &mut Node, mustgather: &MustGath
         dd.write_str("participating in autoscaling")?;
         add_table(
             &mut dd,
-            vec!["Name"],
-            autoscaling.iter().map(|m| m.as_str()).collect(),
-            1,
+            vec!["Name", "Replicas"],
+            autoscaling
+                .iter()
+                .map(|m| vec![m.name().as_str(), m.replicas()])
+                .collect(),
         )?;
     } else {
         dd.write_str("None participating in autoscaling")?;
@@ -263,11 +262,10 @@ fn add_summary_data_nodes_section(parent: &mut Node, mustgather: &MustGather) ->
         .attr("class=\"text-light bg-secondary ps-1 mb-1\"")
         .write_str(format!("{} Nodes", mustgather.nodes.len()).as_str())?;
     let mut dd = parent.dd();
-    let notready: Vec<String> = mustgather
+    let notready: Vec<resources::Node> = mustgather
         .nodes
         .iter()
         .filter(|n| n.is_error())
-        .map(|n| n.name())
         .cloned()
         .collect();
     if !notready.is_empty() {
@@ -278,8 +276,7 @@ fn add_summary_data_nodes_section(parent: &mut Node, mustgather: &MustGather) ->
         add_table(
             &mut dd,
             Vec::new(),
-            notready.iter().map(|n| n.as_str()).collect(),
-            1,
+            notready.iter().map(|n| vec![n.name().as_str()]).collect(),
         )?;
     } else {
         dd.write_str("All nodes ready")?;
@@ -288,7 +285,7 @@ fn add_summary_data_nodes_section(parent: &mut Node, mustgather: &MustGather) ->
     Ok(())
 }
 
-fn add_table(parent: &mut Node, head: Vec<&str>, body: Vec<&str>, width: usize) -> Result<()> {
+fn add_table(parent: &mut Node, head: Vec<&str>, body: Vec<Vec<&str>>) -> Result<()> {
     let mut table = parent
         .table()
         .attr("class=\"table table-sm table-striped font-monospace\"");
@@ -304,18 +301,7 @@ fn add_table(parent: &mut Node, head: Vec<&str>, body: Vec<&str>, width: usize) 
 
     let mut tbody = table.tbody();
 
-    let mut rows: Vec<Vec<&str>> = Vec::new();
-    let mut row: Vec<&str> = Vec::new();
-    for (i, _) in body.iter().enumerate() {
-        row.push(&body[i]);
-        // make news rows when appropriate, but not the first time
-        if (i + 1) % width == 0 && i < body.len() {
-            rows.push(row);
-            row = Vec::new();
-        }
-    }
-
-    for (_i, item) in rows.iter().enumerate() {
+    for (_i, item) in body.iter().enumerate() {
         let mut tr = tbody.tr();
         for (ii, iitem) in item.iter().enumerate() {
             let t = if ii == 0 { tr.th() } else { tr.td() };

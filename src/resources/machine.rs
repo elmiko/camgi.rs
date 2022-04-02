@@ -4,6 +4,7 @@
 use crate::prelude::*;
 use crate::resources::Resource;
 
+#[derive(Debug, Clone)]
 pub struct Machine {
     manifest: Manifest,
     running: bool,

@@ -6,7 +6,7 @@ use std::fs;
 use std::path::PathBuf;
 use yaml_rust::{Yaml, YamlLoader};
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Manifest {
     pub name: String,
     pub safename: String,

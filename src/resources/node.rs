@@ -5,6 +5,7 @@ use crate::prelude::*;
 use crate::resources::Resource;
 use yaml_rust::Yaml;
 
+#[derive(Debug, Clone)]
 pub struct Node {
     manifest: Manifest,
     ready: bool,

@@ -4,10 +4,11 @@
 use crate::prelude::*;
 use crate::resources::Resource;
 
+#[derive(Debug, Clone)]
 pub struct MachineSet {
     manifest: Manifest,
     autoscaling: bool,
-    replicas: i64,
+    replicas: String,
 }
 
 impl MachineSet {
@@ -15,8 +16,8 @@ impl MachineSet {
         self.autoscaling
     }
 
-    pub fn replicas(&self) -> i64 {
-        self.replicas
+    pub fn replicas(&self) -> &String {
+        &self.replicas
     }
 }
 
@@ -62,13 +63,13 @@ fn has_autoscaling_annotations(manifest: &Manifest) -> bool {
     }
 }
 
-fn status_replicas(manifest: &Manifest) -> i64 {
+fn status_replicas(manifest: &Manifest) -> String {
     if manifest.as_yaml()["status"]["replicas"].is_badvalue() {
-        -1
+        String::from("Not Found")
     } else {
         match manifest.as_yaml()["status"]["replicas"].as_i64() {
-            Some(v) => v,
-            None => -1,
+            Some(v) => format!("{}", v),
+            None => String::from("Unknown"),
         }
     }
 }
@@ -100,6 +101,6 @@ mod tests {
         let manifest = Manifest::from(PathBuf::from(
             "testdata/must-gather-valid/sample-openshift-release/namespaces/openshift-machine-api/machine.openshift.io/machinesets/testdata-compute-region-2.yaml",
         )).unwrap();
-        assert_eq!(status_replicas(&manifest), 0)
+        assert_eq!(status_replicas(&manifest), String::from("0"))
     }
 }
