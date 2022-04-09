@@ -29,6 +29,8 @@ impl Html {
     }
 }
 
+// helper functions in alphabetical order
+
 fn add_accordion_section(
     parent: &mut Node,
     kind: &str,
@@ -41,10 +43,10 @@ fn add_accordion_section(
         .attr(format!("id=\"{}-accordion\"", kind.to_lowercase()).as_str());
     for res in resources {
         let mut itemdiv = div.div().attr("class=\"accordion-item\"");
-        let buttonclass = if res.is_error() {
-            " bg-danger text-white"
-        } else {
-            ""
+        let buttonclass = match (res.is_warning(), res.is_error()) {
+            (true, _) => " bg-warning text-white",
+            (_, true) => " bg-danger text-white",
+            _ => "",
         };
         itemdiv
             .h2()
@@ -99,6 +101,7 @@ fn add_body(parent: &mut Node, mustgather: &MustGather) -> Result<()> {
     add_navlist_entry(&mut navlist, "MachineSets", &mustgather.machinesets)?;
     add_navlist_entry(&mut navlist, "Machines", &mustgather.machines)?;
     add_navlist_entry(&mut navlist, "Nodes", &mustgather.nodes)?;
+    add_navlist_entry(&mut navlist, "CSRs", &mustgather.csrs)?;
 
     // github link should go last
     navlist
@@ -127,6 +130,7 @@ fn add_body(parent: &mut Node, mustgather: &MustGather) -> Result<()> {
     add_resource_data(&mut body, "Nodes", &mustgather.nodes)?;
     add_resource_data(&mut body, "Machines", &mustgather.machines)?;
     add_resource_data(&mut body, "MachineSets", &mustgather.machinesets)?;
+    add_resource_data(&mut body, "CSRs", &mustgather.csrs)?;
 
     // scripts
     body.script()
@@ -162,6 +166,13 @@ fn add_navlist_entry(parent: &mut Node, title: &str, resources: &Vec<impl Resour
         .attr(format!("v-on:click=\"changeContent('{}')\"", title.to_lowercase()).as_str())
         .attr("class=\"list-group-item list-group-item-action\"");
     a.write_str(title)?;
+
+    let warnings = resources.iter().filter(|r| r.is_warning()).count();
+    if warnings > 0 {
+        a.span()
+            .attr("class=\"badge bg-warning float-right\"")
+            .write_str(format!("{}", warnings).as_str())?;
+    }
 
     let errors = resources.iter().filter(|r| r.is_error()).count();
     if errors > 0 {

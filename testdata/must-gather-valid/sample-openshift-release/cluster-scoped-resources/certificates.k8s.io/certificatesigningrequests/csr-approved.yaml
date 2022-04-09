@@ -1,0 +1,31 @@
+---
+apiVersion: certificates.k8s.io/v1
+kind: CertificateSigningRequest
+metadata:
+  creationTimestamp: "2022-01-01T00:00:00Z"
+  generateName: csr-
+  name: csr-approved
+  resourceVersion: "12345"
+  uid: 00000000-0000-0000-0000-000000000000
+spec:
+  groups:
+  - system:serviceaccounts
+  - system:serviceaccounts:openshift-machine-config-operator
+  - system:authenticated
+  request: TOTALLY_VALID_CERT
+  signerName: kubernetes.io/kube-apiserver-client-kubelet
+  uid: 00000000-0000-0000-0000-000000000000
+  usages:
+  - digital signature
+  - key encipherment
+  - client auth
+  username: system:serviceaccount:openshift-machine-config-operator:node-bootstrapper
+status:
+  certificate: TOTALLY_VALID_CERT
+  conditions:
+  - lastTransitionTime: "2022-01-01T00:00:00Z"
+    lastUpdateTime: "2022-01-01T00:00:00Z"
+    message: This CSR was approved by the Node CSR Approver
+    reason: NodeCSRApprove
+    status: "True"
+    type: Approved

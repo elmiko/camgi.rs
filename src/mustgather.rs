@@ -12,6 +12,7 @@ pub struct MustGather {
     pub machines: Vec<Machine>,
     pub machinesets: Vec<MachineSet>,
     pub nodes: Vec<Node>,
+    pub csrs: Vec<CertificateSigningRequest>,
 }
 
 impl MustGather {
@@ -38,6 +39,14 @@ impl MustGather {
         let machinesets = get_resources::<MachineSet>(&manifestpath);
         let manifestpath = build_manifest_path(&path, "", "", "nodes", "core");
         let nodes = get_resources::<Node>(&manifestpath);
+        let manifestpath = build_manifest_path(
+            &path,
+            "",
+            "",
+            "certificatesigningrequests",
+            "certificates.k8s.io",
+        );
+        let csrs = get_resources::<CertificateSigningRequest>(&manifestpath);
 
         Ok(MustGather {
             title,
@@ -45,6 +54,7 @@ impl MustGather {
             machines,
             machinesets,
             nodes,
+            csrs,
         })
     }
 }
