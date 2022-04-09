@@ -2,12 +2,16 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 pub mod certificatesigningrequest;
+pub mod clusterautoscaler;
 pub mod machine;
+pub mod machineautoscaler;
 pub mod machineset;
 pub mod node;
 
 pub use crate::resources::certificatesigningrequest::CertificateSigningRequest;
+pub use crate::resources::clusterautoscaler::ClusterAutoscaler;
 pub use crate::resources::machine::Machine;
+pub use crate::resources::machineautoscaler::MachineAutoscaler;
 pub use crate::resources::machineset::MachineSet;
 pub use crate::resources::node::Node;
 use crate::Manifest;

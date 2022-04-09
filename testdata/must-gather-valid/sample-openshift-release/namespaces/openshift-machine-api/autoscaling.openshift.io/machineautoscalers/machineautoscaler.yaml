@@ -1,0 +1,24 @@
+---
+apiVersion: autoscaling.openshift.io/v1beta1
+kind: MachineAutoscaler
+metadata:
+  creationTimestamp: "2022-01-01T00:00:00Z"
+  finalizers:
+  - machinetarget.autoscaling.openshift.io
+  generation: 1
+  name: machineautoscaler
+  namespace: openshift-machine-api
+  resourceVersion: "12345"
+  uid: 00000000-0000-0000-0000-000000000000
+spec:
+  maxReplicas: 10
+  minReplicas: 0
+  scaleTargetRef:
+    apiVersion: machine.openshift.io/v1beta1
+    kind: MachineSet
+    name: testdata-compute-region-2 
+status:
+  lastTargetRef:
+    apiVersion: machine.openshift.io/v1beta1
+    kind: MachineSet
+    name: testdata-compute-region-2

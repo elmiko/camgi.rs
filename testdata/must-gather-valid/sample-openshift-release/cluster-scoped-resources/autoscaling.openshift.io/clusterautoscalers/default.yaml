@@ -1,0 +1,21 @@
+---
+apiVersion: autoscaling.openshift.io/v1
+kind: ClusterAutoscaler
+metadata:
+  creationTimestamp: "2022-01-01T00:00:00Z"
+  generation: 1
+  name: default
+  resourceVersion: "12345"
+  uid: 00000000-0000-0000-0000-000000000000
+spec:
+  resourceLimits:
+    gpus:
+    - max: 2
+      min: 1
+      type: nvidia.com/gpu
+  scaleDown:
+    delayAfterAdd: 10s
+    delayAfterDelete: 10s
+    delayAfterFailure: 10s
+    enabled: true
+    unneededTime: 10s

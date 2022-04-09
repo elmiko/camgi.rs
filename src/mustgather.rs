@@ -13,6 +13,8 @@ pub struct MustGather {
     pub machinesets: Vec<MachineSet>,
     pub nodes: Vec<Node>,
     pub csrs: Vec<CertificateSigningRequest>,
+    pub clusterautoscalers: Vec<ClusterAutoscaler>,
+    pub machineautoscalers: Vec<MachineAutoscaler>,
 }
 
 impl MustGather {
@@ -21,6 +23,7 @@ impl MustGather {
         let path = find_must_gather_root(path)?;
         let title = String::from(path.file_name().unwrap().to_str().unwrap());
         let version = get_cluster_version(&path);
+
         let manifestpath = build_manifest_path(
             &path,
             "",
@@ -29,6 +32,7 @@ impl MustGather {
             "machine.openshift.io",
         );
         let machines = get_resources::<Machine>(&manifestpath);
+
         let manifestpath = build_manifest_path(
             &path,
             "",
@@ -37,8 +41,10 @@ impl MustGather {
             "machine.openshift.io",
         );
         let machinesets = get_resources::<MachineSet>(&manifestpath);
+
         let manifestpath = build_manifest_path(&path, "", "", "nodes", "core");
         let nodes = get_resources::<Node>(&manifestpath);
+
         let manifestpath = build_manifest_path(
             &path,
             "",
@@ -48,6 +54,24 @@ impl MustGather {
         );
         let csrs = get_resources::<CertificateSigningRequest>(&manifestpath);
 
+        let manifestpath = build_manifest_path(
+            &path,
+            "",
+            "",
+            "clusterautoscalers",
+            "autoscaling.openshift.io",
+        );
+        let clusterautoscalers = get_resources::<ClusterAutoscaler>(&manifestpath);
+
+        let manifestpath = build_manifest_path(
+            &path,
+            "",
+            "openshift-machine-api",
+            "machineautoscalers",
+            "autoscaling.openshift.io",
+        );
+        let machineautoscalers = get_resources::<MachineAutoscaler>(&manifestpath);
+
         Ok(MustGather {
             title,
             version,
@@ -55,6 +79,8 @@ impl MustGather {
             machinesets,
             nodes,
             csrs,
+            clusterautoscalers,
+            machineautoscalers,
         })
     }
 }

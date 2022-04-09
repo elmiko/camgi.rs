@@ -75,6 +75,26 @@ fn add_accordion_section(
     Ok(())
 }
 
+fn add_autoscaling_data(parent: &mut Node, mustgather: &MustGather) -> Result<()> {
+    let mut data = parent.data().attr("id=\"autoscaling-data\"");
+
+    add_accordion_section(
+        &mut data,
+        "ClusterAutoscalers",
+        &mustgather.clusterautoscalers,
+    )?;
+
+    data.div().attr("class=\"p-2\"");
+
+    add_accordion_section(
+        &mut data,
+        "MachineAutoscalers",
+        &mustgather.machineautoscalers,
+    )?;
+
+    Ok(())
+}
+
 fn add_body(parent: &mut Node, mustgather: &MustGather) -> Result<()> {
     let mut body = parent.body().attr("class=\"bg-secondary\"");
 
@@ -98,6 +118,7 @@ fn add_body(parent: &mut Node, mustgather: &MustGather) -> Result<()> {
         .write_str("Summary")?;
 
     // nav entries for resources
+    add_navlist_entry(&mut navlist, "Autoscaling", &mustgather.clusterautoscalers)?;
     add_navlist_entry(&mut navlist, "MachineSets", &mustgather.machinesets)?;
     add_navlist_entry(&mut navlist, "Machines", &mustgather.machines)?;
     add_navlist_entry(&mut navlist, "Nodes", &mustgather.nodes)?;
@@ -127,9 +148,10 @@ fn add_body(parent: &mut Node, mustgather: &MustGather) -> Result<()> {
     // data sections are used by the nav list and vue app to change the content
     // in the div#main-content element.
     add_summary_data(&mut body, &mustgather)?;
-    add_resource_data(&mut body, "Nodes", &mustgather.nodes)?;
-    add_resource_data(&mut body, "Machines", &mustgather.machines)?;
+    add_autoscaling_data(&mut body, &mustgather)?;
     add_resource_data(&mut body, "MachineSets", &mustgather.machinesets)?;
+    add_resource_data(&mut body, "Machines", &mustgather.machines)?;
+    add_resource_data(&mut body, "Nodes", &mustgather.nodes)?;
     add_resource_data(&mut body, "CSRs", &mustgather.csrs)?;
 
     // scripts
@@ -160,25 +182,33 @@ fn add_head(parent: &mut Node, mustgather: &MustGather) -> Result<()> {
 }
 
 fn add_navlist_entry(parent: &mut Node, title: &str, resources: &Vec<impl Resource>) -> Result<()> {
+    let mut aclass = "class=\"list-group-item list-group-item-action\"";
+    let mut clickattr = format!("v-on:click=\"changeContent('{}')\"", title.to_lowercase());
+    if resources.is_empty() {
+        aclass = "class=\"list-group-item list-group-item-action disabled\"";
+        clickattr = String::new();
+    }
     let mut a = parent
         .a()
         .attr("href=\"#\"")
-        .attr(format!("v-on:click=\"changeContent('{}')\"", title.to_lowercase()).as_str())
-        .attr("class=\"list-group-item list-group-item-action\"");
+        .attr(aclass)
+        .attr(clickattr.as_str());
     a.write_str(title)?;
 
-    let errors = resources.iter().filter(|r| r.is_error()).count();
-    if errors > 0 {
-        a.span()
-            .attr("class=\"badge bg-danger float-right\"")
-            .write_str(format!("{}", errors).as_str())?;
-    }
+    if !resources.is_empty() {
+        let errors = resources.iter().filter(|r| r.is_error()).count();
+        if errors > 0 {
+            a.span()
+                .attr("class=\"badge bg-danger float-right\"")
+                .write_str(format!("{}", errors).as_str())?;
+        }
 
-    let warnings = resources.iter().filter(|r| r.is_warning()).count();
-    if warnings > 0 {
-        a.span()
-            .attr("class=\"badge bg-warning float-right\"")
-            .write_str(format!("{}", warnings).as_str())?;
+        let warnings = resources.iter().filter(|r| r.is_warning()).count();
+        if warnings > 0 {
+            a.span()
+                .attr("class=\"badge bg-warning float-right\"")
+                .write_str(format!("{}", warnings).as_str())?;
+        }
     }
     Ok(())
 }
