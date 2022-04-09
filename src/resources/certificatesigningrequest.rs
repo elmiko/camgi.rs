@@ -51,8 +51,8 @@ fn is_status_empty(manifest: &Manifest) -> bool {
 
 fn new_from_manifest(manifest: Manifest) -> CertificateSigningRequest {
     let pending = is_status_empty(&manifest);
-    let denied = manifest.has_condition_status("Denied", "True");
-    let failed = manifest.has_condition_status("Failed", "True");
+    let denied = manifest.has_condition("Denied");
+    let failed = manifest.has_condition("Failed");
     CertificateSigningRequest {
         manifest,
         pending,
@@ -107,5 +107,23 @@ mod tests {
         )).unwrap();
         let csr = new_from_manifest(manifest);
         assert_eq!(csr.is_error(), false);
+    }
+
+    #[test]
+    fn test_is_error_true_denied() {
+        let manifest = Manifest::from(PathBuf::from(
+            "testdata/must-gather-valid/sample-openshift-release/cluster-scoped-resources/certificates.k8s.io/certificatesigningrequests/csr-denied.yaml"
+        )).unwrap();
+        let csr = new_from_manifest(manifest);
+        assert_eq!(csr.is_error(), true);
+    }
+
+    #[test]
+    fn test_is_error_true_failed() {
+        let manifest = Manifest::from(PathBuf::from(
+            "testdata/must-gather-valid/sample-openshift-release/cluster-scoped-resources/certificates.k8s.io/certificatesigningrequests/csr-failed.yaml"
+        )).unwrap();
+        let csr = new_from_manifest(manifest);
+        assert_eq!(csr.is_error(), true);
     }
 }

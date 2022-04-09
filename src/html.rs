@@ -167,18 +167,18 @@ fn add_navlist_entry(parent: &mut Node, title: &str, resources: &Vec<impl Resour
         .attr("class=\"list-group-item list-group-item-action\"");
     a.write_str(title)?;
 
-    let warnings = resources.iter().filter(|r| r.is_warning()).count();
-    if warnings > 0 {
-        a.span()
-            .attr("class=\"badge bg-warning float-right\"")
-            .write_str(format!("{}", warnings).as_str())?;
-    }
-
     let errors = resources.iter().filter(|r| r.is_error()).count();
     if errors > 0 {
         a.span()
             .attr("class=\"badge bg-danger float-right\"")
             .write_str(format!("{}", errors).as_str())?;
+    }
+
+    let warnings = resources.iter().filter(|r| r.is_warning()).count();
+    if warnings > 0 {
+        a.span()
+            .attr("class=\"badge bg-warning float-right\"")
+            .write_str(format!("{}", warnings).as_str())?;
     }
     Ok(())
 }

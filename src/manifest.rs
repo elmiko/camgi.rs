@@ -55,6 +55,19 @@ impl Manifest {
         &self.raw
     }
 
+    /// Return true if the manifest has the condition type.
+    pub fn has_condition(&self, condition: &str) -> bool {
+        let empty = Vec::<Yaml>::new();
+        let conditions = self.as_yaml()["status"]["conditions"]
+            .as_vec()
+            .unwrap_or(&empty);
+        let matchedconditions: Vec<&Yaml> = conditions
+            .iter()
+            .filter(|c| c["type"].as_str().unwrap_or("") == condition)
+            .collect();
+        !matchedconditions.is_empty()
+    }
+
     /// Return true if the manfiest has the condition type with the specified status.
     ///
     /// If the manifest has a `status.conditions` list, this function will iterate
@@ -65,7 +78,9 @@ impl Manifest {
             .as_vec()
             .unwrap_or(&empty);
         for c in conditions {
-            if c["type"].as_str().unwrap() == condition && c["status"].as_str().unwrap() == status {
+            if c["type"].as_str().unwrap_or("") == condition
+                && c["status"].as_str().unwrap_or("") == status
+            {
                 return true;
             }
         }
@@ -165,5 +180,21 @@ mod tests {
             "testdata/must-gather-valid/sample-openshift-release/cluster-scoped-resources/core/nodes/ip-10-0-0-1.control.plane.yaml"
         )).unwrap();
         assert_eq!(manifest.has_condition_status("foo", "bar"), false)
+    }
+
+    #[test]
+    fn test_has_condition_true() {
+        let manifest = Manifest::from(PathBuf::from(
+            "testdata/must-gather-valid/sample-openshift-release/cluster-scoped-resources/core/nodes/ip-10-0-0-1.control.plane.yaml"
+        )).unwrap();
+        assert_eq!(manifest.has_condition("Ready"), true)
+    }
+
+    #[test]
+    fn test_has_condition_false() {
+        let manifest = Manifest::from(PathBuf::from(
+            "testdata/must-gather-valid/sample-openshift-release/cluster-scoped-resources/core/nodes/ip-10-0-0-1.control.plane.yaml"
+        )).unwrap();
+        assert_eq!(manifest.has_condition("FooBar"), false)
     }
 }

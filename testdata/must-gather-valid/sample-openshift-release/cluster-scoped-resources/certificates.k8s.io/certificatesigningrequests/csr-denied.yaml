@@ -1,0 +1,27 @@
+---
+apiVersion: certificates.k8s.io/v1
+kind: CertificateSigningRequest
+metadata:
+  creationTimestamp: "2022-01-01T00:00:00Z"
+  generateName: csr-
+  name: csr-denied
+  resourceVersion: "12345"
+  uid: 00000000-0000-0000-0000-000000000000
+spec:
+  groups:
+  - system:nodes
+  - system:authenticated
+  request: TOTALLY_NOT_VALID_CERT
+  signerName: kubernetes.io/kubelet-serving
+  usages:
+  - digital signature
+  - key encipherment
+  - server auth
+  username: system:node:ip-10-0-0-3.region-1.control.plane
+status:
+  conditions:
+  - lastHeartbeatTime: "2022-01-01T00:00:00Z"
+    lastTransitionTime: "2022-01-01T00:00:00Z"
+    message: Denied by some controller
+    reason: DeniedBySomeController
+    type: Denied
