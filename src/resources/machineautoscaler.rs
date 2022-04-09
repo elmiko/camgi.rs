@@ -26,4 +26,3 @@ impl Resource for MachineAutoscaler {
         &self.manifest.safename
     }
 }
-
