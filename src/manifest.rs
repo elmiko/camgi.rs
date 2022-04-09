@@ -54,6 +54,24 @@ impl Manifest {
     pub fn as_raw(&self) -> &String {
         &self.raw
     }
+
+    /// Return true if the manfiest has the condition type with the specified status.
+    ///
+    /// If the manifest has a `status.conditions` list, this function will iterate
+    /// through them attempting to match the condition type and status strings.
+    pub fn has_condition_status(&self, condition: &str, status: &str) -> bool {
+        let empty = Vec::<Yaml>::new();
+        let conditions = self.as_yaml()["status"]["conditions"]
+            .as_vec()
+            .unwrap_or(&empty);
+        for c in conditions {
+            if c["type"].as_str().unwrap() == condition && c["status"].as_str().unwrap() == status {
+                return true;
+            }
+        }
+
+        false
+    }
 }
 
 #[cfg(test)]
@@ -123,5 +141,29 @@ mod tests {
             "testdata/must-gather-valid/sample-openshift-release/cluster-scoped-resources/core/nodes/ip-10-0-0-1.control.plane.yaml"
         )).unwrap();
         assert_eq!(manifest.safename, expected)
+    }
+
+    #[test]
+    fn test_has_condition_status_true() {
+        let manifest = Manifest::from(PathBuf::from(
+            "testdata/must-gather-valid/sample-openshift-release/cluster-scoped-resources/core/nodes/ip-10-0-0-1.control.plane.yaml"
+        )).unwrap();
+        assert_eq!(manifest.has_condition_status("Ready", "True"), true)
+    }
+
+    #[test]
+    fn test_has_condition_status_false() {
+        let manifest = Manifest::from(PathBuf::from(
+            "testdata/must-gather-valid/sample-openshift-release/cluster-scoped-resources/core/nodes/ip-10-0-0-1.control.plane.yaml"
+        )).unwrap();
+        assert_eq!(manifest.has_condition_status("PIDPressure", "True"), false)
+    }
+
+    #[test]
+    fn test_has_condition_status_false_nonexistant() {
+        let manifest = Manifest::from(PathBuf::from(
+            "testdata/must-gather-valid/sample-openshift-release/cluster-scoped-resources/core/nodes/ip-10-0-0-1.control.plane.yaml"
+        )).unwrap();
+        assert_eq!(manifest.has_condition_status("foo", "bar"), false)
     }
 }
