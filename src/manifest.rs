@@ -37,7 +37,7 @@ impl Manifest {
                 Some(n) => String::from(n),
                 None => String::from("Unknown"),
             };
-            let safename = name.replace('.', "-");
+            let safename = render_safename(name.as_str());
             Ok(Manifest {
                 name,
                 raw,
@@ -87,6 +87,10 @@ impl Manifest {
 
         false
     }
+}
+
+fn render_safename(original: &str) -> String {
+    original.replace('.', "-").replace(':', "_")
 }
 
 #[cfg(test)]
@@ -150,16 +154,7 @@ mod tests {
     }
 
     #[test]
-    fn test_manifest_safename() {
-        let expected = String::from("ip-10-0-0-1-control-plane");
-        let manifest = Manifest::from(PathBuf::from(
-            "testdata/must-gather-valid/sample-openshift-release/cluster-scoped-resources/core/nodes/ip-10-0-0-1.control.plane.yaml"
-        )).unwrap();
-        assert_eq!(manifest.safename, expected)
-    }
-
-    #[test]
-    fn test_has_condition_status_true() {
+    fn test_manifest_has_condition_status_true() {
         let manifest = Manifest::from(PathBuf::from(
             "testdata/must-gather-valid/sample-openshift-release/cluster-scoped-resources/core/nodes/ip-10-0-0-1.control.plane.yaml"
         )).unwrap();
@@ -167,7 +162,7 @@ mod tests {
     }
 
     #[test]
-    fn test_has_condition_status_false() {
+    fn test_manifest_has_condition_status_false() {
         let manifest = Manifest::from(PathBuf::from(
             "testdata/must-gather-valid/sample-openshift-release/cluster-scoped-resources/core/nodes/ip-10-0-0-1.control.plane.yaml"
         )).unwrap();
@@ -175,7 +170,7 @@ mod tests {
     }
 
     #[test]
-    fn test_has_condition_status_false_nonexistant() {
+    fn test_manifest_has_condition_status_false_nonexistant() {
         let manifest = Manifest::from(PathBuf::from(
             "testdata/must-gather-valid/sample-openshift-release/cluster-scoped-resources/core/nodes/ip-10-0-0-1.control.plane.yaml"
         )).unwrap();
@@ -183,7 +178,7 @@ mod tests {
     }
 
     #[test]
-    fn test_has_condition_true() {
+    fn test_manifest_has_condition_true() {
         let manifest = Manifest::from(PathBuf::from(
             "testdata/must-gather-valid/sample-openshift-release/cluster-scoped-resources/core/nodes/ip-10-0-0-1.control.plane.yaml"
         )).unwrap();
@@ -191,10 +186,24 @@ mod tests {
     }
 
     #[test]
-    fn test_has_condition_false() {
+    fn test_manifest_has_condition_false() {
         let manifest = Manifest::from(PathBuf::from(
             "testdata/must-gather-valid/sample-openshift-release/cluster-scoped-resources/core/nodes/ip-10-0-0-1.control.plane.yaml"
         )).unwrap();
         assert_eq!(manifest.has_condition("FooBar"), false)
+    }
+
+    #[test]
+    fn test_render_safename_hyphen() {
+        let expected = String::from("ip-10-0-0-1-control-plane");
+        let observed = render_safename("ip-10-0-0-1.control.plane");
+        assert_eq!(observed, expected)
+    }
+
+    #[test]
+    fn test_render_safename_colon() {
+        let expected = String::from("ip-10-0-0-1_control_plane");
+        let observed = render_safename("ip-10-0-0-1:control:plane");
+        assert_eq!(observed, expected)
     }
 }
