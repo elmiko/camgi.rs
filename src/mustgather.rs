@@ -15,6 +15,7 @@ pub struct MustGather {
     pub csrs: Vec<CertificateSigningRequest>,
     pub clusterautoscalers: Vec<ClusterAutoscaler>,
     pub machineautoscalers: Vec<MachineAutoscaler>,
+    pub mapipods: Vec<Pod>,
 }
 
 impl MustGather {
@@ -72,6 +73,9 @@ impl MustGather {
         );
         let machineautoscalers = get_resources::<MachineAutoscaler>(&manifestpath);
 
+        let manifestpath = build_manifest_path(&path, "", "openshift-machine-api", "pods", "");
+        let mapipods = get_pods(&manifestpath);
+
         Ok(MustGather {
             title,
             version,
@@ -81,6 +85,7 @@ impl MustGather {
             csrs,
             clusterautoscalers,
             machineautoscalers,
+            mapipods,
         })
     }
 }
@@ -187,6 +192,44 @@ fn get_cluster_version(path: &Path) -> String {
     }
 }
 
+/// Get all pods in a path.
+/// Pod files within a must gather also include the associated logs for each
+/// container. This function will find all the pod files within a path and
+/// return the structured versions.
+fn get_pods(path: &Path) -> Vec<Pod> {
+    let mut pods = Vec::new();
+
+    // each pod has a subdirectory with its name
+    let directory_entries = match fs::read_dir(&path) {
+        Ok(entries) => entries,
+        Err(_) => return pods,
+    };
+
+    let directories: Vec<PathBuf> = directory_entries
+        .into_iter()
+        .filter(|r| r.is_ok())
+        .map(|r| r.unwrap().path())
+        .filter(|r| r.is_dir())
+        .collect();
+
+    for mut directory in directories {
+        let manifest_filename = match directory.file_name() {
+            Some(basename) => format!("{}.yaml", basename.to_str().unwrap_or("not_found")),
+            None => continue,
+        };
+
+        directory.push(manifest_filename);
+        if directory.exists() {
+            match Manifest::from(directory) {
+                Ok(m) => pods.push(<pod::Pod as Resource>::from(m)),
+                Err(_) => continue,
+            }
+        }
+    }
+
+    pods
+}
+
 /// Get all the resources of a given type.
 /// If the resource path does not exist, will return an empty list.
 fn get_resources<T: Resource>(path: &Path) -> Vec<T> {
@@ -269,6 +312,13 @@ mod tests {
             )),
             "X.Y.Z-fake-test"
         )
+    }
+
+    #[test]
+    fn test_get_pods_success() {
+        let path = PathBuf::from("testdata/must-gather-valid/sample-openshift-release");
+        let manifestpath = build_manifest_path(&path, "", "openshift-machine-api", "pods", "");
+        assert_eq!(get_pods(&manifestpath).len(), 4)
     }
 
     #[test]
