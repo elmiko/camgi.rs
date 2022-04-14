@@ -152,8 +152,12 @@ fn find_must_gather_root(path: String) -> Result<PathBuf> {
         return Ok(orig.canonicalize().unwrap());
     }
 
-    let directories: Vec<PathBuf> = fs::read_dir(orig)
-        .unwrap()
+    let directory_entries = match fs::read_dir(&orig) {
+        Ok(entries) => entries,
+        Err(_) => return Err(anyhow::anyhow!("Unable to read directory {:?}", orig)),
+    };
+
+    let directories: Vec<PathBuf> = directory_entries
         .into_iter()
         .filter(|r| r.is_ok())
         .map(|r| r.unwrap().path())
