@@ -7,11 +7,29 @@ use crate::resources::Resource;
 #[derive(Debug, Clone)]
 pub struct Pod {
     manifest: Manifest,
+    pub containers: Vec<Container>,
+}
+
+impl Pod {
+    pub fn new() -> Pod {
+        Pod {
+            manifest: Manifest::new(),
+            containers: Vec::new(),
+        }
+    }
+
+    pub fn push_container(&mut self, container: Container) {
+        self.containers.push(container);
+    }
 }
 
 impl Resource for Pod {
     fn from(manifest: Manifest) -> Pod {
-        Pod { manifest }
+        let containers = Vec::new();
+        Pod {
+            manifest,
+            containers,
+        }
     }
 
     fn name(&self) -> &String {
@@ -25,4 +43,11 @@ impl Resource for Pod {
     fn safename(&self) -> &String {
         &self.manifest.safename
     }
+}
+
+/// Holds the name and raw log files of a container within a pod.
+#[derive(Debug, Clone)]
+pub struct Container {
+    pub name: String,
+    pub current_log: String,
 }

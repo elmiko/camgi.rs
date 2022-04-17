@@ -192,6 +192,61 @@ fn get_cluster_version(path: &Path) -> String {
     }
 }
 
+/// Get a pod from a path.
+/// Will attempt to determine the pod name and containers, if it cannot
+/// find the files or encounters an error, it will return None.
+fn get_pod(pod_dir: &PathBuf) -> Option<Pod> {
+    let manifest_yaml = match pod_dir.file_name() {
+        Some(basename) => format!("{}.yaml", basename.to_str().unwrap_or("not_found")),
+        None => return None,
+    };
+
+    let mut manifest_file = pod_dir.clone();
+    manifest_file.push(manifest_yaml);
+    let mut pod = Pod::new();
+    if manifest_file.exists() {
+        pod = match Manifest::from(manifest_file) {
+            Ok(m) => <Pod as Resource>::from(m),
+            Err(_) => return None,
+        }
+    }
+
+    if let Ok(container_dirs) = fs::read_dir(&pod_dir) {
+        let container_dirs: Vec<PathBuf> = container_dirs
+            .into_iter()
+            .filter(|r| r.is_ok())
+            .map(|r| r.unwrap().path())
+            .filter(|r| r.is_dir())
+            .collect();
+        // loop through container dirs
+        for container_dir in container_dirs {
+            //   build path to log file
+            let container_name = match container_dir.file_name() {
+                Some(basename) => basename.to_str().unwrap_or("not_found"),
+                None => continue,
+            };
+            let mut current_log_filename = container_dir.clone();
+            current_log_filename.push(&container_name);
+            current_log_filename.push("logs");
+            current_log_filename.push("current.log");
+            if current_log_filename.exists() {
+                //   if it exists open and read into a new string
+                let raw = match fs::read_to_string(current_log_filename.as_path()) {
+                    Ok(contents) => contents,
+                    Err(_) => continue,
+                };
+                //   create a Container and add it to the Pod
+                pod.push_container(Container {
+                    name: container_name.to_string(),
+                    current_log: raw,
+                });
+            }
+        }
+    }
+
+    Some(pod)
+}
+
 /// Get all pods in a path.
 /// Pod files within a must gather also include the associated logs for each
 /// container. This function will find all the pod files within a path and
@@ -200,31 +255,23 @@ fn get_pods(path: &Path) -> Vec<Pod> {
     let mut pods = Vec::new();
 
     // each pod has a subdirectory with its name
-    let directory_entries = match fs::read_dir(&path) {
+    let pod_dirs = match fs::read_dir(&path) {
         Ok(entries) => entries,
         Err(_) => return pods,
     };
-
-    let directories: Vec<PathBuf> = directory_entries
+    let pod_dirs: Vec<PathBuf> = pod_dirs
         .into_iter()
         .filter(|r| r.is_ok())
         .map(|r| r.unwrap().path())
         .filter(|r| r.is_dir())
         .collect();
 
-    for mut directory in directories {
-        let manifest_filename = match directory.file_name() {
-            Some(basename) => format!("{}.yaml", basename.to_str().unwrap_or("not_found")),
+    for pod_dir in pod_dirs {
+        let pod = match get_pod(&pod_dir) {
+            Some(p) => p,
             None => continue,
         };
-
-        directory.push(manifest_filename);
-        if directory.exists() {
-            match Manifest::from(directory) {
-                Ok(m) => pods.push(<pod::Pod as Resource>::from(m)),
-                Err(_) => continue,
-            }
-        }
+        pods.push(pod);
     }
 
     pods
@@ -312,6 +359,13 @@ mod tests {
             )),
             "X.Y.Z-fake-test"
         )
+    }
+
+    #[test]
+    fn test_get_pod_containers_count() {
+        let path = PathBuf::from("testdata/must-gather-valid/sample-openshift-release/namespaces/openshift-machine-api/pods/machine-api-controllers-86c6c8f96d-ssrp8");
+        let pod = get_pod(&path).unwrap();
+        assert_eq!(pod.containers.len(), 7)
     }
 
     #[test]
