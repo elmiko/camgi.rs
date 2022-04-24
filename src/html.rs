@@ -6,6 +6,7 @@ use crate::resources;
 use crate::resources::{Pod, Resource};
 use html_builder::*;
 use std::fmt::Write;
+use uuid::Uuid;
 
 pub struct Html {
     buffer: Buffer,
@@ -244,10 +245,11 @@ fn add_navlist_entry(parent: &mut Node, title: &str, resources: &Vec<impl Resour
 
 fn add_pod_accordions(parent: &mut Node, pods: &Vec<Pod>) -> Result<()> {
     for pod in pods {
+        let poduuid = Uuid::new_v4();
         let mut div = parent
             .div()
             .attr("class=\"accordion\"")
-            .attr(format!("id=\"{}-accordion\"", pod.safename().to_lowercase()).as_str());
+            .attr(format!("id=\"accordion-{}\"", &poduuid.hyphenated()).as_str());
 
         let mut itemdiv = div.div().attr("class=\"accordion-item\"");
         let buttonclass = match (pod.is_warning(), pod.is_error()) {
@@ -258,57 +260,71 @@ fn add_pod_accordions(parent: &mut Node, pods: &Vec<Pod>) -> Result<()> {
         itemdiv
             .h2()
             .attr("class=\"accordion-header\"")
-            .attr(format!("id=\"heading-{}\"", &pod.safename()).as_str())
+            .attr(format!("id=\"heading-{}\"", &poduuid.hyphenated()).as_str())
             .button()
             .attr(format!("class=\"accordion-button collapsed p-2{}\"", buttonclass).as_str())
             .attr("type=\"button\"")
             .attr("data-bs-toggle=\"collapse\"")
-            .attr(format!("data-bs-target=\"#collapse-{}\"", &pod.safename()).as_str())
+            .attr(format!("data-bs-target=\"#collapse-{}\"", &poduuid.hyphenated()).as_str())
             .attr("aria-exapnded=\"false\"")
-            .attr(format!("aria-controls=\"collapse-{}\"", &pod.safename()).as_str())
+            .attr(format!("aria-controls=\"collapse-{}\"", &poduuid.hyphenated()).as_str())
             .write_str(&pod.name())?;
         itemdiv
             .div()
-            .attr(format!("id=\"collapse-{}\"", &pod.safename()).as_str())
+            .attr(format!("id=\"collapse-{}\"", &poduuid.hyphenated()).as_str())
             .attr("class=\"accordion-collapse collapse\"")
-            .attr(format!("aria-labelledby=\"heading-{}\"", &pod.safename()).as_str())
-            .attr(
-                format!(
-                    "data-bs-parents=\"{}-accordion\"",
-                    pod.safename().to_lowercase()
-                )
-                .as_str(),
-            )
+            .attr(format!("aria-labelledby=\"heading-{}\"", &poduuid.hyphenated()).as_str())
+            .attr(format!("data-bs-parents=\"accordion-{}\"", &poduuid.hyphenated(),).as_str())
             .div()
             .attr("class=\"accordion-body fs-6\"")
             .pre()
             .write_str(&pod.raw())?;
         for container in &pod.containers {
+            let containeruuid = Uuid::new_v4();
             let mut itemdiv = div.div().attr("class=\"accordion-item\"");
-            let mut containerdiv = itemdiv.div().attr("class=\"accordion\"").attr(
-                format!("id=\"{}-accordion\"", &container.safename().to_lowercase()).as_str(),
-            );
+            let mut containerdiv = itemdiv
+                .div()
+                .attr("class=\"accordion\"")
+                .attr(format!("id=\"logs-accordion-{}\"", &containeruuid.hyphenated(),).as_str());
             containerdiv
                 .h2()
                 .attr("class=\"accordion-header\"")
-                .attr(format!("id=\"heading-{}\"", &container.safename()).as_str())
+                .attr(format!("id=\"heading-logs-{}\"", &containeruuid.hyphenated(),).as_str())
                 .button()
                 .attr("class=\"accordion-button collapsed p-2 ps-4 bg-light\"")
                 .attr("type=\"button\"")
                 .attr("data-bs-toggle=\"collapse\"")
-                .attr(format!("data-bs-target=\"#collapse-{}\"", &container.safename()).as_str())
+                .attr(
+                    format!(
+                        "data-bs-target=\"#collapse-logs-{}\"",
+                        &containeruuid.hyphenated(),
+                    )
+                    .as_str(),
+                )
                 .attr("aria-exapnded=\"false\"")
-                .attr(format!("aria-controls=\"collapse-{}\"", &container.safename()).as_str())
+                .attr(
+                    format!(
+                        "aria-controls=\"collapse-logs-{}\"",
+                        &containeruuid.hyphenated(),
+                    )
+                    .as_str(),
+                )
                 .write_str(format!("{} logs", &container.name).as_str())?;
             containerdiv
                 .div()
-                .attr(format!("id=\"collapse-{}\"", &container.safename()).as_str())
+                .attr(format!("id=\"collapse-logs-{}\"", &containeruuid.hyphenated(),).as_str())
                 .attr("class=\"accordion-collapse collapse\"")
-                .attr(format!("aria-labelledby=\"heading-{}\"", &container.safename()).as_str())
                 .attr(
                     format!(
-                        "data-bs-parents=\"{}-accordion\"",
-                        &container.safename().to_lowercase()
+                        "aria-labelledby=\"heading-logs-{}\"",
+                        &containeruuid.hyphenated(),
+                    )
+                    .as_str(),
+                )
+                .attr(
+                    format!(
+                        "data-bs-parents=\"logs-accordion-{}\"",
+                        &containeruuid.hyphenated(),
                     )
                     .as_str(),
                 )

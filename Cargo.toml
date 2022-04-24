@@ -11,6 +11,14 @@ anyhow = "1.0.53"
 html-builder = "0.3"
 yaml-rust = "0.4.5"
 
+[dependencies.uuid]
+version = "1.0.0"
+features = [
+    "v4",
+    "fast-rng",
+    "macro-diagnostics",
+]
+
 [dev-dependencies]
 notify = "4.0.17"
 tokio = { version = "1", features = ["full"] }
