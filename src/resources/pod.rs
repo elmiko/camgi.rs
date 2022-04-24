@@ -1,6 +1,7 @@
 // Copyright (C) 2022 Red Hat, Inc.
 // SPDX-License-Identifier: GPL-3.0-or-later
 
+use crate::manifest::render_safename;
 use crate::prelude::*;
 use crate::resources::Resource;
 
@@ -50,4 +51,10 @@ impl Resource for Pod {
 pub struct Container {
     pub name: String,
     pub current_log: String,
+}
+
+impl Container {
+    pub fn safename(&self) -> String {
+        render_safename(&self.name.as_str())
+    }
 }

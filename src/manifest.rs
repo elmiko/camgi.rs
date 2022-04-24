@@ -98,7 +98,7 @@ impl Manifest {
     }
 }
 
-fn render_safename(original: &str) -> String {
+pub fn render_safename(original: &str) -> String {
     original.replace('.', "-").replace(':', "_")
 }
 

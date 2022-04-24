@@ -230,6 +230,40 @@ fn add_machine_api_data(parent: &mut Node, mustgather: &MustGather) -> Result<()
             .attr("class=\"accordion-body fs-6\"")
             .pre()
             .write_str(&pod.raw())?;
+        for container in &pod.containers {
+            let mut itemdiv = div.div().attr("class=\"accordion-item\"");
+            let mut containerdiv = itemdiv.div().attr("class=\"accordion\"").attr(
+                format!("id=\"{}-accordion\"", &container.safename().to_lowercase()).as_str(),
+            );
+            containerdiv
+                .h2()
+                .attr("class=\"accordion-header\"")
+                .attr(format!("id=\"heading-{}\"", &container.safename()).as_str())
+                .button()
+                .attr("class=\"accordion-button collapsed p-2 ps-4 bg-light\"")
+                .attr("type=\"button\"")
+                .attr("data-bs-toggle=\"collapse\"")
+                .attr(format!("data-bs-target=\"#collapse-{}\"", &container.safename()).as_str())
+                .attr("aria-exapnded=\"false\"")
+                .attr(format!("aria-controls=\"collapse-{}\"", &container.safename()).as_str())
+                .write_str(format!("{} logs", &container.name).as_str())?;
+            containerdiv
+                .div()
+                .attr(format!("id=\"collapse-{}\"", &container.safename()).as_str())
+                .attr("class=\"accordion-collapse collapse\"")
+                .attr(format!("aria-labelledby=\"heading-{}\"", &container.safename()).as_str())
+                .attr(
+                    format!(
+                        "data-bs-parents=\"{}-accordion\"",
+                        &container.safename().to_lowercase()
+                    )
+                    .as_str(),
+                )
+                .div()
+                .attr("class=\"accordion-body fs-6\"")
+                .pre()
+                .write_str(&container.current_log)?;
+        }
     }
 
     Ok(())
