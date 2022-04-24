@@ -119,6 +119,7 @@ fn add_body(parent: &mut Node, mustgather: &MustGather) -> Result<()> {
 
     // nav entries for component sections
     add_navlist_entry(&mut navlist, "Machine API", &mustgather.mapipods)?;
+    add_navlist_entry(&mut navlist, "Machine Config", &mustgather.mcopods)?;
 
     // nav entries for resources
     add_navlist_entry(&mut navlist, "Autoscaling", &mustgather.clusterautoscalers)?;
@@ -152,6 +153,7 @@ fn add_body(parent: &mut Node, mustgather: &MustGather) -> Result<()> {
     // in the div#main-content element.
     add_summary_data(&mut body, &mustgather)?;
     add_machine_api_data(&mut body, &mustgather)?;
+    add_machine_config_data(&mut body, &mustgather)?;
     add_autoscaling_data(&mut body, &mustgather)?;
     add_resource_data(&mut body, "MachineSets", &mustgather.machinesets)?;
     add_resource_data(&mut body, "Machines", &mustgather.machines)?;
@@ -189,6 +191,16 @@ fn add_machine_api_data(parent: &mut Node, mustgather: &MustGather) -> Result<()
     let mut data = parent.data().attr("id=\"machine_api-data\"");
 
     data.h1().write_str("Machine API Pods")?;
+
+    add_pod_accordions(&mut data, &mustgather.mapipods)?;
+
+    Ok(())
+}
+
+fn add_machine_config_data(parent: &mut Node, mustgather: &MustGather) -> Result<()> {
+    let mut data = parent.data().attr("id=\"machine_config-data\"");
+
+    data.h1().write_str("Machine Config Operator Pods")?;
 
     add_pod_accordions(&mut data, &mustgather.mapipods)?;
 
