@@ -16,6 +16,7 @@ pub struct MustGather {
     pub clusterautoscalers: Vec<ClusterAutoscaler>,
     pub machineautoscalers: Vec<MachineAutoscaler>,
     pub mapipods: Vec<Pod>,
+    pub mcopods: Vec<Pod>,
 }
 
 impl MustGather {
@@ -76,6 +77,10 @@ impl MustGather {
         let manifestpath = build_manifest_path(&path, "", "openshift-machine-api", "pods", "");
         let mapipods = get_pods(&manifestpath);
 
+        let manifestpath =
+            build_manifest_path(&path, "", "openshift-machine-config-operator", "pods", "");
+        let mcopods = get_pods(&manifestpath);
+
         Ok(MustGather {
             title,
             version,
@@ -86,6 +91,7 @@ impl MustGather {
             clusterautoscalers,
             machineautoscalers,
             mapipods,
+            mcopods,
         })
     }
 }

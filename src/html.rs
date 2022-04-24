@@ -3,7 +3,7 @@
 
 use crate::prelude::*;
 use crate::resources;
-use crate::resources::Resource;
+use crate::resources::{Pod, Resource};
 use html_builder::*;
 use std::fmt::Write;
 
@@ -119,6 +119,7 @@ fn add_body(parent: &mut Node, mustgather: &MustGather) -> Result<()> {
 
     // nav entries for component sections
     add_navlist_entry(&mut navlist, "Machine API", &mustgather.mapipods)?;
+    add_navlist_entry(&mut navlist, "Machine Config", &mustgather.mcopods)?;
 
     // nav entries for resources
     add_navlist_entry(&mut navlist, "Autoscaling", &mustgather.clusterautoscalers)?;
@@ -152,6 +153,7 @@ fn add_body(parent: &mut Node, mustgather: &MustGather) -> Result<()> {
     // in the div#main-content element.
     add_summary_data(&mut body, &mustgather)?;
     add_machine_api_data(&mut body, &mustgather)?;
+    add_machine_config_data(&mut body, &mustgather)?;
     add_autoscaling_data(&mut body, &mustgather)?;
     add_resource_data(&mut body, "MachineSets", &mustgather.machinesets)?;
     add_resource_data(&mut body, "Machines", &mustgather.machines)?;
@@ -190,8 +192,59 @@ fn add_machine_api_data(parent: &mut Node, mustgather: &MustGather) -> Result<()
 
     data.h1().write_str("Machine API Pods")?;
 
-    for pod in &mustgather.mapipods {
-        let mut div = data
+    add_pod_accordions(&mut data, &mustgather.mapipods)?;
+
+    Ok(())
+}
+
+fn add_machine_config_data(parent: &mut Node, mustgather: &MustGather) -> Result<()> {
+    let mut data = parent.data().attr("id=\"machine_config-data\"");
+
+    data.h1().write_str("Machine Config Operator Pods")?;
+
+    add_pod_accordions(&mut data, &mustgather.mapipods)?;
+
+    Ok(())
+}
+
+fn add_navlist_entry(parent: &mut Node, title: &str, resources: &Vec<impl Resource>) -> Result<()> {
+    let mut aclass = "class=\"list-group-item list-group-item-action\"";
+    let mut clickattr = format!(
+        "v-on:click=\"changeContent('{}')\"",
+        title.replace(' ', "_").to_lowercase()
+    );
+    if resources.is_empty() {
+        aclass = "class=\"list-group-item list-group-item-action disabled\"";
+        clickattr = String::new();
+    }
+    let mut a = parent
+        .a()
+        .attr("href=\"#\"")
+        .attr(aclass)
+        .attr(clickattr.as_str());
+    a.write_str(title)?;
+
+    if !resources.is_empty() {
+        let errors = resources.iter().filter(|r| r.is_error()).count();
+        if errors > 0 {
+            a.span()
+                .attr("class=\"badge bg-danger float-right\"")
+                .write_str(format!("{}", errors).as_str())?;
+        }
+
+        let warnings = resources.iter().filter(|r| r.is_warning()).count();
+        if warnings > 0 {
+            a.span()
+                .attr("class=\"badge bg-warning float-right\"")
+                .write_str(format!("{}", warnings).as_str())?;
+        }
+    }
+    Ok(())
+}
+
+fn add_pod_accordions(parent: &mut Node, pods: &Vec<Pod>) -> Result<()> {
+    for pod in pods {
+        let mut div = parent
             .div()
             .attr("class=\"accordion\"")
             .attr(format!("id=\"{}-accordion\"", pod.safename().to_lowercase()).as_str());
@@ -266,41 +319,6 @@ fn add_machine_api_data(parent: &mut Node, mustgather: &MustGather) -> Result<()
         }
     }
 
-    Ok(())
-}
-
-fn add_navlist_entry(parent: &mut Node, title: &str, resources: &Vec<impl Resource>) -> Result<()> {
-    let mut aclass = "class=\"list-group-item list-group-item-action\"";
-    let mut clickattr = format!(
-        "v-on:click=\"changeContent('{}')\"",
-        title.replace(' ', "_").to_lowercase()
-    );
-    if resources.is_empty() {
-        aclass = "class=\"list-group-item list-group-item-action disabled\"";
-        clickattr = String::new();
-    }
-    let mut a = parent
-        .a()
-        .attr("href=\"#\"")
-        .attr(aclass)
-        .attr(clickattr.as_str());
-    a.write_str(title)?;
-
-    if !resources.is_empty() {
-        let errors = resources.iter().filter(|r| r.is_error()).count();
-        if errors > 0 {
-            a.span()
-                .attr("class=\"badge bg-danger float-right\"")
-                .write_str(format!("{}", errors).as_str())?;
-        }
-
-        let warnings = resources.iter().filter(|r| r.is_warning()).count();
-        if warnings > 0 {
-            a.span()
-                .attr("class=\"badge bg-warning float-right\"")
-                .write_str(format!("{}", warnings).as_str())?;
-        }
-    }
     Ok(())
 }
 
