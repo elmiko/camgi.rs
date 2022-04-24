@@ -99,7 +99,7 @@ impl Manifest {
 }
 
 pub fn render_safename(original: &str) -> String {
-    original.replace('.', "-").replace(':', "_")
+    original.replace('.', "-").replace(':', "_").to_lowercase()
 }
 
 #[cfg(test)]
@@ -213,6 +213,13 @@ mod tests {
     fn test_render_safename_colon() {
         let expected = String::from("ip-10-0-0-1_control_plane");
         let observed = render_safename("ip-10-0-0-1:control:plane");
+        assert_eq!(observed, expected)
+    }
+
+    #[test]
+    fn test_render_safename_lowercase() {
+        let expected = String::from("ip-10-0-0-1_control_plane");
+        let observed = render_safename("IP-10-0-0-1_control_plane");
         assert_eq!(observed, expected)
     }
 }
