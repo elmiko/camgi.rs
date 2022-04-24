@@ -15,6 +15,15 @@ pub struct Manifest {
 }
 
 impl Manifest {
+    pub fn new() -> Manifest {
+        Manifest {
+            name: String::new(),
+            safename: String::new(),
+            raw: String::new(),
+            yaml: Yaml::Null,
+        }
+    }
+
     pub fn from(path: PathBuf) -> Result<Manifest> {
         if !path.is_file() {
             return Err(anyhow!("Path is not a file {}", path.as_path().display()));
@@ -89,7 +98,7 @@ impl Manifest {
     }
 }
 
-fn render_safename(original: &str) -> String {
+pub fn render_safename(original: &str) -> String {
     original.replace('.', "-").replace(':', "_")
 }
 

@@ -117,6 +117,9 @@ fn add_body(parent: &mut Node, mustgather: &MustGather) -> Result<()> {
         .attr("class=\"list-group-item list-group-item-action\"")
         .write_str("Summary")?;
 
+    // nav entries for component sections
+    add_navlist_entry(&mut navlist, "Machine API", &mustgather.mapipods)?;
+
     // nav entries for resources
     add_navlist_entry(&mut navlist, "Autoscaling", &mustgather.clusterautoscalers)?;
     add_navlist_entry(&mut navlist, "MachineSets", &mustgather.machinesets)?;
@@ -148,6 +151,7 @@ fn add_body(parent: &mut Node, mustgather: &MustGather) -> Result<()> {
     // data sections are used by the nav list and vue app to change the content
     // in the div#main-content element.
     add_summary_data(&mut body, &mustgather)?;
+    add_machine_api_data(&mut body, &mustgather)?;
     add_autoscaling_data(&mut body, &mustgather)?;
     add_resource_data(&mut body, "MachineSets", &mustgather.machinesets)?;
     add_resource_data(&mut body, "Machines", &mustgather.machines)?;
@@ -181,9 +185,96 @@ fn add_head(parent: &mut Node, mustgather: &MustGather) -> Result<()> {
     Ok(())
 }
 
+fn add_machine_api_data(parent: &mut Node, mustgather: &MustGather) -> Result<()> {
+    let mut data = parent.data().attr("id=\"machine_api-data\"");
+
+    data.h1().write_str("Machine API Pods")?;
+
+    for pod in &mustgather.mapipods {
+        let mut div = data
+            .div()
+            .attr("class=\"accordion\"")
+            .attr(format!("id=\"{}-accordion\"", pod.safename().to_lowercase()).as_str());
+
+        let mut itemdiv = div.div().attr("class=\"accordion-item\"");
+        let buttonclass = match (pod.is_warning(), pod.is_error()) {
+            (true, _) => " bg-warning text-white",
+            (_, true) => " bg-danger text-white",
+            _ => "",
+        };
+        itemdiv
+            .h2()
+            .attr("class=\"accordion-header\"")
+            .attr(format!("id=\"heading-{}\"", &pod.safename()).as_str())
+            .button()
+            .attr(format!("class=\"accordion-button collapsed p-2{}\"", buttonclass).as_str())
+            .attr("type=\"button\"")
+            .attr("data-bs-toggle=\"collapse\"")
+            .attr(format!("data-bs-target=\"#collapse-{}\"", &pod.safename()).as_str())
+            .attr("aria-exapnded=\"false\"")
+            .attr(format!("aria-controls=\"collapse-{}\"", &pod.safename()).as_str())
+            .write_str(&pod.name())?;
+        itemdiv
+            .div()
+            .attr(format!("id=\"collapse-{}\"", &pod.safename()).as_str())
+            .attr("class=\"accordion-collapse collapse\"")
+            .attr(format!("aria-labelledby=\"heading-{}\"", &pod.safename()).as_str())
+            .attr(
+                format!(
+                    "data-bs-parents=\"{}-accordion\"",
+                    pod.safename().to_lowercase()
+                )
+                .as_str(),
+            )
+            .div()
+            .attr("class=\"accordion-body fs-6\"")
+            .pre()
+            .write_str(&pod.raw())?;
+        for container in &pod.containers {
+            let mut itemdiv = div.div().attr("class=\"accordion-item\"");
+            let mut containerdiv = itemdiv.div().attr("class=\"accordion\"").attr(
+                format!("id=\"{}-accordion\"", &container.safename().to_lowercase()).as_str(),
+            );
+            containerdiv
+                .h2()
+                .attr("class=\"accordion-header\"")
+                .attr(format!("id=\"heading-{}\"", &container.safename()).as_str())
+                .button()
+                .attr("class=\"accordion-button collapsed p-2 ps-4 bg-light\"")
+                .attr("type=\"button\"")
+                .attr("data-bs-toggle=\"collapse\"")
+                .attr(format!("data-bs-target=\"#collapse-{}\"", &container.safename()).as_str())
+                .attr("aria-exapnded=\"false\"")
+                .attr(format!("aria-controls=\"collapse-{}\"", &container.safename()).as_str())
+                .write_str(format!("{} logs", &container.name).as_str())?;
+            containerdiv
+                .div()
+                .attr(format!("id=\"collapse-{}\"", &container.safename()).as_str())
+                .attr("class=\"accordion-collapse collapse\"")
+                .attr(format!("aria-labelledby=\"heading-{}\"", &container.safename()).as_str())
+                .attr(
+                    format!(
+                        "data-bs-parents=\"{}-accordion\"",
+                        &container.safename().to_lowercase()
+                    )
+                    .as_str(),
+                )
+                .div()
+                .attr("class=\"accordion-body fs-6\"")
+                .pre()
+                .write_str(&container.current_log)?;
+        }
+    }
+
+    Ok(())
+}
+
 fn add_navlist_entry(parent: &mut Node, title: &str, resources: &Vec<impl Resource>) -> Result<()> {
     let mut aclass = "class=\"list-group-item list-group-item-action\"";
-    let mut clickattr = format!("v-on:click=\"changeContent('{}')\"", title.to_lowercase());
+    let mut clickattr = format!(
+        "v-on:click=\"changeContent('{}')\"",
+        title.replace(' ', "_").to_lowercase()
+    );
     if resources.is_empty() {
         aclass = "class=\"list-group-item list-group-item-action disabled\"";
         clickattr = String::new();
@@ -216,7 +307,7 @@ fn add_navlist_entry(parent: &mut Node, title: &str, resources: &Vec<impl Resour
 fn add_resource_data(parent: &mut Node, kind: &str, resources: &Vec<impl Resource>) -> Result<()> {
     let mut data = parent
         .data()
-        .attr(format!("id=\"{}-data\"", kind.to_lowercase()).as_str());
+        .attr(format!("id=\"{}-data\"", kind.replace(' ', "_").to_lowercase()).as_str());
     add_accordion_section(&mut data, &kind, &resources)
 }
 
