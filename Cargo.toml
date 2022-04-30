@@ -1,7 +1,12 @@
 [package]
 name = "camgi"
-version = "0.1.0"
+version = "0.7.0"
 edition = "2021"
+license = "GPL-3.0-or-later"
+readme = "README.md"
+repository = "https://github.com/elmiko/camgi.rs"
+description = "A tool for inspecting OpenShift must-gather records"
+keywords = ["openshift"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
