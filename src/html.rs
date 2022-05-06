@@ -203,7 +203,7 @@ fn add_machine_config_data(parent: &mut Node, mustgather: &MustGather) -> Result
 
     data.h1().write_str("Machine Config Operator Pods")?;
 
-    add_pod_accordions(&mut data, &mustgather.mapipods)?;
+    add_pod_accordions(&mut data, &mustgather.mcopods)?;
 
     Ok(())
 }
