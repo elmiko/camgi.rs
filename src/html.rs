@@ -43,6 +43,8 @@ fn add_accordion_section(
         .attr("class=\"accordion\"")
         .attr(format!("id=\"{}-accordion\"", kind.to_lowercase()).as_str());
     for res in resources {
+        // use a UUID for the resource CSS id to avoid resource with similar names
+        let resuuid = Uuid::new_v4();
         let mut itemdiv = div.div().attr("class=\"accordion-item\"");
         let buttonclass = match (res.is_warning(), res.is_error()) {
             (true, _) => " bg-warning text-white",
@@ -52,20 +54,20 @@ fn add_accordion_section(
         itemdiv
             .h2()
             .attr("class=\"accordion-header\"")
-            .attr(format!("id=\"heading-{}\"", &res.safename()).as_str())
+            .attr(format!("id=\"heading-{}\"", &resuuid.hyphenated()).as_str())
             .button()
             .attr(format!("class=\"accordion-button collapsed p-2{}\"", buttonclass).as_str())
             .attr("type=\"button\"")
             .attr("data-bs-toggle=\"collapse\"")
-            .attr(format!("data-bs-target=\"#collapse-{}\"", &res.safename()).as_str())
+            .attr(format!("data-bs-target=\"#collapse-{}\"", &resuuid.hyphenated()).as_str())
             .attr("aria-exapnded=\"false\"")
-            .attr(format!("aria-controls=\"collapse-{}\"", &res.safename()).as_str())
+            .attr(format!("aria-controls=\"collapse-{}\"", &resuuid.hyphenated()).as_str())
             .write_str(&res.name())?;
         itemdiv
             .div()
-            .attr(format!("id=\"collapse-{}\"", &res.safename()).as_str())
+            .attr(format!("id=\"collapse-{}\"", &resuuid.hyphenated()).as_str())
             .attr("class=\"accordion-collapse collapse\"")
-            .attr(format!("aria-labelledby=\"heading-{}\"", &res.safename()).as_str())
+            .attr(format!("aria-labelledby=\"heading-{}\"", &resuuid.hyphenated()).as_str())
             .attr(format!("data-bs-parents=\"{}-accordion\"", kind.to_lowercase()).as_str())
             .div()
             .attr("class=\"accordion-body fs-6\"")
