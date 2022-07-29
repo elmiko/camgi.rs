@@ -29,6 +29,54 @@ metadata:
   name: ip-10-0-0-1.control.plane
   resourceVersion: "89485"
   uid: 00000000-0000-0000-0000-000000000000
+  managedFields:
+  - apiVersion: machine.openshift.io/v1beta1
+    fieldsType: FieldsV1
+    fieldsV1:
+      f:metadata:
+        f:labels:
+          .: {}
+          f:machine.openshift.io/cluster-api-cluster: {}
+          f:machine.openshift.io/cluster-api-machine-role: {}
+          f:machine.openshift.io/cluster-api-machine-type: {}
+          f:spec:
+            .: {}
+            f:lifecycleHooks: {}
+            f:metadata: {}
+            f:providerSpec:
+              .: {}
+              f:value:
+                .: {}
+                f:ami:
+                  .: {}
+                  f:id: {}
+                  f:apiVersion: {}
+                  f:blockDevices: {}
+                  f:credentialsSecret:
+                    .: {}
+                    f:name: {}
+                    f:deviceIndex: {}
+                    f:iamInstanceProfile:
+                      .: {}
+                      f:id: {}
+                      f:instanceType: {}
+                      f:kind: {}
+                      f:loadBalancers: {}
+                      f:metadata:
+                        .: {}
+                        f:creationTimestamp: {}
+                        f:placement:
+                          .: {}
+                          f:availabilityZone: {}
+                          f:region: {}
+                          f:securityGroups: {}
+                          f:subnet:
+                            .: {}
+                            f:filters: {}
+                            f:tags: {}
+                            f:userDataSecret:
+                              .: {}
+                              f:name: {}
 spec:
   providerID: fake://ip-10-0-0-1.control.plane
   taints:

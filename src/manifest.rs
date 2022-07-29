@@ -4,6 +4,7 @@
 use crate::prelude::*;
 use std::fs;
 use std::path::PathBuf;
+use yaml_rust::yaml::Hash;
 use yaml_rust::{Yaml, YamlLoader};
 
 #[derive(Debug, Clone)]
@@ -39,11 +40,23 @@ impl Manifest {
                 path.as_path().display()
             ))
         } else {
-            let yaml = docs.remove(0);
+            let mut yaml = docs.remove(0);
             let name = match yaml["metadata"]["name"].as_str() {
                 Some(n) => String::from(n),
                 None => String::from("Unknown"),
             };
+            if yaml["metadata"]["managedFields"].as_vec().is_some() {
+                // excise the managedFields entry from the metadata
+                let mut ycopy = yaml.as_hash().unwrap_or(&Hash::new()).clone();
+                let mut metadata = ycopy[&Yaml::String(String::from("metadata"))]
+                    .as_hash()
+                    .unwrap_or(&Hash::new())
+                    .clone();
+                metadata.remove(&Yaml::String(String::from("managedFields")));
+                ycopy.remove(&Yaml::String(String::from("metadata")));
+                ycopy.insert(Yaml::String(String::from("metadata")), Yaml::Hash(metadata));
+                yaml = Yaml::Hash(ycopy);
+            }
             Ok(Manifest { name, raw, yaml })
         }
     }
@@ -188,5 +201,15 @@ mod tests {
             "testdata/must-gather-valid/sample-openshift-release/cluster-scoped-resources/core/nodes/ip-10-0-0-1.control.plane.yaml"
         )).unwrap();
         assert_eq!(manifest.has_condition("FooBar"), false)
+    }
+
+    #[test]
+    fn test_manifest_removes_managed_fields() {
+        let manifest = Manifest::from(PathBuf::from(
+            "testdata/must-gather-valid/sample-openshift-release/cluster-scoped-resources/core/nodes/ip-10-0-0-1.control.plane.yaml"
+        )).unwrap();
+        assert!(manifest.as_yaml()["metadata"]["managedFields"]
+            .as_vec()
+            .is_none());
     }
 }
