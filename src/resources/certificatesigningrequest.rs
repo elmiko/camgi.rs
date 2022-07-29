@@ -25,10 +25,6 @@ impl Resource for CertificateSigningRequest {
         &self.manifest.as_raw()
     }
 
-    fn safename(&self) -> &String {
-        &self.manifest.safename
-    }
-
     fn is_error(&self) -> bool {
         self.denied || self.failed
     }

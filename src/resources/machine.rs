@@ -27,10 +27,6 @@ impl Resource for Machine {
     fn raw(&self) -> &String {
         &self.manifest.as_raw()
     }
-
-    fn safename(&self) -> &String {
-        &self.manifest.safename
-    }
 }
 
 fn is_running_phase(manifest: &Manifest) -> bool {
