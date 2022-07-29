@@ -9,7 +9,6 @@ use yaml_rust::{Yaml, YamlLoader};
 #[derive(Debug, Clone)]
 pub struct Manifest {
     pub name: String,
-    pub safename: String,
     raw: String,
     yaml: Yaml,
 }
@@ -18,7 +17,6 @@ impl Manifest {
     pub fn new() -> Manifest {
         Manifest {
             name: String::new(),
-            safename: String::new(),
             raw: String::new(),
             yaml: Yaml::Null,
         }
@@ -46,13 +44,7 @@ impl Manifest {
                 Some(n) => String::from(n),
                 None => String::from("Unknown"),
             };
-            let safename = render_safename(name.as_str());
-            Ok(Manifest {
-                name,
-                raw,
-                safename,
-                yaml,
-            })
+            Ok(Manifest { name, raw, yaml })
         }
     }
 
@@ -96,10 +88,6 @@ impl Manifest {
 
         false
     }
-}
-
-pub fn render_safename(original: &str) -> String {
-    original.replace('.', "-").replace(':', "_").to_lowercase()
 }
 
 #[cfg(test)]
@@ -200,26 +188,5 @@ mod tests {
             "testdata/must-gather-valid/sample-openshift-release/cluster-scoped-resources/core/nodes/ip-10-0-0-1.control.plane.yaml"
         )).unwrap();
         assert_eq!(manifest.has_condition("FooBar"), false)
-    }
-
-    #[test]
-    fn test_render_safename_hyphen() {
-        let expected = String::from("ip-10-0-0-1-control-plane");
-        let observed = render_safename("ip-10-0-0-1.control.plane");
-        assert_eq!(observed, expected)
-    }
-
-    #[test]
-    fn test_render_safename_colon() {
-        let expected = String::from("ip-10-0-0-1_control_plane");
-        let observed = render_safename("ip-10-0-0-1:control:plane");
-        assert_eq!(observed, expected)
-    }
-
-    #[test]
-    fn test_render_safename_lowercase() {
-        let expected = String::from("ip-10-0-0-1_control_plane");
-        let observed = render_safename("IP-10-0-0-1_control_plane");
-        assert_eq!(observed, expected)
     }
 }
