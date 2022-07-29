@@ -21,8 +21,4 @@ impl Resource for ClusterAutoscaler {
     fn raw(&self) -> &String {
         &self.manifest.as_raw()
     }
-
-    fn safename(&self) -> &String {
-        &self.manifest.safename
-    }
 }

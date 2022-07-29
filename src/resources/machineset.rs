@@ -43,10 +43,6 @@ impl Resource for MachineSet {
     fn raw(&self) -> &String {
         &self.manifest.as_raw()
     }
-
-    fn safename(&self) -> &String {
-        &self.manifest.safename
-    }
 }
 
 fn has_autoscaling_annotations(manifest: &Manifest) -> bool {
