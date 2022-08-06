@@ -15,6 +15,10 @@ clap = { version = "3.0.14", features = ["derive"] }
 anyhow = "1.0.53"
 html-builder = "0.3"
 yaml-rust = "0.4.5"
+tar = "0.4.38"
+tempdir = "0.3.7"
+flate2 = "1.0.24"
+infer = "0.9.0"
 
 [dependencies.uuid]
 version = "1.0.0"
