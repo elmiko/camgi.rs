@@ -114,8 +114,7 @@ fn add_body(parent: &mut Node, mustgather: &MustGather) -> Result<()> {
 
     // summary nav entry
     navlist
-        .a()
-        .attr("href=\"#\"")
+        .button()
         .attr("v-on:click=\"changeContent('summary')\"")
         .attr("class=\"list-group-item list-group-item-action\"")
         .write_str("Summary")?;
@@ -220,24 +219,22 @@ fn add_navlist_entry(parent: &mut Node, title: &str, resources: &Vec<impl Resour
         aclass = "class=\"list-group-item list-group-item-action disabled\"";
         clickattr = String::new();
     }
-    let mut a = parent
-        .a()
-        .attr("href=\"#\"")
-        .attr(aclass)
-        .attr(clickattr.as_str());
-    a.write_str(title)?;
+    let mut button = parent.button().attr(aclass).attr(clickattr.as_str());
+    button.write_str(title)?;
 
     if !resources.is_empty() {
         let errors = resources.iter().filter(|r| r.is_error()).count();
         if errors > 0 {
-            a.span()
+            button
+                .span()
                 .attr("class=\"badge bg-danger float-right\"")
                 .write_str(format!("{}", errors).as_str())?;
         }
 
         let warnings = resources.iter().filter(|r| r.is_warning()).count();
         if warnings > 0 {
-            a.span()
+            button
+                .span()
                 .attr("class=\"badge bg-warning float-right\"")
                 .write_str(format!("{}", warnings).as_str())?;
         }
