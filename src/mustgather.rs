@@ -16,6 +16,7 @@ pub struct MustGather {
     pub clusterautoscalers: Vec<ClusterAutoscaler>,
     pub machineautoscalers: Vec<MachineAutoscaler>,
     pub baremetalhosts: Vec<BareMetalHost>,
+    pub controlplanemachinesets: Vec<ControlPlaneMachineSet>,
     pub mapipods: Vec<Pod>,
     pub mcopods: Vec<Pod>,
 }
@@ -84,6 +85,15 @@ impl MustGather {
         );
         let baremetalhosts = get_resources::<BareMetalHost>(&manifestpath);
 
+        let manifestpath = build_manifest_path(
+            &path,
+            "",
+            "openshift-machine-api",
+            "controlplanemachinesets",
+            "machine.openshift.io",
+        );
+        let controlplanemachinesets = get_resources::<ControlPlaneMachineSet>(&manifestpath);
+
         let manifestpath = build_manifest_path(&path, "", "openshift-machine-api", "pods", "");
         let mapipods = get_pods(&manifestpath);
 
@@ -101,6 +111,7 @@ impl MustGather {
             clusterautoscalers,
             machineautoscalers,
             baremetalhosts,
+            controlplanemachinesets,
             mapipods,
             mcopods,
         })
