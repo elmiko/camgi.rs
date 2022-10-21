@@ -127,6 +127,7 @@ fn add_body(parent: &mut Node, mustgather: &MustGather) -> Result<()> {
     add_navlist_entry(&mut navlist, "Autoscaling", &mustgather.clusterautoscalers)?;
     add_navlist_entry(&mut navlist, "MachineSets", &mustgather.machinesets)?;
     add_navlist_entry(&mut navlist, "Machines", &mustgather.machines)?;
+    add_navlist_entry(&mut navlist, "BareMetalHosts", &mustgather.baremetalhosts)?;
     add_navlist_entry(&mut navlist, "Nodes", &mustgather.nodes)?;
     add_navlist_entry(&mut navlist, "CSRs", &mustgather.csrs)?;
 
@@ -160,6 +161,7 @@ fn add_body(parent: &mut Node, mustgather: &MustGather) -> Result<()> {
     add_resource_data(&mut body, "MachineSets", &mustgather.machinesets)?;
     add_resource_data(&mut body, "Machines", &mustgather.machines)?;
     add_resource_data(&mut body, "Nodes", &mustgather.nodes)?;
+    add_resource_data(&mut body, "BareMetalHosts", &mustgather.baremetalhosts)?;
     add_resource_data(&mut body, "CSRs", &mustgather.csrs)?;
 
     // scripts
