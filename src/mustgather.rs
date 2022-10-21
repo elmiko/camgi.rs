@@ -15,6 +15,7 @@ pub struct MustGather {
     pub csrs: Vec<CertificateSigningRequest>,
     pub clusterautoscalers: Vec<ClusterAutoscaler>,
     pub machineautoscalers: Vec<MachineAutoscaler>,
+    pub baremetalhosts: Vec<BareMetalHost>,
     pub mapipods: Vec<Pod>,
     pub mcopods: Vec<Pod>,
 }
@@ -74,6 +75,15 @@ impl MustGather {
         );
         let machineautoscalers = get_resources::<MachineAutoscaler>(&manifestpath);
 
+        let manifestpath = build_manifest_path(
+            &path,
+            "",
+            "openshift-machine-api",
+            "baremetalhosts",
+            "metal3.io",
+        );
+        let baremetalhosts = get_resources::<BareMetalHost>(&manifestpath);
+
         let manifestpath = build_manifest_path(&path, "", "openshift-machine-api", "pods", "");
         let mapipods = get_pods(&manifestpath);
 
@@ -90,6 +100,7 @@ impl MustGather {
             csrs,
             clusterautoscalers,
             machineautoscalers,
+            baremetalhosts,
             mapipods,
             mcopods,
         })

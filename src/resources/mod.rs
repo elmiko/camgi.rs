@@ -1,6 +1,7 @@
 // Copyright (C) 2022 Red Hat, Inc.
 // SPDX-License-Identifier: GPL-3.0-or-later
 
+pub mod baremetalhost;
 pub mod certificatesigningrequest;
 pub mod clusterautoscaler;
 pub mod machine;
@@ -9,6 +10,7 @@ pub mod machineset;
 pub mod node;
 pub mod pod;
 
+pub use crate::resources::baremetalhost::BareMetalHost;
 pub use crate::resources::certificatesigningrequest::CertificateSigningRequest;
 pub use crate::resources::clusterautoscaler::ClusterAutoscaler;
 pub use crate::resources::machine::Machine;
