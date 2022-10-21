@@ -10,3 +10,4 @@ To create a release do the following:
 4. create a release tar file with the binary and a sha256 sum, name it camgi-<version>-linux-x86_64.tar
 5. make a new release on github with the tar file artifact.
 
+Look at the `hack/Dockerfile` to see how the builder image is created.
