@@ -181,7 +181,8 @@ fn add_body(parent: &mut Node, mustgather: &MustGather) -> Result<()> {
 
 fn add_head(parent: &mut Node, mustgather: &MustGather) -> Result<()> {
     let mut head = parent.head();
-    head.title().write_str(mustgather.title.as_str())?;
+    head.title()
+        .write_str(format!("camgi-{}", mustgather.title).as_str())?;
     head.meta().attr("charset='utf-8'");
     head.link()
         .attr("href=\"https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css\"")
