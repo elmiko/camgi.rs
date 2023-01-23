@@ -28,71 +28,21 @@ impl MustGather {
         let title = String::from(path.file_name().unwrap().to_str().unwrap());
         let version = get_cluster_version(&path);
 
-        let manifestpath = build_manifest_path(
-            &path,
-            "",
-            "openshift-machine-api",
-            "machines",
-            "machine.openshift.io",
-        );
-        let machines = get_resources::<Machine>(&manifestpath);
+        let machines = get_resources::<Machine>(&path, "openshift-machine-api");
+        let machinesets = get_resources::<MachineSet>(&path, "openshift-machine-api");
 
-        let manifestpath = build_manifest_path(
-            &path,
-            "",
-            "openshift-machine-api",
-            "machinesets",
-            "machine.openshift.io",
-        );
-        let machinesets = get_resources::<MachineSet>(&manifestpath);
+        let nodes = get_resources::<Node>(&path, "");
 
-        let manifestpath = build_manifest_path(&path, "", "", "nodes", "core");
-        let nodes = get_resources::<Node>(&manifestpath);
+        let csrs = get_resources::<CertificateSigningRequest>(&path, "");
 
-        let manifestpath = build_manifest_path(
-            &path,
-            "",
-            "",
-            "certificatesigningrequests",
-            "certificates.k8s.io",
-        );
-        let csrs = get_resources::<CertificateSigningRequest>(&manifestpath);
+        let clusterautoscalers = get_resources::<ClusterAutoscaler>(&path, "");
 
-        let manifestpath = build_manifest_path(
-            &path,
-            "",
-            "",
-            "clusterautoscalers",
-            "autoscaling.openshift.io",
-        );
-        let clusterautoscalers = get_resources::<ClusterAutoscaler>(&manifestpath);
+        let machineautoscalers = get_resources::<MachineAutoscaler>(&path, "openshift-machine-api");
 
-        let manifestpath = build_manifest_path(
-            &path,
-            "",
-            "openshift-machine-api",
-            "machineautoscalers",
-            "autoscaling.openshift.io",
-        );
-        let machineautoscalers = get_resources::<MachineAutoscaler>(&manifestpath);
+        let baremetalhosts = get_resources::<BareMetalHost>(&path, "openshift-machine-api");
 
-        let manifestpath = build_manifest_path(
-            &path,
-            "",
-            "openshift-machine-api",
-            "baremetalhosts",
-            "metal3.io",
-        );
-        let baremetalhosts = get_resources::<BareMetalHost>(&manifestpath);
-
-        let manifestpath = build_manifest_path(
-            &path,
-            "",
-            "openshift-machine-api",
-            "controlplanemachinesets",
-            "machine.openshift.io",
-        );
-        let controlplanemachinesets = get_resources::<ControlPlaneMachineSet>(&manifestpath);
+        let controlplanemachinesets =
+            get_resources::<ControlPlaneMachineSet>(&path, "openshift-machine-api");
 
         let manifestpath = build_manifest_path(&path, "", "openshift-machine-api", "pods", "");
         let mapipods = get_pods(&manifestpath);
@@ -307,7 +257,9 @@ fn get_pods(path: &Path) -> Vec<Pod> {
 
 /// Get all the resources of a given type.
 /// If the resource path does not exist, will return an empty list.
-fn get_resources<T: Resource>(path: &Path) -> Vec<T> {
+fn get_resources<T: GroupKindResource>(mg_root: &Path, namespace: &str) -> Vec<T> {
+    let path = build_manifest_path(mg_root, "", namespace, T::kind_plural().as_str(), T::group);
+
     let mut resources = Vec::new();
     let files = match fs::read_dir(&path) {
         Ok(p) => p,
@@ -406,14 +358,21 @@ mod tests {
     #[test]
     fn test_get_resources_success() {
         let path = PathBuf::from("testdata/must-gather-valid/sample-openshift-release");
-        let manifestpath = build_manifest_path(&path, "", "", "nodes", "core");
-        assert_eq!(get_resources::<Node>(&manifestpath).len(), 3)
+        assert_eq!(get_resources::<Node>(&path, "").len(), 3)
+    }
+
+    #[test]
+    fn test_get_namespaced_resources_success() {
+        let path = PathBuf::from("testdata/must-gather-valid/sample-openshift-release");
+        assert_eq!(
+            get_resources::<MachineSet>(&path, "openshift-machine-api").len(),
+            2
+        )
     }
 
     #[test]
     fn test_get_resources_non_existant() {
         let path = PathBuf::from("testdata/must-gather-invalid/sample-openshift-release");
-        let manifestpath = build_manifest_path(&path, "", "fake", "kind", "group");
-        assert_eq!(get_resources::<Node>(&manifestpath).len(), 0)
+        assert_eq!(get_resources::<Node>(&path, "").len(), 0)
     }
 }
