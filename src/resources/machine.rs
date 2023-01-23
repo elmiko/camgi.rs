@@ -2,12 +2,19 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 use crate::prelude::*;
-use crate::resources::Resource;
+use crate::resources::{GroupKindResource, Resource, ResourceScope};
 
 #[derive(Debug, Clone)]
 pub struct Machine {
     manifest: Manifest,
     running: bool,
+}
+
+#[allow(non_upper_case_globals)]
+impl GroupKindResource for Machine {
+    const group: &'static str = "machine.openshift.io";
+    const kind: &'static str = "machine";
+    const scope: ResourceScope = ResourceScope::Namespaced;
 }
 
 impl Resource for Machine {
@@ -16,16 +23,16 @@ impl Resource for Machine {
         Machine { manifest, running }
     }
 
-    fn is_error(&self) -> bool {
-        !self.running
-    }
-
     fn name(&self) -> &String {
         &self.manifest.name
     }
 
     fn raw(&self) -> &String {
         &self.manifest.as_raw()
+    }
+
+    fn is_error(&self) -> bool {
+        !self.running
     }
 }
 

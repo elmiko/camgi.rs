@@ -4,6 +4,7 @@
 pub mod baremetalhost;
 pub mod certificatesigningrequest;
 pub mod clusterautoscaler;
+pub mod clusterversion;
 pub mod controlplanemachineset;
 pub mod machine;
 pub mod machineautoscaler;
@@ -14,6 +15,7 @@ pub mod pod;
 pub use crate::resources::baremetalhost::BareMetalHost;
 pub use crate::resources::certificatesigningrequest::CertificateSigningRequest;
 pub use crate::resources::clusterautoscaler::ClusterAutoscaler;
+pub use crate::resources::clusterversion::ClusterVersion;
 pub use crate::resources::controlplanemachineset::ControlPlaneMachineSet;
 pub use crate::resources::machine::Machine;
 pub use crate::resources::machineautoscaler::MachineAutoscaler;
@@ -34,5 +36,24 @@ pub trait Resource {
 
     fn is_warning(&self) -> bool {
         false
+    }
+}
+
+pub enum ResourceScope {
+    Namespaced,
+    Cluster,
+    ClusterSingleton,
+}
+
+#[allow(non_upper_case_globals)]
+pub trait GroupKindResource: Resource {
+    const group: &'static str;
+    const kind: &'static str;
+    const scope: ResourceScope;
+
+    fn kind_plural() -> String {
+        // TODO consider formatcp, maybe it's possible to move it into trait attrs as well
+        // https://docs.rs/const_format/0.2.30/const_format/macro.formatcp.html
+        format!("{}s", Self::kind)
     }
 }
