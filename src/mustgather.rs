@@ -240,14 +240,9 @@ fn get_pod(pod_dir: &PathBuf) -> Option<Pod> {
     }
 
     if let Ok(container_dirs) = fs::read_dir(&pod_dir) {
-        let container_dirs: Vec<PathBuf> = container_dirs
-            .into_iter()
-            .filter(|r| r.is_ok())
-            .map(|r| r.unwrap().path())
-            .filter(|r| r.is_dir())
-            .collect();
         // loop through container dirs
         for container_dir in container_dirs {
+            let container_dir = container_dir.ok()?.path();
             //   build path to log file
             let container_name = match container_dir.file_name() {
                 Some(basename) => basename.to_str().unwrap_or("not_found"),
