@@ -87,19 +87,11 @@ impl Manifest {
     /// If the manifest has a `status.conditions` list, this function will iterate
     /// through them attempting to match the condition type and status strings.
     pub fn has_condition_status(&self, condition: &str, status: &str) -> bool {
-        let empty = Vec::<Yaml>::new();
-        let conditions = self.as_yaml()["status"]["conditions"]
+        self.as_yaml()["status"]["conditions"]
             .as_vec()
-            .unwrap_or(&empty);
-        for c in conditions {
-            if c["type"].as_str().unwrap_or("") == condition
-                && c["status"].as_str().unwrap_or("") == status
-            {
-                return true;
-            }
-        }
-
-        false
+            .into_iter()
+            .flatten()
+            .any(|c| c["type"].as_str() == Some(condition) && c["status"].as_str() == Some(status))
     }
 }
 
