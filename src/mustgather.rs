@@ -23,7 +23,11 @@ pub struct MustGather {
 
 impl MustGather {
     /// Build a MustGather from a path to a directory containing the root.
-    pub fn from(path: String) -> Result<MustGather> {
+    pub fn from(path: impl AsRef<Path>) -> Result<MustGather> {
+        Self::from_path(path.as_ref())
+    }
+
+    pub fn from_path(path: &Path) -> Result<MustGather> {
         let path = find_must_gather_root(path)?;
         let title = String::from(path.file_name().unwrap().to_str().unwrap());
         let version = get_cluster_version(&path);
@@ -166,28 +170,18 @@ fn build_manifest_path(
 /// 3. if there is a single subdirectory in the path, recursively run this function on it and
 ///    return the result.
 /// 4. return an error
-fn find_must_gather_root(path: String) -> Result<PathBuf> {
-    let orig = PathBuf::from(&path);
-    let vpath: PathBuf = [String::from(&path), String::from("version")]
-        .iter()
-        .collect();
-    let npath: PathBuf = [String::from(&path), String::from("namespaces")]
-        .iter()
-        .collect();
-    let csrpath: PathBuf = [
-        String::from(&path),
-        String::from("cluster-scoped-resources"),
-    ]
-    .iter()
-    .collect();
+fn find_must_gather_root(path: &Path) -> Result<PathBuf> {
+    let vpath = path.join("version");
+    let npath = path.join("namespaces");
+    let csrpath = path.join("cluster-scoped-resources");
 
     if vpath.is_file() || (npath.is_dir() && csrpath.is_dir()) {
-        return Ok(orig.canonicalize().unwrap());
+        return Ok(path.canonicalize().unwrap());
     }
 
-    let directory_entries = match fs::read_dir(&orig) {
+    let directory_entries = match fs::read_dir(path) {
         Ok(entries) => entries,
-        Err(_) => return Err(anyhow::anyhow!("Unable to read directory {:?}", orig)),
+        Err(_) => return Err(anyhow::anyhow!("Unable to read directory {:?}", path)),
     };
 
     let directories: Vec<PathBuf> = directory_entries
@@ -198,7 +192,7 @@ fn find_must_gather_root(path: String) -> Result<PathBuf> {
         .collect();
 
     if directories.len() == 1 {
-        find_must_gather_root(String::from(directories[0].to_str().unwrap()))
+        find_must_gather_root(&directories[0])
     } else {
         Err(anyhow::anyhow!("Cannot determine root of must-gather"))
     }

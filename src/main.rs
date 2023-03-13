@@ -39,8 +39,7 @@ fn main() -> Result<()> {
 
     if cli.path == "demo" {
         // Special case to render a demo report
-        let mg =
-            MustGather::from("testdata/must-gather-valid/sample-openshift-release/".to_string())?;
+        let mg = MustGather::from("testdata/must-gather-valid/sample-openshift-release/")?;
         let index = Html::from(mg)?;
 
         std::fs::create_dir_all("target/html")?;
