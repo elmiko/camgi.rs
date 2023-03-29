@@ -2,11 +2,18 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 use crate::prelude::*;
-use crate::resources::Resource;
+use crate::resources::{GroupKindResource, Resource, ResourceScope};
 
 #[derive(Debug, Clone)]
 pub struct MachineAutoscaler {
     manifest: Manifest,
+}
+
+#[allow(non_upper_case_globals)]
+impl GroupKindResource for MachineAutoscaler {
+    const group: &'static str = "autoscaling.openshift.io";
+    const kind: &'static str = "machineautoscaler";
+    const scope: ResourceScope = ResourceScope::Namespaced;
 }
 
 impl Resource for MachineAutoscaler {

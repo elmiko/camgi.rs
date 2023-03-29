@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 use crate::prelude::*;
-use crate::resources::Resource;
+use crate::resources::{GroupKindResource, Resource, ResourceScope};
 
 #[derive(Debug, Clone)]
 pub struct CertificateSigningRequest {
@@ -10,6 +10,13 @@ pub struct CertificateSigningRequest {
     pending: bool,
     denied: bool,
     failed: bool,
+}
+
+#[allow(non_upper_case_globals)]
+impl GroupKindResource for CertificateSigningRequest {
+    const group: &'static str = "certificates.k8s.io";
+    const kind: &'static str = "certificatesigningrequest";
+    const scope: ResourceScope = ResourceScope::Cluster;
 }
 
 impl Resource for CertificateSigningRequest {

@@ -93,3 +93,14 @@ fn extract_tar(path: &str) -> Result<TempDir> {
     archive.unpack(tmp_dir.path())?;
     Ok(tmp_dir)
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn verify_cli() {
+        use clap::CommandFactory;
+        Cli::command().debug_assert()
+    }
+}

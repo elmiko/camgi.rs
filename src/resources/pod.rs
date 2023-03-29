@@ -2,12 +2,19 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 use crate::prelude::*;
-use crate::resources::Resource;
+use crate::resources::{GroupKindResource, Resource, ResourceScope};
 
 #[derive(Debug, Clone)]
 pub struct Pod {
     manifest: Manifest,
     pub containers: Vec<Container>,
+}
+
+#[allow(non_upper_case_globals)]
+impl GroupKindResource for Pod {
+    const group: &'static str = "";
+    const kind: &'static str = "pod";
+    const scope: ResourceScope = ResourceScope::Namespaced;
 }
 
 impl Pod {
