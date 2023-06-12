@@ -27,15 +27,3 @@ features = [
     "fast-rng",
     "macro-diagnostics",
 ]
-
-[dev-dependencies]
-notify = "4.0.17"
-tokio = { version = "1", features = ["full"] }
-warp = "0.3"
-futures-util = "0.3"
-futures-channel = "0.3"
-tokio-stream = { version = "0.1.1", features = ["net"] }
-
-[[example]]
-name = "html-designer"
-path = "tools/html-designer.rs"
