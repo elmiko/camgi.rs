@@ -9,6 +9,7 @@ use std::path::{Path, PathBuf};
 pub struct MustGather {
     pub title: String,
     pub version: String,
+    pub clusteroperators: Vec<ClusterOperator>,
     pub machines: Vec<Machine>,
     pub machinesets: Vec<MachineSet>,
     pub nodes: Vec<Node>,
@@ -33,6 +34,10 @@ impl MustGather {
         let path = find_must_gather_root(path)?;
         let title = String::from(path.file_name().unwrap().to_str().unwrap());
         let version = get_cluster_version(&path);
+
+        let manifestpath =
+            build_manifest_path(&path, "", "", "clusteroperators", "config.openshift.io");
+        let clusteroperators = get_resources::<ClusterOperator>(&manifestpath);
 
         let manifestpath = build_manifest_path(
             &path,
@@ -123,6 +128,7 @@ impl MustGather {
         Ok(MustGather {
             title,
             version,
+            clusteroperators,
             machines,
             machinesets,
             nodes,
