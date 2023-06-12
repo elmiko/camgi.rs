@@ -1,7 +1,12 @@
 .PHONY: fmt clippy tags-vi test
 
+all: build
+
+build:
+	cargo build
+
 fmt:
-	cargo fmt -p camgi -- --check -l
+	cargo fmt -p camgi --
 
 clippy:
 	cargo clippy -- -Dwarnings
