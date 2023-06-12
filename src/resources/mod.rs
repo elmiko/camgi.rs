@@ -4,6 +4,7 @@
 pub mod baremetalhost;
 pub mod certificatesigningrequest;
 pub mod clusterautoscaler;
+pub mod clusteroperator;
 pub mod controlplanemachineset;
 pub mod machine;
 pub mod machineautoscaler;
@@ -14,6 +15,7 @@ pub mod pod;
 pub use crate::resources::baremetalhost::BareMetalHost;
 pub use crate::resources::certificatesigningrequest::CertificateSigningRequest;
 pub use crate::resources::clusterautoscaler::ClusterAutoscaler;
+pub use crate::resources::clusteroperator::ClusterOperator;
 pub use crate::resources::controlplanemachineset::ControlPlaneMachineSet;
 pub use crate::resources::machine::Machine;
 pub use crate::resources::machineautoscaler::MachineAutoscaler;

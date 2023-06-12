@@ -47,7 +47,7 @@ fn add_accordion_section(
         let resuuid = Uuid::new_v4();
         let mut itemdiv = div.div().attr("class=\"accordion-item\"");
         let buttonclass = match (res.is_warning(), res.is_error()) {
-            (true, _) => " bg-warning text-white",
+            (true, false) => " bg-warning text-white",
             (_, true) => " bg-danger text-white",
             _ => "",
         };
@@ -119,6 +119,13 @@ fn add_body(parent: &mut Node, mustgather: &MustGather) -> Result<()> {
         .attr("class=\"list-group-item list-group-item-action\"")
         .write_str("Summary")?;
 
+    // cluster info sections
+    add_navlist_entry(
+        &mut navlist,
+        "Cluster Operators",
+        &mustgather.clusteroperators,
+    )?;
+
     // nav entries for component sections
     add_navlist_entry(&mut navlist, "Machine API", &mustgather.mapipods)?;
     add_navlist_entry(&mut navlist, "Machine Config", &mustgather.mcopods)?;
@@ -158,6 +165,7 @@ fn add_body(parent: &mut Node, mustgather: &MustGather) -> Result<()> {
     // data sections are used by the nav list and vue app to change the content
     // in the div#main-content element.
     add_summary_data(&mut body, &mustgather)?;
+    add_resource_data(&mut body, "Cluster Operators", &mustgather.clusteroperators)?;
     add_machine_api_data(&mut body, &mustgather)?;
     add_machine_config_data(&mut body, &mustgather)?;
     add_ccmo_data(&mut body, &mustgather)?;
@@ -282,7 +290,7 @@ fn add_pod_accordions(parent: &mut Node, pods: &Vec<Pod>) -> Result<()> {
 
         let mut itemdiv = div.div().attr("class=\"accordion-item\"");
         let buttonclass = match (pod.is_warning(), pod.is_error()) {
-            (true, _) => " bg-warning text-white",
+            (true, false) => " bg-warning text-white",
             (_, true) => " bg-danger text-white",
             _ => "",
         };
