@@ -73,7 +73,7 @@ fn status_replicas(manifest: &Manifest) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use ::std::path::PathBuf;
+    use std::path::PathBuf;
 
     #[test]
     fn test_machineset_has_autoscaling_annotations_true() {

@@ -186,7 +186,8 @@ fn add_body(parent: &mut Node, mustgather: &MustGather) -> Result<()> {
 fn add_ccmo_data(parent: &mut Node, mustgather: &MustGather) -> Result<()> {
     let mut data = parent.data().attr("id=\"ccm_operator-data\"");
 
-    data.h1().write_str("Cloud Controller Manager Operator Pods")?;
+    data.h1()
+        .write_str("Cloud Controller Manager Operator Pods")?;
 
     add_pod_accordions(&mut data, &mustgather.ccmopods)?;
 

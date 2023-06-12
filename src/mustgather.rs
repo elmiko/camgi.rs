@@ -107,8 +107,13 @@ impl MustGather {
             build_manifest_path(&path, "", "openshift-machine-config-operator", "pods", "");
         let mcopods = get_pods(&manifestpath);
 
-        let manifestpath =
-            build_manifest_path(&path, "", "openshift-cloud-controller-manager-operator", "pods", "");
+        let manifestpath = build_manifest_path(
+            &path,
+            "",
+            "openshift-cloud-controller-manager-operator",
+            "pods",
+            "",
+        );
         let ccmopods = get_pods(&manifestpath);
 
         let manifestpath =
