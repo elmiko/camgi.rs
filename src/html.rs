@@ -122,6 +122,7 @@ fn add_body(parent: &mut Node, mustgather: &MustGather) -> Result<()> {
     // nav entries for component sections
     add_navlist_entry(&mut navlist, "Machine API", &mustgather.mapipods)?;
     add_navlist_entry(&mut navlist, "Machine Config", &mustgather.mcopods)?;
+    add_navlist_entry(&mut navlist, "CCMs", &mustgather.ccmpods)?;
 
     // nav entries for resources
     add_navlist_entry(&mut navlist, "Autoscaling", &mustgather.clusterautoscalers)?;
@@ -158,6 +159,7 @@ fn add_body(parent: &mut Node, mustgather: &MustGather) -> Result<()> {
     add_summary_data(&mut body, &mustgather)?;
     add_machine_api_data(&mut body, &mustgather)?;
     add_machine_config_data(&mut body, &mustgather)?;
+    add_ccms_data(&mut body, &mustgather)?;
     add_autoscaling_data(&mut body, &mustgather)?;
     add_resource_data(&mut body, "MachineSets", &mustgather.machinesets)?;
     add_resource_data(&mut body, "Machines", &mustgather.machines)?;
@@ -175,6 +177,16 @@ fn add_body(parent: &mut Node, mustgather: &MustGather) -> Result<()> {
         .attr("src=\"https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js\"");
     body.script()
         .write_str(include_str!("files/index_script.js"))?;
+
+    Ok(())
+}
+
+fn add_ccms_data(parent: &mut Node, mustgather: &MustGather) -> Result<()> {
+    let mut data = parent.data().attr("id=\"ccms-data\"");
+
+    data.h1().write_str("Cloud Controller Manager Pods")?;
+
+    add_pod_accordions(&mut data, &mustgather.ccmpods)?;
 
     Ok(())
 }
