@@ -19,6 +19,8 @@ pub struct MustGather {
     pub controlplanemachinesets: Vec<ControlPlaneMachineSet>,
     pub mapipods: Vec<Pod>,
     pub mcopods: Vec<Pod>,
+    pub ccmopods: Vec<Pod>,
+    pub ccmpods: Vec<Pod>,
 }
 
 impl MustGather {
@@ -105,6 +107,19 @@ impl MustGather {
             build_manifest_path(&path, "", "openshift-machine-config-operator", "pods", "");
         let mcopods = get_pods(&manifestpath);
 
+        let manifestpath = build_manifest_path(
+            &path,
+            "",
+            "openshift-cloud-controller-manager-operator",
+            "pods",
+            "",
+        );
+        let ccmopods = get_pods(&manifestpath);
+
+        let manifestpath =
+            build_manifest_path(&path, "", "openshift-cloud-controller-manager", "pods", "");
+        let ccmpods = get_pods(&manifestpath);
+
         Ok(MustGather {
             title,
             version,
@@ -118,6 +133,8 @@ impl MustGather {
             controlplanemachinesets,
             mapipods,
             mcopods,
+            ccmopods,
+            ccmpods,
         })
     }
 }

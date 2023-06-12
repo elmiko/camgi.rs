@@ -43,7 +43,7 @@ fn is_running_phase(manifest: &Manifest) -> bool {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use ::std::path::PathBuf;
+    use std::path::PathBuf;
 
     #[test]
     fn test_machine_is_running_phase_true() {
