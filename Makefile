@@ -5,11 +5,15 @@ all: build
 build:
 	cargo build
 
-fmt:
-	cargo fmt -p camgi --
-
 clippy:
 	cargo clippy -- -Dwarnings
+
+fmt:
+	cargo fmt -p camgi -- --edition 2021
+
+html-designer: build
+	./target/debug/camgi demo
+	cargo run --example html-designer
 
 tags-vi:
 	rusty-tags vi

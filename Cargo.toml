@@ -38,4 +38,4 @@ tokio-stream = { version = "0.1.1", features = ["net"] }
 
 [[example]]
 name = "html-designer"
-path = "tools/html-designer.rs"
+path = "src/html-designer/html-designer.rs"
