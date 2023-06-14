@@ -1,4 +1,6 @@
-FROM registry.ci.openshift.org/ocp/builder:rhel-8-golang-1.19-openshift-4.12
+FROM registry.ci.openshift.org/ocp/builder:rhel-9-golang-1.20-openshift-4.14
 
-RUN dnf install -y cargo
-
+RUN wget https://sh.rustup.rs -O rustup.sh
+RUN sh ./rustup.sh -y
+RUN cp /root/.cargo/bin/* /usr/bin/
+RUN rustup default stable
