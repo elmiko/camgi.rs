@@ -9,6 +9,7 @@ use std::path::{Path, PathBuf};
 pub struct MustGather {
     pub title: String,
     pub version: String,
+    pub platformtype: String,
     pub clusteroperators: Vec<ClusterOperator>,
     pub machines: Vec<Machine>,
     pub machinesets: Vec<MachineSet>,
@@ -34,6 +35,7 @@ impl MustGather {
         let path = find_must_gather_root(path)?;
         let title = String::from(path.file_name().unwrap().to_str().unwrap());
         let version = get_cluster_version(&path);
+        let platformtype = get_cluster_platform_type(&path);
 
         let manifestpath =
             build_manifest_path(&path, "", "", "clusteroperators", "config.openshift.io");
@@ -128,6 +130,7 @@ impl MustGather {
         Ok(MustGather {
             title,
             version,
+            platformtype,
             clusteroperators,
             machines,
             machinesets,
@@ -218,6 +221,22 @@ fn find_must_gather_root(path: &Path) -> Result<PathBuf> {
         find_must_gather_root(&directories[0])
     } else {
         Err(anyhow::anyhow!("Cannot determine root of must-gather"))
+    }
+}
+
+/// Get the platform type.
+/// If unable to determine the platform, "Unknown" will be returned.
+fn get_cluster_platform_type(path: &Path) -> String {
+    let mut manifestpath =
+        build_manifest_path(path, "", "", "infrastructures", "config.openshift.io");
+    manifestpath.push("cluster.yaml");
+    let version = match Manifest::from(manifestpath) {
+        Ok(v) => v,
+        Err(_) => return String::from("Unknown"),
+    };
+    match version.as_yaml()["status"]["platformStatus"]["type"].as_str() {
+        Some(v) => String::from(v),
+        None => String::from("Unknown"),
     }
 }
 

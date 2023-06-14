@@ -395,7 +395,10 @@ fn add_summary_data(parent: &mut Node, mustgather: &MustGather) -> Result<()> {
     add_table(
         &mut dd,
         Vec::new(),
-        vec![vec!["OpenShift Version", mustgather.version.as_str()]],
+        vec![
+            vec!["OpenShift Version", mustgather.version.as_str()],
+            vec!["Platform Type", mustgather.platformtype.as_str()],
+        ],
     )?;
 
     add_summary_data_machinesets_section(&mut dl, &mustgather)?;
