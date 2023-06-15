@@ -11,3 +11,14 @@ To create a release do the following:
 5. make a new release on github with the tar file artifact.
 
 Look at the `hack/Dockerfile` to see how the builder image is created.
+
+## Notes from elmiko
+
+Doing the release has become complicated, mainly because it needs to be compiled using an image which doesn't
+bring in a glibc version greater than what is available in the image that will be run by OpenShift CI.
+This poses a challenge when building the output. What I have traditionally done is to create an image
+based on the same one used by the release tooling (see `hack/Dockerfile` for inspiration), and then run
+that image while mounting the local directory and issuing the `cargo build --release` command. This
+process is fragile and could use some improvement, but has been working so far.
+
+In other words, beware, dragons ahead...
