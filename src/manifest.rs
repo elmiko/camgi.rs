@@ -5,7 +5,7 @@ use crate::prelude::*;
 use std::fs;
 use std::path::PathBuf;
 use yaml_rust::yaml::Hash;
-use yaml_rust::{Yaml, YamlLoader, YamlEmitter};
+use yaml_rust::{Yaml, YamlEmitter, YamlLoader};
 
 #[derive(Debug, Clone)]
 pub struct Manifest {
@@ -158,8 +158,7 @@ mod tests {
 
     #[test]
     fn test_manifest_as_raw() {
-        let expected = include_str!(
-            "../testdata/ip-10-0-0-1.control.plane.no-managed-fields.yaml");
+        let expected = include_str!("../testdata/ip-10-0-0-1.control.plane.no-managed-fields.yaml");
         let manifest = Manifest::from(PathBuf::from(
             "testdata/must-gather-valid/sample-openshift-release/cluster-scoped-resources/core/nodes/ip-10-0-0-1.control.plane.yaml"
         )).unwrap();
