@@ -74,9 +74,14 @@ impl Manifest {
                 yaml = Yaml::Hash(ycopy);
                 let mut out_str = String::new();
                 let mut emitter = YamlEmitter::new(&mut out_str);
-                emitter.dump(&yaml).unwrap();
-                out_str.push('\n');
-                raw = out_str;
+                // if we have an error creating the string, default to using the original
+                raw = match emitter.dump(&yaml) {
+                    Ok(()) => {
+                        out_str.push('\n');
+                        out_str
+                    }
+                    Err(_) => raw,
+                };
             }
             Ok(Manifest { name, raw, yaml })
         }
