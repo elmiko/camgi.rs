@@ -5,7 +5,7 @@ use crate::prelude::*;
 use std::fs;
 use std::path::PathBuf;
 use yaml_rust::yaml::Hash;
-use yaml_rust::{Yaml, YamlLoader};
+use yaml_rust::{Yaml, YamlEmitter, YamlLoader};
 
 #[derive(Debug, Clone)]
 pub struct Manifest {
@@ -31,7 +31,7 @@ impl Manifest {
             return Err(anyhow!("Path is a directory {}", path.as_path().display()));
         }
 
-        let raw = fs::read_to_string(path.as_path())?;
+        let mut raw = fs::read_to_string(path.as_path())?;
         let mut docs = YamlLoader::load_from_str(&raw)?;
 
         if docs.is_empty() {
@@ -55,7 +55,33 @@ impl Manifest {
                 metadata.remove(&Yaml::String(String::from("managedFields")));
                 ycopy.remove(&Yaml::String(String::from("metadata")));
                 ycopy.insert(Yaml::String(String::from("metadata")), Yaml::Hash(metadata));
+
+                // we want to make sure that the display of the raw file is in a familiar format
+                // to accomplish that, we want the metadata field to appear first, then spec, then status
+                let spec = ycopy[&Yaml::String(String::from("spec"))]
+                    .as_hash()
+                    .unwrap_or(&Hash::new())
+                    .clone();
+                ycopy.remove(&Yaml::String(String::from("spec")));
+                ycopy.insert(Yaml::String(String::from("spec")), Yaml::Hash(spec));
+                let status = ycopy[&Yaml::String(String::from("status"))]
+                    .as_hash()
+                    .unwrap_or(&Hash::new())
+                    .clone();
+                ycopy.remove(&Yaml::String(String::from("status")));
+                ycopy.insert(Yaml::String(String::from("status")), Yaml::Hash(status));
+
                 yaml = Yaml::Hash(ycopy);
+                let mut out_str = String::new();
+                let mut emitter = YamlEmitter::new(&mut out_str);
+                // if we have an error creating the string, default to using the original
+                raw = match emitter.dump(&yaml) {
+                    Ok(()) => {
+                        out_str.push('\n');
+                        out_str
+                    }
+                    Err(_) => raw,
+                };
             }
             Ok(Manifest { name, raw, yaml })
         }
@@ -137,8 +163,7 @@ mod tests {
 
     #[test]
     fn test_manifest_as_raw() {
-        let expected = include_str!(
-            "../testdata/must-gather-valid/sample-openshift-release/cluster-scoped-resources/core/nodes/ip-10-0-0-1.control.plane.yaml");
+        let expected = include_str!("../testdata/ip-10-0-0-1.control.plane.no-managed-fields.yaml");
         let manifest = Manifest::from(PathBuf::from(
             "testdata/must-gather-valid/sample-openshift-release/cluster-scoped-resources/core/nodes/ip-10-0-0-1.control.plane.yaml"
         )).unwrap();
