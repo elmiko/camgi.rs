@@ -9,7 +9,7 @@ clippy:
 	cargo clippy -- -Dwarnings
 
 fmt:
-	cargo fmt -p camgi -- --edition 2021
+	cargo fmt -p camgi -- --check -l
 
 html-designer: build
 	./target/debug/camgi demo

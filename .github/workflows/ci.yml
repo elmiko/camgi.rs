@@ -37,9 +37,9 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
       - name: Install toolchain
-        uses: dtolnay/rust-toolchain@v1
+        uses: dtolnay/rust-toolchain@stable
         with:
           toolchain: stable
           components: rustfmt
       - name: cargo fmt (check)
-        run: cargo fmt -- --check -l
+        run: cargo fmt -p camgi -- --check -l
