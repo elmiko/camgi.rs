@@ -6,6 +6,9 @@ use crate::resources::*;
 use std::fs;
 use std::path::{Path, PathBuf};
 
+// MAX_LOG_LINES defines the maximum number of log lines that will be included in the output
+const MAX_LOG_LINES: usize = 99;
+
 pub struct MustGather {
     pub title: String,
     pub version: String,
@@ -290,14 +293,29 @@ fn get_pod(pod_dir: &PathBuf) -> Option<Pod> {
             current_log_filename.push("current.log");
             if current_log_filename.exists() {
                 //   if it exists open and read into a new string
-                let raw = match fs::read_to_string(current_log_filename.as_path()) {
+                let raw: String = match fs::read_to_string(current_log_filename.as_path()) {
                     Ok(contents) => contents,
                     Err(_) => continue,
                 };
+                let mut logoutput = String::new();
+                let mut revlines = raw.lines().rev();
+                if revlines.clone().count() > MAX_LOG_LINES {
+                    for _ in 0..MAX_LOG_LINES {
+                        logoutput = match revlines.next() {
+                            Some(l) => l.to_owned() + "\n" + &logoutput,
+                            None => logoutput,
+                        };
+                    }
+
+                    logoutput = String::from("camgi warning: log file has been truncated to end, see full contents in the must-gather\n") + &logoutput;
+                } else {
+                    logoutput = raw;
+                }
+
                 //   create a Container and add it to the Pod
                 pod.push_container(Container {
                     name: container_name.to_string(),
-                    current_log: raw,
+                    current_log: logoutput,
                 });
             }
         }
@@ -425,6 +443,24 @@ mod tests {
         let path = PathBuf::from("testdata/must-gather-valid/sample-openshift-release/namespaces/openshift-machine-api/pods/machine-api-controllers-86c6c8f96d-ssrp8");
         let pod = get_pod(&path).unwrap();
         assert_eq!(pod.containers.len(), 7)
+    }
+
+    #[test]
+    fn test_get_pod_log_file() {
+        let path = PathBuf::from("testdata/must-gather-valid/sample-openshift-release/namespaces/openshift-machine-api/pods/cluster-baremetal-operator-6955c869bf-9ccgk");
+        let pod = get_pod(&path).unwrap();
+        assert_eq!(pod.containers.len(), 1);
+        let expected = include_str!("../testdata/must-gather-valid/sample-openshift-release/namespaces/openshift-machine-api/pods/cluster-baremetal-operator-6955c869bf-9ccgk/cluster-baremetal-operator/cluster-baremetal-operator/logs/current.log");
+        assert_eq!(pod.containers[0].current_log.as_str(), expected);
+    }
+
+    #[test]
+    fn test_get_pod_log_file_truncated() {
+        let path = PathBuf::from("testdata/must-gather-valid/sample-openshift-release/namespaces/openshift-machine-api/pods/cluster-autoscaler-default-f548ffc66-bck7p");
+        let pod = get_pod(&path).unwrap();
+        assert_eq!(pod.containers.len(), 1);
+        let expected = include_str!("../testdata/truncated-log-file.txt");
+        assert_eq!(pod.containers[0].current_log.as_str(), expected);
     }
 
     #[test]
