@@ -55,7 +55,7 @@ fn main() -> Result<()> {
                     return Err(error);
                 }
             };
-            mg = MustGather::from(tmp_dir.path().to_str().unwrap().to_owned())?;
+            mg = MustGather::from(tmp_dir.path().to_str().unwrap())?;
         } else {
             mg = MustGather::from(cli.path)?;
         }

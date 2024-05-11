@@ -62,7 +62,7 @@ fn add_accordion_section(
             .attr(format!("data-bs-target=\"#collapse-{}\"", &resuuid.hyphenated()).as_str())
             .attr("aria-exapnded=\"false\"")
             .attr(format!("aria-controls=\"collapse-{}\"", &resuuid.hyphenated()).as_str())
-            .write_str(&res.name())?;
+            .write_str(res.name())?;
         itemdiv
             .div()
             .attr(format!("id=\"collapse-{}\"", &resuuid.hyphenated()).as_str())
@@ -72,7 +72,7 @@ fn add_accordion_section(
             .div()
             .attr("class=\"accordion-body fs-6\"")
             .pre()
-            .write_str(&res.raw())?;
+            .write_str(res.raw())?;
     }
 
     Ok(())
@@ -164,13 +164,13 @@ fn add_body(parent: &mut Node, mustgather: &MustGather) -> Result<()> {
     // add data sections
     // data sections are used by the nav list and vue app to change the content
     // in the div#main-content element.
-    add_summary_data(&mut body, &mustgather)?;
+    add_summary_data(&mut body, mustgather)?;
     add_resource_data(&mut body, "Cluster Operators", &mustgather.clusteroperators)?;
-    add_machine_api_data(&mut body, &mustgather)?;
-    add_machine_config_data(&mut body, &mustgather)?;
-    add_ccmo_data(&mut body, &mustgather)?;
-    add_ccms_data(&mut body, &mustgather)?;
-    add_autoscaling_data(&mut body, &mustgather)?;
+    add_machine_api_data(&mut body, mustgather)?;
+    add_machine_config_data(&mut body, mustgather)?;
+    add_ccmo_data(&mut body, mustgather)?;
+    add_ccms_data(&mut body, mustgather)?;
+    add_autoscaling_data(&mut body, mustgather)?;
     add_resource_data(&mut body, "MachineSets", &mustgather.machinesets)?;
     add_resource_data(&mut body, "Machines", &mustgather.machines)?;
     add_resource_data(&mut body, "Nodes", &mustgather.nodes)?;
@@ -247,7 +247,7 @@ fn add_machine_config_data(parent: &mut Node, mustgather: &MustGather) -> Result
     Ok(())
 }
 
-fn add_navlist_entry(parent: &mut Node, title: &str, resources: &Vec<impl Resource>) -> Result<()> {
+fn add_navlist_entry(parent: &mut Node, title: &str, resources: &[impl Resource]) -> Result<()> {
     let mut aclass = "class=\"list-group-item list-group-item-action\"";
     let mut clickattr = format!(
         "v-on:click=\"changeContent('{}')\"",
@@ -305,7 +305,7 @@ fn add_pod_accordions(parent: &mut Node, pods: &Vec<Pod>) -> Result<()> {
             .attr(format!("data-bs-target=\"#collapse-{}\"", &poduuid.hyphenated()).as_str())
             .attr("aria-exapnded=\"false\"")
             .attr(format!("aria-controls=\"collapse-{}\"", &poduuid.hyphenated()).as_str())
-            .write_str(&pod.name())?;
+            .write_str(pod.name())?;
         itemdiv
             .div()
             .attr(format!("id=\"collapse-{}\"", &poduuid.hyphenated()).as_str())
@@ -315,7 +315,7 @@ fn add_pod_accordions(parent: &mut Node, pods: &Vec<Pod>) -> Result<()> {
             .div()
             .attr("class=\"accordion-body fs-6\"")
             .pre()
-            .write_str(&pod.raw())?;
+            .write_str(pod.raw())?;
         for container in &pod.containers {
             let containeruuid = Uuid::new_v4();
             let mut itemdiv = div.div().attr("class=\"accordion-item\"");
@@ -379,7 +379,7 @@ fn add_resource_data(parent: &mut Node, kind: &str, resources: &Vec<impl Resourc
     let mut data = parent
         .data()
         .attr(format!("id=\"{}-data\"", kind.replace(' ', "_").to_lowercase()).as_str());
-    add_accordion_section(&mut data, &kind, &resources)
+    add_accordion_section(&mut data, kind, resources)
 }
 
 fn add_summary_data(parent: &mut Node, mustgather: &MustGather) -> Result<()> {
@@ -401,9 +401,9 @@ fn add_summary_data(parent: &mut Node, mustgather: &MustGather) -> Result<()> {
         ],
     )?;
 
-    add_summary_data_machinesets_section(&mut dl, &mustgather)?;
-    add_summary_data_machines_section(&mut dl, &mustgather)?;
-    add_summary_data_nodes_section(&mut dl, &mustgather)?;
+    add_summary_data_machinesets_section(&mut dl, mustgather)?;
+    add_summary_data_machines_section(&mut dl, mustgather)?;
+    add_summary_data_nodes_section(&mut dl, mustgather)?;
 
     Ok(())
 }
@@ -515,7 +515,7 @@ fn add_table(parent: &mut Node, head: Vec<&str>, body: Vec<Vec<&str>>) -> Result
 
     let mut tbody = table.tbody();
 
-    for (_i, item) in body.iter().enumerate() {
+    for item in body.iter() {
         let mut tr = tbody.tr();
         for (ii, iitem) in item.iter().enumerate() {
             let t = if ii == 0 { tr.th() } else { tr.td() };

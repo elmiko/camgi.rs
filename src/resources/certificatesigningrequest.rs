@@ -22,7 +22,7 @@ impl Resource for CertificateSigningRequest {
     }
 
     fn raw(&self) -> &String {
-        &self.manifest.as_raw()
+        self.manifest.as_raw()
     }
 
     fn is_error(&self) -> bool {

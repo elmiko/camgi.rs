@@ -1,0 +1,2577 @@
+<html lang='en'>
+ <head>
+  <title>
+camgi-sample-openshift-release  </title>
+  <meta charset='utf-8'>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6" crossorigin="anonymous">
+  <style>
+div#nav-col ul {
+  list-style: none;
+}
+data {
+  display: none;
+}
+#nav-col {
+  max-width: 200px;
+}
+span.float-right {
+  float: right;
+}
+table {
+  font-size: 8pt;
+}
+  </style>
+ </head>
+ <body class="bg-secondary">
+  <div id="app" class="container-fluid">
+   <div class="row mt-2">
+    <div class="col-2" id="nav-col">
+     <div class="list-group">
+      <button v-on:click="changeContent('summary')" class="list-group-item list-group-item-action">
+Summary      </button>
+      <button class="list-group-item list-group-item-action disabled" >
+Cluster Operators      </button>
+      <button class="list-group-item list-group-item-action" v-on:click="changeContent('machine_api')">
+Machine API      </button>
+      <button class="list-group-item list-group-item-action disabled" >
+Machine Config      </button>
+      <button class="list-group-item list-group-item-action disabled" >
+CCM Operator      </button>
+      <button class="list-group-item list-group-item-action disabled" >
+CCMs      </button>
+      <button class="list-group-item list-group-item-action" v-on:click="changeContent('autoscaling')">
+Autoscaling      </button>
+      <button class="list-group-item list-group-item-action" v-on:click="changeContent('machinesets')">
+MachineSets      </button>
+      <button class="list-group-item list-group-item-action disabled" >
+CPMSs      </button>
+      <button class="list-group-item list-group-item-action" v-on:click="changeContent('machines')">
+Machines       <span class="badge bg-danger float-right">
+1       </span>
+      </button>
+      <button class="list-group-item list-group-item-action disabled" >
+BareMetalHosts      </button>
+      <button class="list-group-item list-group-item-action" v-on:click="changeContent('nodes')">
+Nodes       <span class="badge bg-danger float-right">
+2       </span>
+      </button>
+      <button class="list-group-item list-group-item-action" v-on:click="changeContent('csrs')">
+CSRs       <span class="badge bg-danger float-right">
+2       </span>
+       <span class="badge bg-warning float-right">
+1       </span>
+      </button>
+      <a href="https://github.com/elmiko/camgi.rs" class="list-group-item list-group-item-action text-center" target="_blank">
+       <img src="https://github.com/favicon.ico" alt="GitHub logo" title="Found a bug or issue? Visit this project's git repo.">
+      </a>
+     </div>
+    </div>
+    <div class="col-10 bg-white rounded">
+     <div id="main-content" class="overflow-auto">
+      <span v-html="content">
+      </span>
+     </div>
+    </div>
+   </div>
+  </div>
+  <data id="summary-data">
+   <h1>
+Summary   </h1>
+   <hr>
+   <dl>
+    <dt class="text-light bg-secondary ps-1 mb-1">
+Cluster    </dt>
+    <dd>
+     <table class="table table-sm table-striped font-monospace">
+      <tbody>
+       <tr>
+        <th scope="col">
+OpenShift Version        </th>
+        <td scope="col">
+X.Y.Z-fake-test        </td>
+       </tr>
+       <tr>
+        <th scope="col">
+Platform Type        </th>
+        <td scope="col">
+Unknown        </td>
+       </tr>
+      </tbody>
+     </table>
+    </dd>
+    <dt class="text-light bg-secondary ps-1 mb-1">
+2 MachineSets    </dt>
+    <dd>
+     <span class="badge bg-secondary">
+1     </span>
+participating in autoscaling     <table class="table table-sm table-striped font-monospace">
+      <thead>
+       <tr>
+        <th scope="col">
+Name        </th>
+        <td scope="col">
+Replicas        </td>
+       </tr>
+      </thead>
+      <tbody>
+       <tr>
+        <th scope="col">
+testdata-compute-region-2        </th>
+        <td scope="col">
+0        </td>
+       </tr>
+      </tbody>
+     </table>
+    </dd>
+    <dt class="text-light bg-secondary ps-1 mb-1">
+3 Machines    </dt>
+    <dd>
+     <span class="badge bg-danger">
+1     </span>
+Machines not in Running phase     <table class="table table-sm table-striped font-monospace">
+      <tbody>
+       <tr>
+        <th scope="col">
+testdata-control-plane-1        </th>
+       </tr>
+      </tbody>
+     </table>
+    </dd>
+    <dt class="text-light bg-secondary ps-1 mb-1">
+3 Nodes    </dt>
+    <dd>
+     <span class="badge bg-danger">
+2     </span>
+Nodes do not have a Ready condition     <table class="table table-sm table-striped font-monospace">
+      <tbody>
+       <tr>
+        <th scope="col">
+ip-10-0-0-2.control.plane        </th>
+       </tr>
+       <tr>
+        <th scope="col">
+ip-10-0-1-1.compute.plane        </th>
+       </tr>
+      </tbody>
+     </table>
+    </dd>
+   </dl>
+  </data>
+  <data id="cluster_operators-data">
+   <h1>
+Cluster Operators   </h1>
+   <div class="accordion" id="cluster operators-accordion">
+   </div>
+  </data>
+  <data id="machine_api-data">
+   <h1>
+Machine API Pods   </h1>
+   <div class="accordion" id="accordion-17717787-dbff-4b92-9a5b-3fabc66c549e">
+    <div class="accordion-item">
+     <h2 class="accordion-header" id="heading-17717787-dbff-4b92-9a5b-3fabc66c549e">
+      <button class="accordion-button collapsed p-2" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-17717787-dbff-4b92-9a5b-3fabc66c549e" aria-exapnded="false" aria-controls="collapse-17717787-dbff-4b92-9a5b-3fabc66c549e">
+cluster-autoscaler-default-f548ffc66-bck7p      </button>
+     </h2>
+     <div id="collapse-17717787-dbff-4b92-9a5b-3fabc66c549e" class="accordion-collapse collapse" aria-labelledby="heading-17717787-dbff-4b92-9a5b-3fabc66c549e" data-bs-parents="accordion-17717787-dbff-4b92-9a5b-3fabc66c549e">
+      <div class="accordion-body fs-6">
+       <pre>
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    release.openshift.io/version: X.Y.Z-fake-test
+  creationTimestamp: "2022-01-01T00:00:00Z"
+  labels:
+    cluster-autoscaler: default
+    k8s-app: cluster-autoscaler
+  name: cluster-autoscaler-default-f548ffc66-bck7p
+  namespace: openshift-machine-api
+  ownerReferences:
+  - apiVersion: apps/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: ReplicaSet
+    name: cluster-autoscaler-default-f548ffc66
+    uid: 00000000-0000-0000-0000-000000000000
+  resourceVersion: "12345"
+  uid: 00000000-0000-0000-0000-000000000000
+spec:
+  containers:
+  - args:
+    - --logtostderr
+    - --v=4
+    - --cloud-provider=clusterapi
+    - --namespace=openshift-machine-api
+    - --gpu-total=nvidia.com/gpu:1:2
+    - --scale-down-enabled=true
+    - --scale-down-delay-after-add=10s
+    - --scale-down-delay-after-delete=10s
+    - --scale-down-delay-after-failure=10s
+    - --scale-down-unneeded-time=10s
+    command:
+    - cluster-autoscaler
+    env:
+    - name: CAPI_GROUP
+      value: machine.openshift.io
+    image: quay.io/openshift-release-dev/ocp-v4.0-fake
+    imagePullPolicy: IfNotPresent
+    name: cluster-autoscaler
+    ports:
+    - containerPort: 8085
+      name: metrics
+      protocol: TCP
+    resources:
+      requests:
+        cpu: 10m
+        memory: 20Mi
+    securityContext:
+      capabilities:
+        drop:
+        - KILL
+        - MKNOD
+        - SETGID
+        - SETUID
+      runAsUser: 1000450000
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-6lqjg
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  imagePullSecrets:
+  - name: cluster-autoscaler-dockercfg-dq8xb
+  nodeName: ip-10-0-0-1.control.plane
+  nodeSelector:
+    beta.kubernetes.io/os: linux
+    node-role.kubernetes.io/master: ""
+  preemptionPolicy: PreemptLowerPriority
+  priority: 2000000000
+  priorityClassName: system-cluster-critical
+  restartPolicy: Always
+  schedulerName: default-scheduler
+  securityContext:
+    fsGroup: 1000450000
+    seLinuxOptions:
+      level: s0:c21,c15
+  serviceAccount: cluster-autoscaler
+  serviceAccountName: cluster-autoscaler
+  terminationGracePeriodSeconds: 30
+  tolerations:
+  - key: CriticalAddonsOnly
+    operator: Exists
+  - effect: NoSchedule
+    key: node-role.kubernetes.io/master
+    operator: Exists
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoSchedule
+    key: node.kubernetes.io/memory-pressure
+    operator: Exists
+  volumes:
+  - name: kube-api-access-6lqjg
+    projected:
+      defaultMode: 420
+      sources:
+      - serviceAccountToken:
+          expirationSeconds: 3607
+          path: token
+      - configMap:
+          items:
+          - key: ca.crt
+            path: ca.crt
+          name: kube-root-ca.crt
+      - downwardAPI:
+          items:
+          - fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+            path: namespace
+      - configMap:
+          items:
+          - key: service-ca.crt
+            path: service-ca.crt
+          name: openshift-service-ca.crt
+status:
+  conditions:
+  - lastProbeTime: null
+    lastTransitionTime: "2022-01-01T00:00:00Z"
+    status: "True"
+    type: Initialized
+  - lastProbeTime: null
+    lastTransitionTime: "2022-01-01T00:00:00Z"
+    status: "True"
+    type: Ready
+  - lastProbeTime: null
+    lastTransitionTime: "2022-01-01T00:00:00Z"
+    status: "True"
+    type: ContainersReady
+  - lastProbeTime: null
+    lastTransitionTime: "2022-01-01T00:00:00Z"
+    status: "True"
+    type: PodScheduled
+  containerStatuses:
+  - containerID: cri-o://fake
+    image: quay.io/openshift-release-dev/ocp-v4.0-fake
+    imageID: quay.io/openshift-release-dev/ocp-v4.0-fake
+    lastState: {}
+    name: cluster-autoscaler
+    ready: true
+    restartCount: 0
+    started: true
+    state:
+      running:
+        startedAt: "2022-01-01T00:00:00Z"
+  hostIP: 10.0.0.1
+  phase: Running
+  podIP: 10.129.1.1
+  podIPs:
+  - ip: 10.129.1.1
+  qosClass: Burstable
+  startTime: "2022-01-01T00:00:00Z"
+       </pre>
+      </div>
+     </div>
+    </div>
+    <div class="accordion-item">
+     <div class="accordion" id="logs-accordion-cb5f30ce-b642-4f42-972e-421c111393ae">
+      <h2 class="accordion-header" id="heading-logs-cb5f30ce-b642-4f42-972e-421c111393ae">
+       <button class="accordion-button collapsed p-2 ps-4 bg-light" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-logs-cb5f30ce-b642-4f42-972e-421c111393ae" aria-exapnded="false" aria-controls="collapse-logs-cb5f30ce-b642-4f42-972e-421c111393ae">
+cluster-autoscaler logs       </button>
+      </h2>
+      <div id="collapse-logs-cb5f30ce-b642-4f42-972e-421c111393ae" class="accordion-collapse collapse" aria-labelledby="heading-logs-cb5f30ce-b642-4f42-972e-421c111393ae" data-bs-parents="logs-accordion-cb5f30ce-b642-4f42-972e-421c111393ae">
+       <div class="accordion-body fs-6">
+        <pre>
+camgi warning: log file has been truncated to end, see full contents in the must-gather
+line 11
+line 12
+line 13
+line 14
+line 15
+line 16
+line 17
+line 18
+line 19
+line 20
+line 21
+line 22
+line 23
+line 24
+line 25
+line 26
+line 27
+line 28
+line 29
+line 30
+line 31
+line 32
+line 33
+line 34
+line 35
+line 36
+line 37
+line 38
+line 39
+line 40
+line 41
+line 42
+line 43
+line 44
+line 45
+line 46
+line 47
+line 48
+line 49
+line 50
+line 51
+line 52
+line 53
+line 54
+line 55
+line 56
+line 57
+line 58
+line 59
+line 60
+line 61
+line 62
+line 63
+line 64
+line 65
+line 66
+line 67
+line 68
+line 69
+line 70
+line 71
+line 72
+line 73
+line 74
+line 75
+line 76
+line 77
+line 78
+line 79
+line 80
+line 81
+line 82
+line 83
+line 84
+line 85
+line 86
+line 87
+line 88
+line 89
+line 90
+line 91
+line 92
+line 93
+line 94
+line 95
+line 96
+line 97
+line 98
+line 99
+line 100
+line 101
+line 102
+line 103
+line 104
+line 105
+line 106
+line 107
+line 108
+line 109
+        </pre>
+       </div>
+      </div>
+     </div>
+    </div>
+   </div>
+   <div class="accordion" id="accordion-950cc726-8a21-4ef6-9229-5eee2b265741">
+    <div class="accordion-item">
+     <h2 class="accordion-header" id="heading-950cc726-8a21-4ef6-9229-5eee2b265741">
+      <button class="accordion-button collapsed p-2" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-950cc726-8a21-4ef6-9229-5eee2b265741" aria-exapnded="false" aria-controls="collapse-950cc726-8a21-4ef6-9229-5eee2b265741">
+cluster-baremetal-operator-6955c869bf-9ccgk      </button>
+     </h2>
+     <div id="collapse-950cc726-8a21-4ef6-9229-5eee2b265741" class="accordion-collapse collapse" aria-labelledby="heading-950cc726-8a21-4ef6-9229-5eee2b265741" data-bs-parents="accordion-950cc726-8a21-4ef6-9229-5eee2b265741">
+      <div class="accordion-body fs-6">
+       <pre>
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    release.openshift.io/version: X.Y.Z-fake-test
+  creationTimestamp: "2022-01-01T00:00:00Z"
+  generateName: cluster-baremetal-operator-6955c869bf-
+  labels:
+    k8s-app: cluster-baremetal-operator
+  name: cluster-baremetal-operator-6955c869bf-9ccgk
+  namespace: openshift-machine-api
+  ownerReferences:
+  - apiVersion: apps/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: ReplicaSet
+    name: cluster-baremetal-operator-6955c869bf
+    uid: 00000000-0000-0000-0000-000000000000
+  resourceVersion: "12345"
+  uid: 00000000-0000-0000-0000-000000000000
+spec:
+  containers:
+  - command:
+    - /usr/bin/cluster-baremetal-operator
+    env:
+    - name: RELEASE_VERSION
+      value: X.Y.Z-fake-test
+    - name: COMPONENT_NAMESPACE
+      valueFrom:
+        fieldRef:
+          apiVersion: v1
+          fieldPath: metadata.namespace
+    - name: METRICS_PORT
+      value: "8080"
+    image: quay.io/openshift-release-dev/ocp-v4.0-fake
+    imagePullPolicy: IfNotPresent
+    name: cluster-baremetal-operator
+    ports:
+    - containerPort: 9443
+      name: webhook-server
+      protocol: TCP
+    resources:
+      requests:
+        cpu: 10m
+        memory: 50Mi
+    securityContext:
+      capabilities:
+        drop:
+        - MKNOD
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /etc/cluster-baremetal-operator/tls
+      name: cert
+      readOnly: true
+    - mountPath: /etc/cluster-baremetal-operator/images
+      name: images
+      readOnly: true
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-n8nw4
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  nodeName: ip-10-0-0-1.control.plane
+  nodeSelector:
+    node-role.kubernetes.io/master: ""
+  preemptionPolicy: PreemptLowerPriority
+  priority: 2000001000
+  priorityClassName: system-node-critical
+  restartPolicy: Always
+  schedulerName: default-scheduler
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 65534
+    seLinuxOptions:
+      level: s0:c21,c15
+  serviceAccount: cluster-baremetal-operator
+  serviceAccountName: cluster-baremetal-operator
+  terminationGracePeriodSeconds: 30
+  tolerations:
+  - effect: NoSchedule
+    key: node-role.kubernetes.io/master
+    operator: Exists
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+    tolerationSeconds: 120
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+    tolerationSeconds: 120
+  - effect: NoSchedule
+    key: node.kubernetes.io/memory-pressure
+    operator: Exists
+  volumes:
+  - name: cert
+    secret:
+      defaultMode: 420
+      secretName: cluster-baremetal-webhook-server-cert
+  - configMap:
+      defaultMode: 420
+      name: kube-rbac-proxy
+    name: config
+  - name: cluster-baremetal-operator-tls
+    secret:
+      defaultMode: 420
+      secretName: cluster-baremetal-operator-tls
+  - configMap:
+      defaultMode: 420
+      name: cluster-baremetal-operator-images
+    name: images
+  - name: kube-api-access-n8nw4
+    projected:
+      defaultMode: 420
+      sources:
+      - serviceAccountToken:
+          expirationSeconds: 3607
+          path: token
+      - configMap:
+          items:
+          - key: ca.crt
+            path: ca.crt
+          name: kube-root-ca.crt
+      - downwardAPI:
+          items:
+          - fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+            path: namespace
+      - configMap:
+          items:
+          - key: service-ca.crt
+            path: service-ca.crt
+          name: openshift-service-ca.crt
+status:
+  conditions:
+  - lastProbeTime: null
+    lastTransitionTime: "2022-01-01T00:00:00Z"
+    status: "True"
+    type: Initialized
+  - lastProbeTime: null
+    lastTransitionTime: "2022-01-01T00:00:00Z"
+    status: "True"
+    type: Ready
+  - lastProbeTime: null
+    lastTransitionTime: "2022-01-01T00:00:00Z"
+    status: "True"
+    type: ContainersReady
+  - lastProbeTime: null
+    lastTransitionTime: "2022-01-01T00:00:00Z"
+    status: "True"
+    type: PodScheduled
+  containerStatuses:
+  - containerID: cri-o://fake
+    image: quay.io/openshift-release-dev/ocp-v4.0-fake
+    imageID: quay.io/openshift-release-dev/ocp-v4.0-fake
+    lastState:
+      terminated:
+        containerID: cri-o://fake
+        exitCode: 1
+        finishedAt: "2022-01-01T00:00:00Z"
+        reason: Error
+        startedAt: "2022-01-01T00:00:00Z"
+    name: cluster-baremetal-operator
+    ready: true
+    restartCount: 1
+    started: true
+    state:
+      running:
+        startedAt: "2022-01-01T00:00:00Z"
+  - containerID: cri-o://fake
+    image: quay.io/openshift-release-dev/ocp-v4.0-fake
+    imageID: quay.io/openshift-release-dev/ocp-v4.0-fake
+    lastState: {}
+    name: kube-rbac-proxy
+    ready: true
+    restartCount: 0
+    started: true
+    state:
+      running:
+        startedAt: "2022-01-01T00:00:00Z"
+  hostIP: 10.0.0.1
+  phase: Running
+  podIP: 10.130.1.1
+  podIPs:
+  - ip: 10.130.1.1
+  qosClass: Burstable
+  startTime: "2022-01-01T00:00:00Z"
+       </pre>
+      </div>
+     </div>
+    </div>
+    <div class="accordion-item">
+     <div class="accordion" id="logs-accordion-04522eeb-4924-4e7e-9b12-6fa8982e00b2">
+      <h2 class="accordion-header" id="heading-logs-04522eeb-4924-4e7e-9b12-6fa8982e00b2">
+       <button class="accordion-button collapsed p-2 ps-4 bg-light" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-logs-04522eeb-4924-4e7e-9b12-6fa8982e00b2" aria-exapnded="false" aria-controls="collapse-logs-04522eeb-4924-4e7e-9b12-6fa8982e00b2">
+cluster-baremetal-operator logs       </button>
+      </h2>
+      <div id="collapse-logs-04522eeb-4924-4e7e-9b12-6fa8982e00b2" class="accordion-collapse collapse" aria-labelledby="heading-logs-04522eeb-4924-4e7e-9b12-6fa8982e00b2" data-bs-parents="logs-accordion-04522eeb-4924-4e7e-9b12-6fa8982e00b2">
+       <div class="accordion-body fs-6">
+        <pre>
+cluster-baremetal-operator-6955c869bf-9ccgk cluster-baremetal-operator logs
+        </pre>
+       </div>
+      </div>
+     </div>
+    </div>
+   </div>
+   <div class="accordion" id="accordion-0df2b7c3-7354-4c22-a4e6-cffa712f65b8">
+    <div class="accordion-item">
+     <h2 class="accordion-header" id="heading-0df2b7c3-7354-4c22-a4e6-cffa712f65b8">
+      <button class="accordion-button collapsed p-2" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-0df2b7c3-7354-4c22-a4e6-cffa712f65b8" aria-exapnded="false" aria-controls="collapse-0df2b7c3-7354-4c22-a4e6-cffa712f65b8">
+machine-api-controllers-86c6c8f96d-ssrp8      </button>
+     </h2>
+     <div id="collapse-0df2b7c3-7354-4c22-a4e6-cffa712f65b8" class="accordion-collapse collapse" aria-labelledby="heading-0df2b7c3-7354-4c22-a4e6-cffa712f65b8" data-bs-parents="accordion-0df2b7c3-7354-4c22-a4e6-cffa712f65b8">
+      <div class="accordion-body fs-6">
+       <pre>
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    release.openshift.io/version: X.Y.Z-fake-test
+  creationTimestamp: "2022-01-01T00:00:00Z"
+  generateName: machine-api-controllers-86c6c8f96d-
+  labels:
+    api: clusterapi
+    k8s-app: controller
+  name: machine-api-controllers-86c6c8f96d-ssrp8
+  namespace: openshift-machine-api
+  ownerReferences:
+  - apiVersion: apps/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: ReplicaSet
+    name: machine-api-controllers-86c6c8f96d
+    uid: 00000000-0000-0000-0000-000000000000
+  resourceVersion: "12345"
+  uid: 00000000-0000-0000-0000-000000000000
+spec:
+  containers:
+  - args:
+    - --logtostderr=true
+    - --v=3
+    - --leader-elect=true
+    - --leader-elect-lease-duration=120s
+    - --namespace=openshift-machine-api
+    command:
+    - /machineset-controller
+    image: quay.io/openshift-release-dev/ocp-v4.0-fake
+    imagePullPolicy: IfNotPresent
+    livenessProbe:
+      failureThreshold: 3
+      httpGet:
+        path: /readyz
+        port: healthz
+        scheme: HTTP
+      periodSeconds: 10
+      successThreshold: 1
+      timeoutSeconds: 1
+    name: machineset-controller
+    ports:
+    - containerPort: 8443
+      name: webhook-server
+      protocol: TCP
+    - containerPort: 9441
+      name: healthz
+      protocol: TCP
+    readinessProbe:
+      failureThreshold: 3
+      httpGet:
+        path: /healthz
+        port: healthz
+        scheme: HTTP
+      periodSeconds: 10
+      successThreshold: 1
+      timeoutSeconds: 1
+    resources:
+      requests:
+        cpu: 10m
+        memory: 20Mi
+    securityContext:
+      capabilities:
+        drop:
+        - KILL
+        - MKNOD
+        - SETGID
+        - SETUID
+      runAsUser: 1000450000
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /etc/machine-api-operator/tls
+      name: cert
+      readOnly: true
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-6fbb2
+      readOnly: true
+  - args:
+    - --logtostderr=true
+    - --v=3
+    - --leader-elect=true
+    - --leader-elect-lease-duration=120s
+    - --namespace=openshift-machine-api
+    command:
+    - /machine-controller-manager
+    env:
+    - name: NODE_NAME
+      valueFrom:
+        fieldRef:
+          apiVersion: v1
+          fieldPath: spec.nodeName
+    image: quay.io/openshift-release-dev/ocp-v4.0-fake
+    imagePullPolicy: IfNotPresent
+    livenessProbe:
+      failureThreshold: 3
+      httpGet:
+        path: /readyz
+        port: healthz
+        scheme: HTTP
+      periodSeconds: 10
+      successThreshold: 1
+      timeoutSeconds: 1
+    name: machine-controller
+    ports:
+    - containerPort: 9440
+      name: healthz
+      protocol: TCP
+    readinessProbe:
+      failureThreshold: 3
+      httpGet:
+        path: /healthz
+        port: healthz
+        scheme: HTTP
+      periodSeconds: 10
+      successThreshold: 1
+      timeoutSeconds: 1
+    resources:
+      requests:
+        cpu: 10m
+        memory: 20Mi
+    securityContext:
+      capabilities:
+        drop:
+        - KILL
+        - MKNOD
+        - SETGID
+        - SETUID
+      runAsUser: 1000450000
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /etc/pki/ca-trust/extracted/pem
+      name: trusted-ca
+      readOnly: true
+    - mountPath: /var/run/secrets/openshift/serviceaccount
+      name: bound-sa-token
+      readOnly: true
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-6fbb2
+      readOnly: true
+  - args:
+    - --logtostderr=true
+    - --v=3
+    - --leader-elect=true
+    - --leader-elect-lease-duration=120s
+    - --namespace=openshift-machine-api
+    command:
+    - /nodelink-controller
+    image: quay.io/openshift-release-dev/ocp-v4.0-fake
+    imagePullPolicy: IfNotPresent
+    name: nodelink-controller
+    resources:
+      requests:
+        cpu: 10m
+        memory: 20Mi
+    securityContext:
+      capabilities:
+        drop:
+        - KILL
+        - MKNOD
+        - SETGID
+        - SETUID
+      runAsUser: 1000450000
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-6fbb2
+      readOnly: true
+  - args:
+    - --logtostderr=true
+    - --v=3
+    - --leader-elect=true
+    - --leader-elect-lease-duration=120s
+    - --namespace=openshift-machine-api
+    command:
+    - /machine-healthcheck
+    image: quay.io/openshift-release-dev/ocp-v4.0-fake
+    imagePullPolicy: IfNotPresent
+    livenessProbe:
+      failureThreshold: 3
+      httpGet:
+        path: /readyz
+        port: healthz
+        scheme: HTTP
+      periodSeconds: 10
+      successThreshold: 1
+      timeoutSeconds: 1
+    name: machine-healthcheck-controller
+    ports:
+    - containerPort: 9442
+      name: healthz
+      protocol: TCP
+    readinessProbe:
+      failureThreshold: 3
+      httpGet:
+        path: /healthz
+        port: healthz
+        scheme: HTTP
+      periodSeconds: 10
+      successThreshold: 1
+      timeoutSeconds: 1
+    resources:
+      requests:
+        cpu: 10m
+        memory: 20Mi
+    securityContext:
+      capabilities:
+        drop:
+        - KILL
+        - MKNOD
+        - SETGID
+        - SETUID
+      runAsUser: 1000450000
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-6fbb2
+      readOnly: true
+  - args:
+    - --secure-listen-address=0.0.0.0:8442
+    - --upstream=http://localhost:8082
+    - --config-file=/etc/kube-rbac-proxy/config-file.yaml
+    - --tls-cert-file=/etc/tls/private/tls.crt
+    - --tls-private-key-file=/etc/tls/private/tls.key
+    - --tls-cipher-suites=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305,TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305
+    - --logtostderr=true
+    - --v=3
+    image: quay.io/openshift-release-dev/ocp-v4.0-fake
+    imagePullPolicy: IfNotPresent
+    name: kube-rbac-proxy-machineset-mtrc
+    ports:
+    - containerPort: 8442
+      name: machineset-mtrc
+      protocol: TCP
+    resources:
+      requests:
+        cpu: 10m
+        memory: 20Mi
+    securityContext:
+      capabilities:
+        drop:
+        - KILL
+        - MKNOD
+        - SETGID
+        - SETUID
+      runAsUser: 1000450000
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /etc/kube-rbac-proxy
+      name: config
+    - mountPath: /etc/tls/private
+      name: machine-api-controllers-tls
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-6fbb2
+      readOnly: true
+  - args:
+    - --secure-listen-address=0.0.0.0:8441
+    - --upstream=http://localhost:8081
+    - --config-file=/etc/kube-rbac-proxy/config-file.yaml
+    - --tls-cert-file=/etc/tls/private/tls.crt
+    - --tls-private-key-file=/etc/tls/private/tls.key
+    - --tls-cipher-suites=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305,TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305
+    - --logtostderr=true
+    - --v=3
+    image: quay.io/openshift-release-dev/ocp-v4.0-fake
+    imagePullPolicy: IfNotPresent
+    name: kube-rbac-proxy-machine-mtrc
+    ports:
+    - containerPort: 8441
+      name: machine-mtrc
+      protocol: TCP
+    resources:
+      requests:
+        cpu: 10m
+        memory: 20Mi
+    securityContext:
+      capabilities:
+        drop:
+        - KILL
+        - MKNOD
+        - SETGID
+        - SETUID
+      runAsUser: 1000450000
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /etc/kube-rbac-proxy
+      name: config
+    - mountPath: /etc/tls/private
+      name: machine-api-controllers-tls
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-6fbb2
+      readOnly: true
+  - args:
+    - --secure-listen-address=0.0.0.0:8444
+    - --upstream=http://localhost:8083
+    - --config-file=/etc/kube-rbac-proxy/config-file.yaml
+    - --tls-cert-file=/etc/tls/private/tls.crt
+    - --tls-private-key-file=/etc/tls/private/tls.key
+    - --tls-cipher-suites=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305,TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305
+    - --logtostderr=true
+    - --v=3
+    image: quay.io/openshift-release-dev/ocp-v4.0-fake
+    imagePullPolicy: IfNotPresent
+    name: kube-rbac-proxy-mhc-mtrc
+    ports:
+    - containerPort: 8444
+      name: mhc-mtrc
+      protocol: TCP
+    resources:
+      requests:
+        cpu: 10m
+        memory: 20Mi
+    securityContext:
+      capabilities:
+        drop:
+        - KILL
+        - MKNOD
+        - SETGID
+        - SETUID
+      runAsUser: 1000450000
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /etc/kube-rbac-proxy
+      name: config
+    - mountPath: /etc/tls/private
+      name: machine-api-controllers-tls
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-6fbb2
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  nodeName: ip-10-0-1-1.compute.plane
+  nodeSelector:
+    node-role.kubernetes.io/master: ""
+  preemptionPolicy: PreemptLowerPriority
+  priority: 2000001000
+  priorityClassName: system-node-critical
+  restartPolicy: Always
+  schedulerName: default-scheduler
+  securityContext:
+    fsGroup: 1000450000
+    seLinuxOptions:
+      level: s0:c21,c15
+  serviceAccount: machine-api-controllers
+  serviceAccountName: machine-api-controllers
+  terminationGracePeriodSeconds: 30
+  tolerations:
+  - effect: NoSchedule
+    key: node-role.kubernetes.io/master
+  - key: CriticalAddonsOnly
+    operator: Exists
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+    tolerationSeconds: 120
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+    tolerationSeconds: 120
+  - effect: NoSchedule
+    key: node.kubernetes.io/memory-pressure
+    operator: Exists
+  volumes:
+  - name: cert
+    secret:
+      defaultMode: 420
+      items:
+      - key: tls.crt
+        path: tls.crt
+      - key: tls.key
+        path: tls.key
+      secretName: machine-api-operator-webhook-cert
+  - name: bound-sa-token
+    projected:
+      defaultMode: 420
+      sources:
+      - serviceAccountToken:
+          audience: openshift
+          expirationSeconds: 3600
+          path: token
+  - configMap:
+      defaultMode: 420
+      name: kube-rbac-proxy
+    name: config
+  - name: machine-api-controllers-tls
+    secret:
+      defaultMode: 420
+      secretName: machine-api-controllers-tls
+  - configMap:
+      defaultMode: 420
+      items:
+      - key: ca-bundle.crt
+        path: tls-ca-bundle.pem
+      name: mao-trusted-ca
+      optional: true
+    name: trusted-ca
+  - name: kube-api-access-6fbb2
+    projected:
+      defaultMode: 420
+      sources:
+      - serviceAccountToken:
+          expirationSeconds: 3607
+          path: token
+      - configMap:
+          items:
+          - key: ca.crt
+            path: ca.crt
+          name: kube-root-ca.crt
+      - downwardAPI:
+          items:
+          - fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+            path: namespace
+      - configMap:
+          items:
+          - key: service-ca.crt
+            path: service-ca.crt
+          name: openshift-service-ca.crt
+status:
+  conditions:
+  - lastProbeTime: null
+    lastTransitionTime: "2022-01-01T00:00:00Z"
+    status: "True"
+    type: Initialized
+  - lastProbeTime: null
+    lastTransitionTime: "2022-01-01T00:00:00Z"
+    status: "True"
+    type: Ready
+  - lastProbeTime: null
+    lastTransitionTime: "2022-01-01T00:00:00Z"
+    status: "True"
+    type: ContainersReady
+  - lastProbeTime: null
+    lastTransitionTime: "2022-01-01T00:00:00Z"
+    status: "True"
+    type: PodScheduled
+  containerStatuses:
+  - containerID: cri-o://fake
+    image: quay.io/openshift-release-dev/ocp-v4.0-fake
+    imageID: quay.io/openshift-release-dev/ocp-v4.0-fake
+    lastState: {}
+    name: kube-rbac-proxy-machine-mtrc
+    ready: true
+    restartCount: 0
+    started: true
+    state:
+      running:
+        startedAt: "2022-01-01T00:00:00Z"
+  - containerID: cri-o://fake
+    image: quay.io/openshift-release-dev/ocp-v4.0-fake
+    imageID: quay.io/openshift-release-dev/ocp-v4.0-fake
+    lastState: {}
+    name: kube-rbac-proxy-machineset-mtrc
+    ready: true
+    restartCount: 0
+    started: true
+    state:
+      running:
+        startedAt: "2022-01-01T00:00:00Z"
+  - containerID: cri-o://fake
+    image: quay.io/openshift-release-dev/ocp-v4.0-fake
+    imageID: quay.io/openshift-release-dev/ocp-v4.0-fake
+    lastState: {}
+    name: kube-rbac-proxy-mhc-mtrc
+    ready: true
+    restartCount: 0
+    started: true
+    state:
+      running:
+        startedAt: "2022-01-01T00:00:00Z"
+  - containerID: cri-o://fake
+    image: quay.io/openshift-release-dev/ocp-v4.0-fake
+    imageID: quay.io/openshift-release-dev/ocp-v4.0-fake
+    lastState:
+      terminated:
+        containerID: cri-o://fake
+        exitCode: 2
+        finishedAt: "2022-01-01T00:00:00Z"
+        reason: Error
+        startedAt: "2022-01-01T00:00:00Z"
+    name: machine-controller
+    ready: true
+    restartCount: 2
+    started: true
+    state:
+      running:
+        startedAt: "2022-01-01T00:00:00Z"
+  - containerID: cri-o://fake
+    image: quay.io/openshift-release-dev/ocp-v4.0-fake
+    imageID: quay.io/openshift-release-dev/ocp-v4.0-fake
+    lastState:
+      terminated:
+        containerID: cri-o://fake
+        exitCode: 2
+        finishedAt: "2022-01-01T00:00:00Z"
+        reason: Error
+        startedAt: "2022-01-01T00:00:00Z"
+    name: machine-healthcheck-controller
+    ready: true
+    restartCount: 3
+    started: true
+    state:
+      running:
+        startedAt: "2022-01-01T00:00:00Z"
+  - containerID: cri-o://fake
+    image: quay.io/openshift-release-dev/ocp-v4.0-fake
+    imageID: quay.io/openshift-release-dev/ocp-v4.0-fake
+    lastState:
+      terminated:
+        containerID: cri-o://fake
+        exitCode: 2
+        finishedAt: "2022-01-01T00:00:00Z"
+        reason: Error
+        startedAt: "2022-01-01T00:00:00Z"
+    name: machineset-controller
+    ready: true
+    restartCount: 2
+    started: true
+    state:
+      running:
+        startedAt: "2022-01-01T00:00:00Z"
+  - containerID: cri-o://fake
+    image: quay.io/openshift-release-dev/ocp-v4.0-fake
+    imageID: quay.io/openshift-release-dev/ocp-v4.0-fake
+    lastState:
+      terminated:
+        containerID: cri-o://fake
+        exitCode: 255
+        finishedAt: "2022-01-01T00:00:00Z"
+        reason: Error
+        startedAt: "2022-01-01T00:00:00Z"
+    name: nodelink-controller
+    ready: true
+    restartCount: 2
+    started: true
+    state:
+      running:
+        startedAt: "2022-01-01T00:00:00Z"
+  hostIP: 10.0.1.1
+  phase: Running
+  podIP: 10.128.0.8
+  podIPs:
+  - ip: 10.128.0.8
+  qosClass: Burstable
+  startTime: "2022-01-01T00:00:00Z"
+       </pre>
+      </div>
+     </div>
+    </div>
+    <div class="accordion-item">
+     <div class="accordion" id="logs-accordion-e639d5ca-c04d-44ca-818c-daad6931b189">
+      <h2 class="accordion-header" id="heading-logs-e639d5ca-c04d-44ca-818c-daad6931b189">
+       <button class="accordion-button collapsed p-2 ps-4 bg-light" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-logs-e639d5ca-c04d-44ca-818c-daad6931b189" aria-exapnded="false" aria-controls="collapse-logs-e639d5ca-c04d-44ca-818c-daad6931b189">
+kube-rbac-proxy-machine-mtrc logs       </button>
+      </h2>
+      <div id="collapse-logs-e639d5ca-c04d-44ca-818c-daad6931b189" class="accordion-collapse collapse" aria-labelledby="heading-logs-e639d5ca-c04d-44ca-818c-daad6931b189" data-bs-parents="logs-accordion-e639d5ca-c04d-44ca-818c-daad6931b189">
+       <div class="accordion-body fs-6">
+        <pre>
+machine-api-controllers-86c6c8f96d-ssrp8 kube-rbac-proxy-machine-mtrc logs
+        </pre>
+       </div>
+      </div>
+     </div>
+    </div>
+    <div class="accordion-item">
+     <div class="accordion" id="logs-accordion-fd3b18e2-0fab-4e22-b6ec-9f6cd9ac5b92">
+      <h2 class="accordion-header" id="heading-logs-fd3b18e2-0fab-4e22-b6ec-9f6cd9ac5b92">
+       <button class="accordion-button collapsed p-2 ps-4 bg-light" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-logs-fd3b18e2-0fab-4e22-b6ec-9f6cd9ac5b92" aria-exapnded="false" aria-controls="collapse-logs-fd3b18e2-0fab-4e22-b6ec-9f6cd9ac5b92">
+kube-rbac-proxy-machineset-mtrc logs       </button>
+      </h2>
+      <div id="collapse-logs-fd3b18e2-0fab-4e22-b6ec-9f6cd9ac5b92" class="accordion-collapse collapse" aria-labelledby="heading-logs-fd3b18e2-0fab-4e22-b6ec-9f6cd9ac5b92" data-bs-parents="logs-accordion-fd3b18e2-0fab-4e22-b6ec-9f6cd9ac5b92">
+       <div class="accordion-body fs-6">
+        <pre>
+machine-api-controllers-86c6c8f96d-ssrp8 kube-rbac-proxy-machineset-mtrc logs
+        </pre>
+       </div>
+      </div>
+     </div>
+    </div>
+    <div class="accordion-item">
+     <div class="accordion" id="logs-accordion-2bb17fb5-3f5d-471a-aa02-85a5d3de8875">
+      <h2 class="accordion-header" id="heading-logs-2bb17fb5-3f5d-471a-aa02-85a5d3de8875">
+       <button class="accordion-button collapsed p-2 ps-4 bg-light" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-logs-2bb17fb5-3f5d-471a-aa02-85a5d3de8875" aria-exapnded="false" aria-controls="collapse-logs-2bb17fb5-3f5d-471a-aa02-85a5d3de8875">
+kube-rbac-proxy-mhc-mtrc logs       </button>
+      </h2>
+      <div id="collapse-logs-2bb17fb5-3f5d-471a-aa02-85a5d3de8875" class="accordion-collapse collapse" aria-labelledby="heading-logs-2bb17fb5-3f5d-471a-aa02-85a5d3de8875" data-bs-parents="logs-accordion-2bb17fb5-3f5d-471a-aa02-85a5d3de8875">
+       <div class="accordion-body fs-6">
+        <pre>
+machine-api-controllers-86c6c8f96d-ssrp8 kube-rbac-proxy-mhc-mtrc logs
+        </pre>
+       </div>
+      </div>
+     </div>
+    </div>
+    <div class="accordion-item">
+     <div class="accordion" id="logs-accordion-866a1487-260f-422c-81b4-3f644ca6d6e2">
+      <h2 class="accordion-header" id="heading-logs-866a1487-260f-422c-81b4-3f644ca6d6e2">
+       <button class="accordion-button collapsed p-2 ps-4 bg-light" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-logs-866a1487-260f-422c-81b4-3f644ca6d6e2" aria-exapnded="false" aria-controls="collapse-logs-866a1487-260f-422c-81b4-3f644ca6d6e2">
+machine-controller logs       </button>
+      </h2>
+      <div id="collapse-logs-866a1487-260f-422c-81b4-3f644ca6d6e2" class="accordion-collapse collapse" aria-labelledby="heading-logs-866a1487-260f-422c-81b4-3f644ca6d6e2" data-bs-parents="logs-accordion-866a1487-260f-422c-81b4-3f644ca6d6e2">
+       <div class="accordion-body fs-6">
+        <pre>
+machine-api-controllers-86c6c8f96d-ssrp8 machine-controller logs
+        </pre>
+       </div>
+      </div>
+     </div>
+    </div>
+    <div class="accordion-item">
+     <div class="accordion" id="logs-accordion-11383287-4070-4f33-9d92-96900079447c">
+      <h2 class="accordion-header" id="heading-logs-11383287-4070-4f33-9d92-96900079447c">
+       <button class="accordion-button collapsed p-2 ps-4 bg-light" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-logs-11383287-4070-4f33-9d92-96900079447c" aria-exapnded="false" aria-controls="collapse-logs-11383287-4070-4f33-9d92-96900079447c">
+machine-healthcheck-controller logs       </button>
+      </h2>
+      <div id="collapse-logs-11383287-4070-4f33-9d92-96900079447c" class="accordion-collapse collapse" aria-labelledby="heading-logs-11383287-4070-4f33-9d92-96900079447c" data-bs-parents="logs-accordion-11383287-4070-4f33-9d92-96900079447c">
+       <div class="accordion-body fs-6">
+        <pre>
+machine-api-controllers-86c6c8f96d-ssrp8 machine-healthcheck-controller logs
+        </pre>
+       </div>
+      </div>
+     </div>
+    </div>
+    <div class="accordion-item">
+     <div class="accordion" id="logs-accordion-e123b542-9274-42e1-b4ea-a0675122e317">
+      <h2 class="accordion-header" id="heading-logs-e123b542-9274-42e1-b4ea-a0675122e317">
+       <button class="accordion-button collapsed p-2 ps-4 bg-light" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-logs-e123b542-9274-42e1-b4ea-a0675122e317" aria-exapnded="false" aria-controls="collapse-logs-e123b542-9274-42e1-b4ea-a0675122e317">
+machineset-controller logs       </button>
+      </h2>
+      <div id="collapse-logs-e123b542-9274-42e1-b4ea-a0675122e317" class="accordion-collapse collapse" aria-labelledby="heading-logs-e123b542-9274-42e1-b4ea-a0675122e317" data-bs-parents="logs-accordion-e123b542-9274-42e1-b4ea-a0675122e317">
+       <div class="accordion-body fs-6">
+        <pre>
+machine-api-controllers-86c6c8f96d-ssrp8 machineset-controller logs
+        </pre>
+       </div>
+      </div>
+     </div>
+    </div>
+    <div class="accordion-item">
+     <div class="accordion" id="logs-accordion-379fbdd7-69fe-461a-bc11-d62da51f3fbd">
+      <h2 class="accordion-header" id="heading-logs-379fbdd7-69fe-461a-bc11-d62da51f3fbd">
+       <button class="accordion-button collapsed p-2 ps-4 bg-light" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-logs-379fbdd7-69fe-461a-bc11-d62da51f3fbd" aria-exapnded="false" aria-controls="collapse-logs-379fbdd7-69fe-461a-bc11-d62da51f3fbd">
+nodelink-controller logs       </button>
+      </h2>
+      <div id="collapse-logs-379fbdd7-69fe-461a-bc11-d62da51f3fbd" class="accordion-collapse collapse" aria-labelledby="heading-logs-379fbdd7-69fe-461a-bc11-d62da51f3fbd" data-bs-parents="logs-accordion-379fbdd7-69fe-461a-bc11-d62da51f3fbd">
+       <div class="accordion-body fs-6">
+        <pre>
+machine-api-controllers-86c6c8f96d-ssrp8 nodelink-controller logs
+        </pre>
+       </div>
+      </div>
+     </div>
+    </div>
+   </div>
+   <div class="accordion" id="accordion-b6178de2-ce6d-476c-96e3-34c0da51fbf6">
+    <div class="accordion-item">
+     <h2 class="accordion-header" id="heading-b6178de2-ce6d-476c-96e3-34c0da51fbf6">
+      <button class="accordion-button collapsed p-2" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-b6178de2-ce6d-476c-96e3-34c0da51fbf6" aria-exapnded="false" aria-controls="collapse-b6178de2-ce6d-476c-96e3-34c0da51fbf6">
+machine-api-operator-d6457f456-wbczp      </button>
+     </h2>
+     <div id="collapse-b6178de2-ce6d-476c-96e3-34c0da51fbf6" class="accordion-collapse collapse" aria-labelledby="heading-b6178de2-ce6d-476c-96e3-34c0da51fbf6" data-bs-parents="accordion-b6178de2-ce6d-476c-96e3-34c0da51fbf6">
+      <div class="accordion-body fs-6">
+       <pre>
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    release.openshift.io/version: X.Y.Z-fake-test
+  creationTimestamp: "2022-01-01T00:00:00Z"
+  generateName: machine-api-operator-d6457f456-
+  labels:
+    k8s-app: machine-api-operator
+  name: machine-api-operator-d6457f456-wbczp
+  namespace: openshift-machine-api
+  ownerReferences:
+  - apiVersion: apps/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: ReplicaSet
+    name: machine-api-operator-d6457f456
+    uid: 00000000-0000-0000-0000-000000000000
+  resourceVersion: "12345"
+  uid: 00000000-0000-0000-0000-000000000000
+spec:
+  containers:
+  - args:
+    - --secure-listen-address=0.0.0.0:8443
+    - --upstream=http://localhost:8080/
+    - --tls-cert-file=/etc/tls/private/tls.crt
+    - --tls-private-key-file=/etc/tls/private/tls.key
+    - --config-file=/etc/kube-rbac-proxy/config-file.yaml
+    - --tls-cipher-suites=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305,TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305
+    - --logtostderr=true
+    - --v=3
+    image: quay.io/openshift-release-dev/ocp-v4.0-fake
+    imagePullPolicy: IfNotPresent
+    name: kube-rbac-proxy
+    ports:
+    - containerPort: 8443
+      name: https
+      protocol: TCP
+    resources:
+      requests:
+        cpu: 10m
+        memory: 20Mi
+    securityContext:
+      capabilities:
+        drop:
+        - KILL
+        - MKNOD
+        - SETGID
+        - SETUID
+      runAsUser: 1000450000
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /etc/kube-rbac-proxy
+      name: config
+    - mountPath: /etc/tls/private
+      name: machine-api-operator-tls
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-trl82
+      readOnly: true
+  - args:
+    - start
+    - --images-json=/etc/machine-api-operator-config/images/images.json
+    - --alsologtostderr
+    - --v=3
+    command:
+    - /machine-api-operator
+    env:
+    - name: RELEASE_VERSION
+      value: X.Y.Z-fake-test
+    - name: COMPONENT_NAMESPACE
+      valueFrom:
+        fieldRef:
+          apiVersion: v1
+          fieldPath: metadata.namespace
+    - name: METRICS_PORT
+      value: "8080"
+    image: quay.io/openshift-release-dev/ocp-v4.0-fake
+    imagePullPolicy: IfNotPresent
+    name: machine-api-operator
+    resources:
+      requests:
+        cpu: 10m
+        memory: 50Mi
+    securityContext:
+      capabilities:
+        drop:
+        - KILL
+        - MKNOD
+        - SETGID
+        - SETUID
+      runAsUser: 1000450000
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /etc/machine-api-operator-config/images
+      name: images
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-trl82
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  nodeName: ip-10-0-0-1.control.plane
+  nodeSelector:
+    node-role.kubernetes.io/master: ""
+  preemptionPolicy: PreemptLowerPriority
+  priority: 2000001000
+  priorityClassName: system-node-critical
+  restartPolicy: Always
+  schedulerName: default-scheduler
+  securityContext:
+    fsGroup: 1000450000
+    seLinuxOptions:
+      level: s0:c21,c15
+  serviceAccount: machine-api-operator
+  serviceAccountName: machine-api-operator
+  terminationGracePeriodSeconds: 30
+  tolerations:
+  - effect: NoSchedule
+    key: node-role.kubernetes.io/master
+    operator: Exists
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+    tolerationSeconds: 120
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+    tolerationSeconds: 120
+  - effect: NoSchedule
+    key: node.kubernetes.io/memory-pressure
+    operator: Exists
+  volumes:
+  - configMap:
+      defaultMode: 420
+      name: kube-rbac-proxy
+    name: config
+  - configMap:
+      defaultMode: 420
+      name: machine-api-operator-images
+    name: images
+  - name: machine-api-operator-tls
+    secret:
+      defaultMode: 420
+      secretName: machine-api-operator-tls
+  - name: kube-api-access-trl82
+    projected:
+      defaultMode: 420
+      sources:
+      - serviceAccountToken:
+          expirationSeconds: 3607
+          path: token
+      - configMap:
+          items:
+          - key: ca.crt
+            path: ca.crt
+          name: kube-root-ca.crt
+      - downwardAPI:
+          items:
+          - fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+            path: namespace
+      - configMap:
+          items:
+          - key: service-ca.crt
+            path: service-ca.crt
+          name: openshift-service-ca.crt
+status:
+  conditions:
+  - lastProbeTime: null
+    lastTransitionTime: "2022-01-01T00:00:00Z"
+    status: "True"
+    type: Initialized
+  - lastProbeTime: null
+    lastTransitionTime: "2022-01-01T00:00:00Z"
+    status: "True"
+    type: Ready
+  - lastProbeTime: null
+    lastTransitionTime: "2022-01-01T00:00:00Z"
+    status: "True"
+    type: ContainersReady
+  - lastProbeTime: null
+    lastTransitionTime: "2022-01-01T00:00:00Z"
+    status: "True"
+    type: PodScheduled
+  containerStatuses:
+  - containerID: cri-o://fake
+    image: quay.io/openshift-release-dev/ocp-v4.0-fake
+    imageID: quay.io/openshift-release-dev/ocp-v4.0-fake
+    lastState: {}
+    name: kube-rbac-proxy
+    ready: true
+    restartCount: 0
+    started: true
+    state:
+      running:
+        startedAt: "2022-01-01T00:00:00Z"
+  - containerID: cri-o://fake
+    image: quay.io/openshift-release-dev/ocp-v4.0-fake
+    imageID: quay.io/openshift-release-dev/ocp-v4.0-fake
+    lastState:
+      terminated:
+        containerID: cri-o://fake
+        exitCode: 255
+        finishedAt: "2022-01-01T00:00:00Z"
+        reason: Error
+        startedAt: "2022-01-01T00:00:00Z"
+    name: machine-api-operator
+    ready: true
+    restartCount: 1
+    started: true
+    state:
+      running:
+        startedAt: "2022-01-01T00:00:00Z"
+  hostIP: 10.0.0.1
+  phase: Running
+  podIP: 10.130.0.28
+  podIPs:
+  - ip: 10.130.0.28
+  qosClass: Burstable
+  startTime: "2022-01-01T00:00:00Z"
+       </pre>
+      </div>
+     </div>
+    </div>
+    <div class="accordion-item">
+     <div class="accordion" id="logs-accordion-e7cd8b76-e483-42a2-adea-162bac63feba">
+      <h2 class="accordion-header" id="heading-logs-e7cd8b76-e483-42a2-adea-162bac63feba">
+       <button class="accordion-button collapsed p-2 ps-4 bg-light" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-logs-e7cd8b76-e483-42a2-adea-162bac63feba" aria-exapnded="false" aria-controls="collapse-logs-e7cd8b76-e483-42a2-adea-162bac63feba">
+kube-rbac-proxy logs       </button>
+      </h2>
+      <div id="collapse-logs-e7cd8b76-e483-42a2-adea-162bac63feba" class="accordion-collapse collapse" aria-labelledby="heading-logs-e7cd8b76-e483-42a2-adea-162bac63feba" data-bs-parents="logs-accordion-e7cd8b76-e483-42a2-adea-162bac63feba">
+       <div class="accordion-body fs-6">
+        <pre>
+machine-api-operator-d6457f456-wbczp kube-rbac-proxy logs
+        </pre>
+       </div>
+      </div>
+     </div>
+    </div>
+    <div class="accordion-item">
+     <div class="accordion" id="logs-accordion-f6c990e4-6d5b-491d-bdae-995fe5aedf3b">
+      <h2 class="accordion-header" id="heading-logs-f6c990e4-6d5b-491d-bdae-995fe5aedf3b">
+       <button class="accordion-button collapsed p-2 ps-4 bg-light" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-logs-f6c990e4-6d5b-491d-bdae-995fe5aedf3b" aria-exapnded="false" aria-controls="collapse-logs-f6c990e4-6d5b-491d-bdae-995fe5aedf3b">
+machine-api-operator logs       </button>
+      </h2>
+      <div id="collapse-logs-f6c990e4-6d5b-491d-bdae-995fe5aedf3b" class="accordion-collapse collapse" aria-labelledby="heading-logs-f6c990e4-6d5b-491d-bdae-995fe5aedf3b" data-bs-parents="logs-accordion-f6c990e4-6d5b-491d-bdae-995fe5aedf3b">
+       <div class="accordion-body fs-6">
+        <pre>
+machine-api-operator-d6457f456-wbczp machine-api-operator logs
+        </pre>
+       </div>
+      </div>
+     </div>
+    </div>
+   </div>
+  </data>
+  <data id="machine_config-data">
+   <h1>
+Machine Config Operator Pods   </h1>
+  </data>
+  <data id="ccm_operator-data">
+   <h1>
+Cloud Controller Manager Operator Pods   </h1>
+  </data>
+  <data id="ccms-data">
+   <h1>
+Cloud Controller Manager Pods   </h1>
+  </data>
+  <data id="autoscaling-data">
+   <h1>
+ClusterAutoscalers   </h1>
+   <div class="accordion" id="clusterautoscalers-accordion">
+    <div class="accordion-item">
+     <h2 class="accordion-header" id="heading-029bc2f4-2c38-4aaf-b9cc-ae8845cf40aa">
+      <button class="accordion-button collapsed p-2" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-029bc2f4-2c38-4aaf-b9cc-ae8845cf40aa" aria-exapnded="false" aria-controls="collapse-029bc2f4-2c38-4aaf-b9cc-ae8845cf40aa">
+default      </button>
+     </h2>
+     <div id="collapse-029bc2f4-2c38-4aaf-b9cc-ae8845cf40aa" class="accordion-collapse collapse" aria-labelledby="heading-029bc2f4-2c38-4aaf-b9cc-ae8845cf40aa" data-bs-parents="clusterautoscalers-accordion">
+      <div class="accordion-body fs-6">
+       <pre>
+---
+apiVersion: autoscaling.openshift.io/v1
+kind: ClusterAutoscaler
+metadata:
+  creationTimestamp: "2022-01-01T00:00:00Z"
+  generation: 1
+  name: default
+  resourceVersion: "12345"
+  uid: 00000000-0000-0000-0000-000000000000
+spec:
+  resourceLimits:
+    gpus:
+    - max: 2
+      min: 1
+      type: nvidia.com/gpu
+  scaleDown:
+    delayAfterAdd: 10s
+    delayAfterDelete: 10s
+    delayAfterFailure: 10s
+    enabled: true
+    unneededTime: 10s
+       </pre>
+      </div>
+     </div>
+    </div>
+   </div>
+   <div class="p-2">
+   </div>
+   <h1>
+MachineAutoscalers   </h1>
+   <div class="accordion" id="machineautoscalers-accordion">
+    <div class="accordion-item">
+     <h2 class="accordion-header" id="heading-214a7d44-4898-4252-be0b-1871fb4133d3">
+      <button class="accordion-button collapsed p-2" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-214a7d44-4898-4252-be0b-1871fb4133d3" aria-exapnded="false" aria-controls="collapse-214a7d44-4898-4252-be0b-1871fb4133d3">
+machineautoscaler      </button>
+     </h2>
+     <div id="collapse-214a7d44-4898-4252-be0b-1871fb4133d3" class="accordion-collapse collapse" aria-labelledby="heading-214a7d44-4898-4252-be0b-1871fb4133d3" data-bs-parents="machineautoscalers-accordion">
+      <div class="accordion-body fs-6">
+       <pre>
+---
+apiVersion: autoscaling.openshift.io/v1beta1
+kind: MachineAutoscaler
+metadata:
+  creationTimestamp: "2022-01-01T00:00:00Z"
+  finalizers:
+  - machinetarget.autoscaling.openshift.io
+  generation: 1
+  name: machineautoscaler
+  namespace: openshift-machine-api
+  resourceVersion: "12345"
+  uid: 00000000-0000-0000-0000-000000000000
+spec:
+  maxReplicas: 10
+  minReplicas: 0
+  scaleTargetRef:
+    apiVersion: machine.openshift.io/v1beta1
+    kind: MachineSet
+    name: testdata-compute-region-2 
+status:
+  lastTargetRef:
+    apiVersion: machine.openshift.io/v1beta1
+    kind: MachineSet
+    name: testdata-compute-region-2
+       </pre>
+      </div>
+     </div>
+    </div>
+   </div>
+  </data>
+  <data id="machinesets-data">
+   <h1>
+MachineSets   </h1>
+   <div class="accordion" id="machinesets-accordion">
+    <div class="accordion-item">
+     <h2 class="accordion-header" id="heading-82ab4679-d933-47f5-bea4-09792b85fa29">
+      <button class="accordion-button collapsed p-2" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-82ab4679-d933-47f5-bea4-09792b85fa29" aria-exapnded="false" aria-controls="collapse-82ab4679-d933-47f5-bea4-09792b85fa29">
+testdata-compute-region-1      </button>
+     </h2>
+     <div id="collapse-82ab4679-d933-47f5-bea4-09792b85fa29" class="accordion-collapse collapse" aria-labelledby="heading-82ab4679-d933-47f5-bea4-09792b85fa29" data-bs-parents="machinesets-accordion">
+      <div class="accordion-body fs-6">
+       <pre>
+---
+apiVersion: machine.openshift.io/v1beta1
+kind: MachineSet
+metadata:
+  annotations:
+    machine.openshift.io/GPU: "0"
+    machine.openshift.io/memoryMb: "8192"
+    machine.openshift.io/vCPU: "2"
+  creationTimestamp: "2022-01-01T00:00:00Z"
+  generation: 1
+  labels:
+    machine.openshift.io/cluster-api-cluster: testdata
+  name: testdata-compute-region-1
+  namespace: openshift-machine-api
+  resourceVersion: "38123"
+  uid: 00000000-0000-0000-0000-000000000000
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      machine.openshift.io/cluster-api-cluster: testdata
+      machine.openshift.io/cluster-api-machineset: testdata-compute-region-1
+  template:
+    metadata:
+      labels:
+        machine.openshift.io/cluster-api-cluster: testdata
+        machine.openshift.io/cluster-api-machine-role: worker
+        machine.openshift.io/cluster-api-machine-type: worker
+        machine.openshift.io/cluster-api-machineset: testdata-compute-region-1
+    spec:
+      metadata: {}
+      providerSpec:
+        value: {}
+status:
+  availableReplicas: 1
+  fullyLabeledReplicas: 1
+  observedGeneration: 1
+  readyReplicas: 1
+  replicas: 1
+       </pre>
+      </div>
+     </div>
+    </div>
+    <div class="accordion-item">
+     <h2 class="accordion-header" id="heading-7cb4d770-667c-44f5-99be-1dc1f60d070f">
+      <button class="accordion-button collapsed p-2" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-7cb4d770-667c-44f5-99be-1dc1f60d070f" aria-exapnded="false" aria-controls="collapse-7cb4d770-667c-44f5-99be-1dc1f60d070f">
+testdata-compute-region-2      </button>
+     </h2>
+     <div id="collapse-7cb4d770-667c-44f5-99be-1dc1f60d070f" class="accordion-collapse collapse" aria-labelledby="heading-7cb4d770-667c-44f5-99be-1dc1f60d070f" data-bs-parents="machinesets-accordion">
+      <div class="accordion-body fs-6">
+       <pre>
+---
+apiVersion: machine.openshift.io/v1beta1
+kind: MachineSet
+metadata:
+  annotations:
+    machine.openshift.io/GPU: "0"
+    machine.openshift.io/memoryMb: "8192"
+    machine.openshift.io/vCPU: "2"
+    machine.openshift.io/cluster-api-autoscaler-node-group-min-size: 0
+    machine.openshift.io/cluster-api-autoscaler-node-group-max-size: 10
+  creationTimestamp: "2022-01-01T00:00:00Z"
+  generation: 1
+  labels:
+    machine.openshift.io/cluster-api-cluster: testdata
+  name: testdata-compute-region-2
+  namespace: openshift-machine-api
+  resourceVersion: "38123"
+  uid: 00000000-0000-0000-0000-000000000000
+spec:
+  replicas: 0
+  selector:
+    matchLabels:
+      machine.openshift.io/cluster-api-cluster: testdata
+      machine.openshift.io/cluster-api-machineset: testdata-compute-region-2
+  template:
+    metadata:
+      labels:
+        machine.openshift.io/cluster-api-cluster: testdata
+        machine.openshift.io/cluster-api-machine-role: worker
+        machine.openshift.io/cluster-api-machine-type: worker
+        machine.openshift.io/cluster-api-machineset: testdata-compute-region-2
+    spec:
+      metadata: {}
+      providerSpec:
+        value: {}
+status:
+  availableReplicas: 0
+  fullyLabeledReplicas: 0
+  observedGeneration: 1
+  readyReplicas: 0
+  replicas: 0
+       </pre>
+      </div>
+     </div>
+    </div>
+   </div>
+  </data>
+  <data id="machines-data">
+   <h1>
+Machines   </h1>
+   <div class="accordion" id="machines-accordion">
+    <div class="accordion-item">
+     <h2 class="accordion-header" id="heading-ce21b7ad-6adb-4a81-bcd9-e83b88443e54">
+      <button class="accordion-button collapsed p-2" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-ce21b7ad-6adb-4a81-bcd9-e83b88443e54" aria-exapnded="false" aria-controls="collapse-ce21b7ad-6adb-4a81-bcd9-e83b88443e54">
+testdata-compute-0      </button>
+     </h2>
+     <div id="collapse-ce21b7ad-6adb-4a81-bcd9-e83b88443e54" class="accordion-collapse collapse" aria-labelledby="heading-ce21b7ad-6adb-4a81-bcd9-e83b88443e54" data-bs-parents="machines-accordion">
+      <div class="accordion-body fs-6">
+       <pre>
+---
+apiVersion: machine.openshift.io/v1beta1
+kind: Machine
+metadata:
+  annotations:
+    machine.openshift.io/instance-state: running
+  creationTimestamp: "2022-01-01T00:00:00Z"
+  finalizers:
+  - machine.machine.openshift.io
+  generation: 2
+  labels:
+    machine.openshift.io/cluster-api-cluster: testdata
+    machine.openshift.io/cluster-api-machine-role: worker
+    machine.openshift.io/cluster-api-machine-type: worker
+    machine.openshift.io/cluster-api-machineset: testdata-compute-region-1
+    machine.openshift.io/instance-type: xxlarge
+    machine.openshift.io/region: region-1
+    machine.openshift.io/zone: zone-1
+  name: testdata-compute-0
+  namespace: openshift-machine-api
+  ownerReferences:
+  - apiVersion: machine.openshift.io/v1beta1
+    blockOwnerDeletion: true
+    controller: true
+    kind: MachineSet
+    name: testdata-compute-region-1
+    uid: 00000000-0000-0000-0000-000000000000
+  resourceVersion: "38121"
+  uid: 00000000-0000-0000-0000-000000000000
+spec:
+  metadata: {}
+  providerID: fake://ip-10-0-1-1.compute.plane
+  providerSpec:
+    value: {}
+status:
+  addresses:
+  - address: 10.0.1.1
+    type: InternalIP
+  - address: ip-10-0-1-1.compute.plane
+    type: InternalDNS
+  - address: ip-10-0-1-1.compute.plane
+    type: Hostname
+  conditions:
+  - lastTransitionTime: "2022-01-01T00:00:00Z"
+    status: "True"
+    type: InstanceExists
+  lastUpdated: "2022-01-01T00:00:00Z"
+  nodeRef:
+    kind: Node
+    name: ip-10-0-1-1.compute.plane
+    uid: 00000000-0000-0000-0000-000000000000
+  phase: Running
+  providerStatus:
+    conditions:
+    - lastProbeTime: "2022-01-01T00:00:00Z"
+      lastTransitionTime: "2022-01-01T00:00:00Z"
+      message: Machine successfully created
+      reason: MachineCreationSucceeded
+      status: "True"
+      type: MachineCreation
+    instanceId: 10.0.1.1.compute.plane
+    instanceState: running
+       </pre>
+      </div>
+     </div>
+    </div>
+    <div class="accordion-item">
+     <h2 class="accordion-header" id="heading-41108496-9387-457f-a1dc-4bacac2ea7f3">
+      <button class="accordion-button collapsed p-2" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-41108496-9387-457f-a1dc-4bacac2ea7f3" aria-exapnded="false" aria-controls="collapse-41108496-9387-457f-a1dc-4bacac2ea7f3">
+testdata-control-plane-0      </button>
+     </h2>
+     <div id="collapse-41108496-9387-457f-a1dc-4bacac2ea7f3" class="accordion-collapse collapse" aria-labelledby="heading-41108496-9387-457f-a1dc-4bacac2ea7f3" data-bs-parents="machines-accordion">
+      <div class="accordion-body fs-6">
+       <pre>
+---
+apiVersion: machine.openshift.io/v1beta1
+kind: Machine
+metadata:
+  annotations:
+    machine.openshift.io/instance-state: running
+  creationTimestamp: "2022-01-01T00:00:00Z"
+  finalizers:
+  - machine.machine.openshift.io
+  generation: 2
+  labels:
+    machine.openshift.io/cluster-api-cluster: testdata
+    machine.openshift.io/cluster-api-machine-role: master
+    machine.openshift.io/cluster-api-machine-type: master
+    machine.openshift.io/instance-type: xlarge
+    machine.openshift.io/region: region-1
+    machine.openshift.io/zone: zone-1
+  name: testdata-control-plane-0
+  namespace: openshift-machine-api
+  resourceVersion: "16606"
+  uid: 00000000-0000-0000-0000-000000000000
+spec:
+  metadata: {}
+  providerID: fake://ip-10-0-0-1.control.plane
+  providerSpec:
+    value: {}
+status:
+  addresses:
+  - address: 10.0.0.1
+    type: InternalIP
+  - address: ip-10-0-0-1.control.plane
+    type: InternalDNS
+  - address: ip-10-0-0-1.control.plane
+    type: Hostname
+  conditions:
+  - lastTransitionTime: "2022-01-01T00:00:00Z"
+    status: "True"
+    type: InstanceExists
+  lastUpdated: "2022-01-01T00:00:00Z"
+  nodeRef:
+    kind: Node
+    name: ip-10-0-0-1.control.plane
+    uid: 00000000-0000-0000-0000-000000000000
+  phase: Running
+  providerStatus:
+    conditions:
+    - lastProbeTime: "2022-01-01T00:00:00Z"
+      lastTransitionTime: "2022-01-01T00:00:00Z"
+      message: Machine successfully created
+      reason: MachineCreationSucceeded
+      status: "True"
+      type: MachineCreation
+    instanceId: 10.0.0.1.control.plane
+    instanceState: running
+       </pre>
+      </div>
+     </div>
+    </div>
+    <div class="accordion-item">
+     <h2 class="accordion-header" id="heading-a09fd7f9-f784-46de-b962-f66f16afe381">
+      <button class="accordion-button collapsed p-2 bg-danger text-white" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-a09fd7f9-f784-46de-b962-f66f16afe381" aria-exapnded="false" aria-controls="collapse-a09fd7f9-f784-46de-b962-f66f16afe381">
+testdata-control-plane-1      </button>
+     </h2>
+     <div id="collapse-a09fd7f9-f784-46de-b962-f66f16afe381" class="accordion-collapse collapse" aria-labelledby="heading-a09fd7f9-f784-46de-b962-f66f16afe381" data-bs-parents="machines-accordion">
+      <div class="accordion-body fs-6">
+       <pre>
+---
+apiVersion: machine.openshift.io/v1beta1
+kind: Machine
+metadata:
+  annotations:
+    machine.openshift.io/instance-state: running
+  creationTimestamp: "2022-01-01T00:00:00Z"
+  finalizers:
+  - machine.machine.openshift.io
+  generation: 2
+  labels:
+    machine.openshift.io/cluster-api-cluster: testdata
+    machine.openshift.io/cluster-api-machine-role: master
+    machine.openshift.io/cluster-api-machine-type: master
+    machine.openshift.io/instance-type: xlarge
+    machine.openshift.io/region: region-1
+    machine.openshift.io/zone: zone-2
+  name: testdata-control-plane-1
+  namespace: openshift-machine-api
+  resourceVersion: "16606"
+  uid: 00000000-0000-0000-0000-000000000000
+spec:
+  metadata: {}
+  providerID: fake://ip-10-0-0-2.control.plane
+  providerSpec:
+    value: {}
+status:
+  addresses:
+  - address: 10.0.0.2
+    type: InternalIP
+  - address: ip-10-0-0-2.control.plane
+    type: InternalDNS
+  - address: ip-10-0-0-2.control.plane
+    type: Hostname
+  conditions:
+  - lastTransitionTime: "2022-01-01T00:00:00Z"
+    status: "True"
+    type: InstanceExists
+  lastUpdated: "2022-01-01T00:00:00Z"
+  nodeRef:
+    kind: Node
+    name: ip-10-0-0-2.control.plane
+    uid: 00000000-0000-0000-0000-000000000000
+  phase: Failed
+  providerStatus:
+    conditions:
+    - lastProbeTime: "2022-01-01T00:00:00Z"
+      lastTransitionTime: "2022-01-01T00:00:00Z"
+      message: Machine successfully created
+      reason: MachineCreationSucceeded
+      status: "True"
+      type: MachineCreation
+    instanceId: 10.0.0.2.control.plane
+    instanceState: failed
+       </pre>
+      </div>
+     </div>
+    </div>
+   </div>
+  </data>
+  <data id="nodes-data">
+   <h1>
+Nodes   </h1>
+   <div class="accordion" id="nodes-accordion">
+    <div class="accordion-item">
+     <h2 class="accordion-header" id="heading-b65af278-5277-40f9-a4ae-ba10b0e2f0f0">
+      <button class="accordion-button collapsed p-2 bg-danger text-white" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-b65af278-5277-40f9-a4ae-ba10b0e2f0f0" aria-exapnded="false" aria-controls="collapse-b65af278-5277-40f9-a4ae-ba10b0e2f0f0">
+ip-10-0-0-2.control.plane      </button>
+     </h2>
+     <div id="collapse-b65af278-5277-40f9-a4ae-ba10b0e2f0f0" class="accordion-collapse collapse" aria-labelledby="heading-b65af278-5277-40f9-a4ae-ba10b0e2f0f0" data-bs-parents="nodes-accordion">
+      <div class="accordion-body fs-6">
+       <pre>
+---
+apiVersion: v1
+kind: Node
+metadata:
+  annotations:
+    machine.openshift.io/machine: openshift-machine-api/testdata-control-plane-1
+    machineconfiguration.openshift.io/controlPlaneTopology: HighlyAvailable
+    machineconfiguration.openshift.io/currentConfig: rendered-master-0
+    machineconfiguration.openshift.io/desiredConfig: rendered-master-0
+    machineconfiguration.openshift.io/reason: ""
+    machineconfiguration.openshift.io/state: Done
+    nfd.node.kubernetes.io/master.version: "1.16"
+    volumes.kubernetes.io/controller-managed-attach-detach: "true"
+  creationTimestamp: "2022-01-01T00:00:00Z"
+  labels:
+    beta.kubernetes.io/arch: amd64
+    beta.kubernetes.io/instance-type: xlarge
+    beta.kubernetes.io/os: linux
+    failure-domain.beta.kubernetes.io/region: region-1
+    failure-domain.beta.kubernetes.io/zone: zone-1
+    kubernetes.io/arch: amd64
+    kubernetes.io/hostname: ip-10-0-0-2.control.plane
+    kubernetes.io/os: linux
+    node-role.kubernetes.io/master: ""
+    node.kubernetes.io/instance-type: xlarge
+    node.openshift.io/os_id: rhcos
+    topology.kubernetes.io/region: region-1
+    topology.kubernetes.io/zone: zone-1
+  name: ip-10-0-0-2.control.plane
+  resourceVersion: "89485"
+  uid: 00000000-0000-0000-0000-000000000000
+spec:
+  providerID: fake://ip-10-0-0-2.control.plane
+  taints:
+  - effect: NoSchedule
+    key: node-role.kubernetes.io/master
+status:
+  addresses:
+  - address: 10.0.0.2
+    type: InternalIP
+  - address: ip-10-0-0-2.control.plane
+    type: Hostname
+  - address: ip-10-0-0-2.control.plane
+    type: InternalDNS
+  allocatable:
+    cpu: 3500m
+    ephemeral-storage: "115470533646"
+    hugepages-1Gi: "0"
+    hugepages-2Mi: "0"
+    memory: 14955324Ki
+    pods: "250"
+  capacity:
+    cpu: "4"
+    ephemeral-storage: 125293548Ki
+    hugepages-1Gi: "0"
+    hugepages-2Mi: "0"
+    memory: 16106300Ki
+    pods: "250"
+  conditions:
+  - lastHeartbeatTime: "2022-01-01T00:00:00Z"
+    lastTransitionTime: "2022-01-01T00:00:00Z"
+    message: kubelet has sufficient memory available
+    reason: KubeletHasSufficientMemory
+    status: "False"
+    type: MemoryPressure
+  - lastHeartbeatTime: "2022-01-01T00:00:00Z"
+    lastTransitionTime: "2022-01-01T00:00:00Z"
+    message: kubelet has no disk pressure
+    reason: KubeletHasNoDiskPressure
+    status: "False"
+    type: DiskPressure
+  - lastHeartbeatTime: "2022-01-01T00:00:00Z"
+    lastTransitionTime: "2022-01-01T00:00:00Z"
+    message: kubelet has sufficient PID available
+    reason: KubeletHasSufficientPID
+    status: "False"
+    type: PIDPressure
+  - lastHeartbeatTime: "2022-01-01T00:00:00Z"
+    lastTransitionTime: "2022-01-01T00:00:00Z"
+    message: kubelet is posting ready status
+    reason: KubeletReady
+    status: "False"
+    type: Ready
+  daemonEndpoints:
+    kubeletEndpoint:
+      Port: 10250
+  images:
+  - names:
+    - quay.io/openshift-release-dev/ocp-v4.0-art-dev
+    sizeBytes: 1139449201
+  nodeInfo:
+    architecture: amd64
+    bootID: 00000000-0000-0000-0000-000000000000
+    containerRuntimeVersion: cri-o://1.24.alpha.fake
+    kernelVersion: 5.fake
+    kubeProxyVersion: v1.24
+    kubeletVersion: v1.24
+    machineID: 00000000000000000000000000000000
+    operatingSystem: linux
+    osImage: Linux
+    systemUUID: 00000000-0000-0000-0000-000000000000
+       </pre>
+      </div>
+     </div>
+    </div>
+    <div class="accordion-item">
+     <h2 class="accordion-header" id="heading-23e3468c-e925-4a49-aaed-36d1b12e7997">
+      <button class="accordion-button collapsed p-2 bg-danger text-white" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-23e3468c-e925-4a49-aaed-36d1b12e7997" aria-exapnded="false" aria-controls="collapse-23e3468c-e925-4a49-aaed-36d1b12e7997">
+ip-10-0-1-1.compute.plane      </button>
+     </h2>
+     <div id="collapse-23e3468c-e925-4a49-aaed-36d1b12e7997" class="accordion-collapse collapse" aria-labelledby="heading-23e3468c-e925-4a49-aaed-36d1b12e7997" data-bs-parents="nodes-accordion">
+      <div class="accordion-body fs-6">
+       <pre>
+---
+apiVersion: v1
+kind: Node
+metadata:
+  annotations:
+    machine.openshift.io/machine: openshift-machine-api/testdata-compute-0
+    machineconfiguration.openshift.io/controlPlaneTopology: HighlyAvailable
+    machineconfiguration.openshift.io/currentConfig: rendered-worker-0
+    machineconfiguration.openshift.io/desiredConfig: rendered-worker-0
+    machineconfiguration.openshift.io/reason: ""
+    machineconfiguration.openshift.io/state: Done
+    nfd.node.kubernetes.io/master.version: "1.16"
+    volumes.kubernetes.io/controller-managed-attach-detach: "true"
+  creationTimestamp: "2022-01-01T00:00:00Z"
+  labels:
+    beta.kubernetes.io/arch: amd64
+    beta.kubernetes.io/instance-type: xxlarge
+    beta.kubernetes.io/os: linux
+    failure-domain.beta.kubernetes.io/region: region-1
+    failure-domain.beta.kubernetes.io/zone: zone-1
+    kubernetes.io/arch: amd64
+    kubernetes.io/hostname: ip-10-0-1-1.compute.plane
+    kubernetes.io/os: linux
+    node-role.kubernetes.io/worker: ""
+    node.kubernetes.io/instance-type: xxlarge
+    node.openshift.io/os_id: rhcos
+    topology.kubernetes.io/region: region-1
+    topology.kubernetes.io/zone: zone-1
+  name: ip-10-0-1-1.compute.plane
+  resourceVersion: "89485"
+  uid: 00000000-0000-0000-0000-000000000000
+spec:
+  providerID: fake://ip-10-0-1-1.compute.plane
+status:
+  addresses:
+  - address: 10.0.1.1.
+    type: InternalIP
+  - address: ip-10-0-1-1.compute.plane
+    type: Hostname
+  - address: ip-10-0-1-1.compute.plane
+    type: InternalDNS
+  allocatable:
+    cpu: 3500m
+    ephemeral-storage: "115470533646"
+    hugepages-1Gi: "0"
+    hugepages-2Mi: "0"
+    memory: 14955324Ki
+    pods: "250"
+  capacity:
+    cpu: "4"
+    ephemeral-storage: 125293548Ki
+    hugepages-1Gi: "0"
+    hugepages-2Mi: "0"
+    memory: 16106300Ki
+    pods: "250"
+  conditions:
+  - lastHeartbeatTime: "2022-01-01T00:00:00Z"
+    lastTransitionTime: "2022-01-01T00:00:00Z"
+    message: kubelet has sufficient memory available
+    reason: KubeletHasSufficientMemory
+    status: "False"
+    type: MemoryPressure
+  - lastHeartbeatTime: "2022-01-01T00:00:00Z"
+    lastTransitionTime: "2022-01-01T00:00:00Z"
+    message: kubelet has no disk pressure
+    reason: KubeletHasNoDiskPressure
+    status: "False"
+    type: DiskPressure
+  - lastHeartbeatTime: "2022-01-01T00:00:00Z"
+    lastTransitionTime: "2022-01-01T00:00:00Z"
+    message: kubelet has sufficient PID available
+    reason: KubeletHasSufficientPID
+    status: "False"
+    type: PIDPressure
+  - lastHeartbeatTime: "2022-01-01T00:00:00Z"
+    lastTransitionTime: "2022-01-01T00:00:00Z"
+    message: kubelet is posting ready status
+    reason: KubeletReady
+    status: "False"
+    type: Ready
+  daemonEndpoints:
+    kubeletEndpoint:
+      Port: 10250
+  images:
+  - names:
+    - quay.io/openshift-release-dev/ocp-v4.0-art-dev
+    sizeBytes: 1139449201
+  nodeInfo:
+    architecture: amd64
+    bootID: 00000000-0000-0000-0000-000000000000
+    containerRuntimeVersion: cri-o://1.24.alpha.fake
+    kernelVersion: 5.fake
+    kubeProxyVersion: v1.24
+    kubeletVersion: v1.24
+    machineID: 00000000000000000000000000000000
+    operatingSystem: linux
+    osImage: Linux
+    systemUUID: 00000000-0000-0000-0000-000000000000
+       </pre>
+      </div>
+     </div>
+    </div>
+    <div class="accordion-item">
+     <h2 class="accordion-header" id="heading-5e607372-04bf-4f90-9fde-dd8690c5ae8b">
+      <button class="accordion-button collapsed p-2" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-5e607372-04bf-4f90-9fde-dd8690c5ae8b" aria-exapnded="false" aria-controls="collapse-5e607372-04bf-4f90-9fde-dd8690c5ae8b">
+ip-10-0-0-1.control.plane      </button>
+     </h2>
+     <div id="collapse-5e607372-04bf-4f90-9fde-dd8690c5ae8b" class="accordion-collapse collapse" aria-labelledby="heading-5e607372-04bf-4f90-9fde-dd8690c5ae8b" data-bs-parents="nodes-accordion">
+      <div class="accordion-body fs-6">
+       <pre>
+---
+apiVersion: v1
+kind: Node
+metadata:
+  annotations:
+    machine.openshift.io/machine: openshift-machine-api/control-plane1
+    machineconfiguration.openshift.io/controlPlaneTopology: HighlyAvailable
+    machineconfiguration.openshift.io/currentConfig: rendered-master-0
+    machineconfiguration.openshift.io/desiredConfig: rendered-master-0
+    machineconfiguration.openshift.io/reason: ""
+    machineconfiguration.openshift.io/state: Done
+    nfd.node.kubernetes.io/master.version: "1.16"
+    volumes.kubernetes.io/controller-managed-attach-detach: "true"
+  creationTimestamp: "2022-01-01T00:00:00Z"
+  labels:
+    beta.kubernetes.io/arch: amd64
+    beta.kubernetes.io/instance-type: xlarge
+    beta.kubernetes.io/os: linux
+    failure-domain.beta.kubernetes.io/region: region-1
+    failure-domain.beta.kubernetes.io/zone: zone-1
+    kubernetes.io/arch: amd64
+    kubernetes.io/hostname: ip-10-0-0-1.control.plane
+    kubernetes.io/os: linux
+    node-role.kubernetes.io/master: ""
+    node.kubernetes.io/instance-type: xlarge
+    node.openshift.io/os_id: rhcos
+    topology.kubernetes.io/region: region-1
+    topology.kubernetes.io/zone: zone-1
+  name: ip-10-0-0-1.control.plane
+  resourceVersion: "89485"
+  uid: 00000000-0000-0000-0000-000000000000
+spec:
+  providerID: "fake://ip-10-0-0-1.control.plane"
+  taints:
+    - effect: NoSchedule
+      key: node-role.kubernetes.io/master
+status:
+  addresses:
+    - address: 10.0.0.1
+      type: InternalIP
+    - address: ip-10-0-0-1.control.plane
+      type: Hostname
+    - address: ip-10-0-0-1.control.plane
+      type: InternalDNS
+  allocatable:
+    cpu: 3500m
+    ephemeral-storage: "115470533646"
+    hugepages-1Gi: "0"
+    hugepages-2Mi: "0"
+    memory: 14955324Ki
+    pods: "250"
+  capacity:
+    cpu: "4"
+    ephemeral-storage: 125293548Ki
+    hugepages-1Gi: "0"
+    hugepages-2Mi: "0"
+    memory: 16106300Ki
+    pods: "250"
+  conditions:
+    - lastHeartbeatTime: "2022-01-01T00:00:00Z"
+      lastTransitionTime: "2022-01-01T00:00:00Z"
+      message: kubelet has sufficient memory available
+      reason: KubeletHasSufficientMemory
+      status: "False"
+      type: MemoryPressure
+    - lastHeartbeatTime: "2022-01-01T00:00:00Z"
+      lastTransitionTime: "2022-01-01T00:00:00Z"
+      message: kubelet has no disk pressure
+      reason: KubeletHasNoDiskPressure
+      status: "False"
+      type: DiskPressure
+    - lastHeartbeatTime: "2022-01-01T00:00:00Z"
+      lastTransitionTime: "2022-01-01T00:00:00Z"
+      message: kubelet has sufficient PID available
+      reason: KubeletHasSufficientPID
+      status: "False"
+      type: PIDPressure
+    - lastHeartbeatTime: "2022-01-01T00:00:00Z"
+      lastTransitionTime: "2022-01-01T00:00:00Z"
+      message: kubelet is posting ready status
+      reason: KubeletReady
+      status: "True"
+      type: Ready
+  daemonEndpoints:
+    kubeletEndpoint:
+      Port: 10250
+  images:
+    - names:
+        - quay.io/openshift-release-dev/ocp-v4.0-art-dev
+      sizeBytes: 1139449201
+  nodeInfo:
+    architecture: amd64
+    bootID: 00000000-0000-0000-0000-000000000000
+    containerRuntimeVersion: "cri-o://1.24.alpha.fake"
+    kernelVersion: 5.fake
+    kubeProxyVersion: v1.24
+    kubeletVersion: v1.24
+    machineID: 493810f75ca55b6099ceec0c9373f2fe
+    operatingSystem: linux
+    osImage: Linux
+    systemUUID: 00000000-0000-0000-0000-000000000000
+       </pre>
+      </div>
+     </div>
+    </div>
+   </div>
+  </data>
+  <data id="baremetalhosts-data">
+   <h1>
+BareMetalHosts   </h1>
+   <div class="accordion" id="baremetalhosts-accordion">
+   </div>
+  </data>
+  <data id="cpmss-data">
+   <h1>
+CPMSs   </h1>
+   <div class="accordion" id="cpmss-accordion">
+   </div>
+  </data>
+  <data id="csrs-data">
+   <h1>
+CSRs   </h1>
+   <div class="accordion" id="csrs-accordion">
+    <div class="accordion-item">
+     <h2 class="accordion-header" id="heading-7161a4f4-9d43-4629-aba6-465d3d0a5581">
+      <button class="accordion-button collapsed p-2" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-7161a4f4-9d43-4629-aba6-465d3d0a5581" aria-exapnded="false" aria-controls="collapse-7161a4f4-9d43-4629-aba6-465d3d0a5581">
+csr-approved      </button>
+     </h2>
+     <div id="collapse-7161a4f4-9d43-4629-aba6-465d3d0a5581" class="accordion-collapse collapse" aria-labelledby="heading-7161a4f4-9d43-4629-aba6-465d3d0a5581" data-bs-parents="csrs-accordion">
+      <div class="accordion-body fs-6">
+       <pre>
+---
+apiVersion: certificates.k8s.io/v1
+kind: CertificateSigningRequest
+metadata:
+  creationTimestamp: "2022-01-01T00:00:00Z"
+  generateName: csr-
+  name: csr-approved
+  resourceVersion: "12345"
+  uid: 00000000-0000-0000-0000-000000000000
+spec:
+  groups:
+  - system:serviceaccounts
+  - system:serviceaccounts:openshift-machine-config-operator
+  - system:authenticated
+  request: TOTALLY_VALID_CERT
+  signerName: kubernetes.io/kube-apiserver-client-kubelet
+  uid: 00000000-0000-0000-0000-000000000000
+  usages:
+  - digital signature
+  - key encipherment
+  - client auth
+  username: system:serviceaccount:openshift-machine-config-operator:node-bootstrapper
+status:
+  certificate: TOTALLY_VALID_CERT
+  conditions:
+  - lastTransitionTime: "2022-01-01T00:00:00Z"
+    lastUpdateTime: "2022-01-01T00:00:00Z"
+    message: This CSR was approved by the Node CSR Approver
+    reason: NodeCSRApprove
+    status: "True"
+    type: Approved
+       </pre>
+      </div>
+     </div>
+    </div>
+    <div class="accordion-item">
+     <h2 class="accordion-header" id="heading-04132f01-9a29-4e8f-977e-caecc41993a9">
+      <button class="accordion-button collapsed p-2 bg-danger text-white" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-04132f01-9a29-4e8f-977e-caecc41993a9" aria-exapnded="false" aria-controls="collapse-04132f01-9a29-4e8f-977e-caecc41993a9">
+csr-denied      </button>
+     </h2>
+     <div id="collapse-04132f01-9a29-4e8f-977e-caecc41993a9" class="accordion-collapse collapse" aria-labelledby="heading-04132f01-9a29-4e8f-977e-caecc41993a9" data-bs-parents="csrs-accordion">
+      <div class="accordion-body fs-6">
+       <pre>
+---
+apiVersion: certificates.k8s.io/v1
+kind: CertificateSigningRequest
+metadata:
+  creationTimestamp: "2022-01-01T00:00:00Z"
+  generateName: csr-
+  name: csr-denied
+  resourceVersion: "12345"
+  uid: 00000000-0000-0000-0000-000000000000
+spec:
+  groups:
+  - system:nodes
+  - system:authenticated
+  request: TOTALLY_NOT_VALID_CERT
+  signerName: kubernetes.io/kubelet-serving
+  usages:
+  - digital signature
+  - key encipherment
+  - server auth
+  username: system:node:ip-10-0-0-3.region-1.control.plane
+status:
+  conditions:
+  - lastHeartbeatTime: "2022-01-01T00:00:00Z"
+    lastTransitionTime: "2022-01-01T00:00:00Z"
+    message: Denied by some controller
+    reason: DeniedBySomeController
+    type: Denied
+       </pre>
+      </div>
+     </div>
+    </div>
+    <div class="accordion-item">
+     <h2 class="accordion-header" id="heading-3ff66b82-a896-4b56-bdce-04c4d468698a">
+      <button class="accordion-button collapsed p-2 bg-danger text-white" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-3ff66b82-a896-4b56-bdce-04c4d468698a" aria-exapnded="false" aria-controls="collapse-3ff66b82-a896-4b56-bdce-04c4d468698a">
+csr-failed      </button>
+     </h2>
+     <div id="collapse-3ff66b82-a896-4b56-bdce-04c4d468698a" class="accordion-collapse collapse" aria-labelledby="heading-3ff66b82-a896-4b56-bdce-04c4d468698a" data-bs-parents="csrs-accordion">
+      <div class="accordion-body fs-6">
+       <pre>
+---
+apiVersion: certificates.k8s.io/v1
+kind: CertificateSigningRequest
+metadata:
+  creationTimestamp: "2022-01-01T00:00:00Z"
+  generateName: csr-
+  name: csr-failed
+  resourceVersion: "12345"
+  uid: 00000000-0000-0000-0000-000000000000
+spec:
+  groups:
+  - system:nodes
+  - system:authenticated
+  request: TOTALLY_NOT_VALID_CERT
+  signerName: kubernetes.io/kubelet-serving
+  usages:
+  - digital signature
+  - key encipherment
+  - server auth
+  username: system:node:ip-10-0-0-5.region-1.control.plane
+status:
+  conditions:
+  - lastHeartbeatTime: "2022-01-01T00:00:00Z"
+    lastTransitionTime: "2022-01-01T00:00:00Z"
+    message: Failed for some reason
+    reason: FailedForSomeReason
+    type: Failed
+       </pre>
+      </div>
+     </div>
+    </div>
+    <div class="accordion-item">
+     <h2 class="accordion-header" id="heading-deda4ba2-a50c-4b46-9392-8b9c28cb9b8d">
+      <button class="accordion-button collapsed p-2 bg-warning text-white" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-deda4ba2-a50c-4b46-9392-8b9c28cb9b8d" aria-exapnded="false" aria-controls="collapse-deda4ba2-a50c-4b46-9392-8b9c28cb9b8d">
+csr-pending      </button>
+     </h2>
+     <div id="collapse-deda4ba2-a50c-4b46-9392-8b9c28cb9b8d" class="accordion-collapse collapse" aria-labelledby="heading-deda4ba2-a50c-4b46-9392-8b9c28cb9b8d" data-bs-parents="csrs-accordion">
+      <div class="accordion-body fs-6">
+       <pre>
+---
+apiVersion: certificates.k8s.io/v1
+kind: CertificateSigningRequest
+metadata:
+  creationTimestamp: "2022-01-01T00:00:00Z"
+  generateName: csr-
+  name: csr-pending
+  resourceVersion: "12345"
+  uid: 00000000-0000-0000-0000-000000000000
+spec:
+  groups:
+  - system:nodes
+  - system:authenticated
+  request: TOTALLY_VALID_CERT
+  signerName: kubernetes.io/kubelet-serving
+  usages:
+  - digital signature
+  - key encipherment
+  - server auth
+  username: system:node:ip-10-0-0-3.region-1.control.plane
+status: {}
+       </pre>
+      </div>
+     </div>
+    </div>
+   </div>
+  </data>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js" integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf" crossorigin="anonymous">
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js">
+  </script>
+  <script>
+// main vue entry point
+var app = new Vue({
+  el: '#app',
+  data: {
+    content: ''
+  },
+  methods: {
+    changeContent: function(target) {
+        let newdata = document.getElementById(target + '-data')
+        this.content = newdata.innerHTML
+    }
+  }
+})
+
+// adjust the content window size
+// TODO add this to a resize function
+var maincontent = document.getElementById('main-content')
+maincontent.style.height = window.innerHeight - 10
+
+// set the summary page
+app.changeContent('summary')
+  </script>
+ </body>
+</html>
+

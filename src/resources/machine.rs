@@ -25,7 +25,7 @@ impl Resource for Machine {
     }
 
     fn raw(&self) -> &String {
-        &self.manifest.as_raw()
+        self.manifest.as_raw()
     }
 }
 
