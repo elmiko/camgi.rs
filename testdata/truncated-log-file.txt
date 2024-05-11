@@ -1,13 +1,4 @@
-cluster-autoscaler-default-f548ffc66-bck7p cluster-autoscaler logs
-line 2
-line 3
-line 4
-line 5
-line 6
-line 7
-line 8
-line 9
-line 10
+camgi warning: log file has been truncated to end, see full contents in the must-gather
 line 11
 line 12
 line 13
