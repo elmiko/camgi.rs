@@ -41,22 +41,17 @@ impl Resource for MachineSet {
     }
 
     fn raw(&self) -> &String {
-        &self.manifest.as_raw()
+        self.manifest.as_raw()
     }
 }
 
 fn has_autoscaling_annotations(manifest: &Manifest) -> bool {
-    if manifest.as_yaml()["metadata"]["annotations"]
+    !(manifest.as_yaml()["metadata"]["annotations"]
         ["machine.openshift.io/cluster-api-autoscaler-node-group-min-size"]
         .is_badvalue()
         && manifest.as_yaml()["metadata"]["annotations"]
             ["machine.openshift.io/cluster-api-autoscaler-node-group-max-size"]
-            .is_badvalue()
-    {
-        false
-    } else {
-        true
-    }
+            .is_badvalue())
 }
 
 fn status_replicas(manifest: &Manifest) -> String {

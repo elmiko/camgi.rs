@@ -278,7 +278,7 @@ fn get_pod(pod_dir: &PathBuf) -> Option<Pod> {
         }
     }
 
-    if let Ok(container_dirs) = fs::read_dir(&pod_dir) {
+    if let Ok(container_dirs) = fs::read_dir(pod_dir) {
         // loop through container dirs
         for container_dir in container_dirs {
             let container_dir = container_dir.ok()?.path();
@@ -288,7 +288,7 @@ fn get_pod(pod_dir: &PathBuf) -> Option<Pod> {
                 None => continue,
             };
             let mut current_log_filename = container_dir.clone();
-            current_log_filename.push(&container_name);
+            current_log_filename.push(container_name);
             current_log_filename.push("logs");
             current_log_filename.push("current.log");
             if current_log_filename.exists() {
@@ -332,7 +332,7 @@ fn get_pods(path: &Path) -> Vec<Pod> {
     let mut pods = Vec::new();
 
     // each pod has a subdirectory with its name
-    let pod_dirs = match fs::read_dir(&path) {
+    let pod_dirs = match fs::read_dir(path) {
         Ok(entries) => entries,
         Err(_) => return pods,
     };
@@ -358,7 +358,7 @@ fn get_pods(path: &Path) -> Vec<Pod> {
 /// If the resource path does not exist, will return an empty list.
 fn get_resources<T: Resource>(path: &Path) -> Vec<T> {
     let mut resources = Vec::new();
-    let files = match fs::read_dir(&path) {
+    let files = match fs::read_dir(path) {
         Ok(p) => p,
         Err(_) => return resources,
     };

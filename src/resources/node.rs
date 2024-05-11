@@ -25,6 +25,6 @@ impl Resource for Node {
     }
 
     fn raw(&self) -> &String {
-        &self.manifest.as_raw()
+        self.manifest.as_raw()
     }
 }
