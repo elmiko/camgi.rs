@@ -64,12 +64,14 @@ impl Manifest {
                     .clone();
                 ycopy.remove(&Yaml::String(String::from("spec")));
                 ycopy.insert(Yaml::String(String::from("spec")), Yaml::Hash(spec));
-                let status = ycopy[&Yaml::String(String::from("status"))]
-                    .as_hash()
-                    .unwrap_or(&Hash::new())
-                    .clone();
-                ycopy.remove(&Yaml::String(String::from("status")));
-                ycopy.insert(Yaml::String(String::from("status")), Yaml::Hash(status));
+                if yaml["status"].as_hash().is_some() {
+                    let status = ycopy[&Yaml::String(String::from("status"))]
+                        .as_hash()
+                        .unwrap_or(&Hash::new())
+                        .clone();
+                    ycopy.remove(&Yaml::String(String::from("status")));
+                    ycopy.insert(Yaml::String(String::from("status")), Yaml::Hash(status));
+                }
 
                 yaml = Yaml::Hash(ycopy);
                 let mut out_str = String::new();
