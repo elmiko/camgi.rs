@@ -474,7 +474,7 @@ mod tests {
     fn test_get_resources_success() {
         let path = PathBuf::from("testdata/must-gather-valid/sample-openshift-release");
         let manifestpath = build_manifest_path(&path, "", "", "nodes", "core");
-        assert_eq!(get_resources::<Node>(&manifestpath).len(), 3)
+        assert_eq!(get_resources::<Node>(&manifestpath).len(), 4)
     }
 
     #[test]
