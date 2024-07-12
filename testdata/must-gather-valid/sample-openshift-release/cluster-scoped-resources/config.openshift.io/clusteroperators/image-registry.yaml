@@ -1,0 +1,103 @@
+---
+apiVersion: config.openshift.io/v1
+kind: ClusterOperator
+metadata:
+  annotations:
+    capability.openshift.io/name: ImageRegistry
+    include.release.openshift.io/ibm-cloud-managed: "true"
+    include.release.openshift.io/self-managed-high-availability: "true"
+    include.release.openshift.io/single-node-developer: "true"
+  creationTimestamp: "2024-04-17T09:03:48Z"
+  generation: 1
+  managedFields:
+  - apiVersion: config.openshift.io/v1
+    fieldsType: FieldsV1
+    fieldsV1:
+      f:metadata:
+        f:annotations:
+          .: {}
+          f:capability.openshift.io/name: {}
+          f:include.release.openshift.io/ibm-cloud-managed: {}
+          f:include.release.openshift.io/self-managed-high-availability: {}
+          f:include.release.openshift.io/single-node-developer: {}
+        f:ownerReferences:
+          .: {}
+          k:{"uid":"fb8ca3e4-5385-46a5-b3e4-aecc71c3fa51"}: {}
+      f:spec: {}
+    manager: cluster-version-operator
+    operation: Update
+    time: "2024-04-17T09:03:48Z"
+  - apiVersion: config.openshift.io/v1
+    fieldsType: FieldsV1
+    fieldsV1:
+      f:status:
+        .: {}
+        f:extension: {}
+    manager: cluster-version-operator
+    operation: Update
+    subresource: status
+    time: "2024-04-17T09:03:48Z"
+  - apiVersion: config.openshift.io/v1
+    fieldsType: FieldsV1
+    fieldsV1:
+      f:status:
+        f:conditions: {}
+        f:relatedObjects: {}
+        f:versions: {}
+    manager: cluster-image-registry-operator
+    operation: Update
+    subresource: status
+    time: "2024-04-17T14:43:40Z"
+  name: image-registry
+  ownerReferences:
+  - apiVersion: config.openshift.io/v1
+    controller: true
+    kind: ClusterVersion
+    name: version
+spec: {}
+status:
+  conditions:
+  - lastTransitionTime: "2024-04-17T14:25:59Z"
+    message: |-
+      Available: The registry has minimum availability
+      NodeCADaemonAvailable: The daemon set node-ca has available replicas
+      ImagePrunerAvailable: Pruner CronJob has been created
+    reason: MinimumAvailability
+    status: "True"
+    type: Available
+  - lastTransitionTime: "2024-04-17T14:41:25Z"
+    message: |-
+      Progressing: The deployment has not completed
+      NodeCADaemonProgressing: The daemon set node-ca is deployed
+    reason: DeploymentNotCompleted
+    status: "True"
+    type: Progressing
+  - lastTransitionTime: "2024-04-17T14:42:26Z"
+    message: 'Degraded: Registry deployment has timed out progressing: ReplicaSet
+      "image-registry-645fd555b6" has timed out progressing.'
+    reason: ProgressDeadlineExceeded
+    status: "True"
+    type: Degraded
+  extension: null
+  relatedObjects:
+  - group: imageregistry.operator.openshift.io
+    name: cluster
+    resource: configs
+  - group: imageregistry.operator.openshift.io
+    name: cluster
+    resource: imagepruners
+  - group: rbac.authorization.k8s.io
+    name: system:registry
+    resource: clusterroles
+  - group: rbac.authorization.k8s.io
+    name: registry-registry-role
+    resource: clusterrolebindings
+  - group: rbac.authorization.k8s.io
+    name: openshift-image-registry-pruner
+    resource: clusterrolebindings
+  - group: ""
+    name: openshift-image-registry
+    resource: namespaces
+  versions:
+  - name: operator
+    version: 4.14.17
