@@ -43,4 +43,17 @@ impl Resource for ClusterOperator {
     fn raw(&self) -> &String {
         self.manifest.as_raw()
     }
+
+    fn conditions(&self) -> Vec<String> {
+        let mut conditions = Vec::new();
+
+        if self.degraded {
+            conditions.push(String::from("Degraded"));
+        }
+        if self.manifest.has_condition_status("Progressing", "True") {
+            conditions.push(String::from("Progressing"));
+        }
+
+        conditions
+    }
 }

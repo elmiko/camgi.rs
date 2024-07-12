@@ -37,4 +37,8 @@ pub trait Resource {
     fn is_warning(&self) -> bool {
         false
     }
+
+    fn conditions(&self) -> Vec<String> {
+        Vec::new()
+    }
 }

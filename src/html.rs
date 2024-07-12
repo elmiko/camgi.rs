@@ -51,18 +51,25 @@ fn add_accordion_section(
             (_, true) => " bg-danger text-white",
             _ => "",
         };
-        itemdiv
+        let mut itemh2 = itemdiv
             .h2()
             .attr("class=\"accordion-header\"")
-            .attr(format!("id=\"heading-{}\"", &resuuid.hyphenated()).as_str())
+            .attr(format!("id=\"heading-{}\"", &resuuid.hyphenated()).as_str());
+        let mut itembutton = itemh2
             .button()
             .attr(format!("class=\"accordion-button collapsed p-2{}\"", buttonclass).as_str())
             .attr("type=\"button\"")
             .attr("data-bs-toggle=\"collapse\"")
             .attr(format!("data-bs-target=\"#collapse-{}\"", &resuuid.hyphenated()).as_str())
             .attr("aria-exapnded=\"false\"")
-            .attr(format!("aria-controls=\"collapse-{}\"", &resuuid.hyphenated()).as_str())
-            .write_str(res.name())?;
+            .attr(format!("aria-controls=\"collapse-{}\"", &resuuid.hyphenated()).as_str());
+        itembutton.write_str(res.name())?;
+        for condition in &res.conditions() {
+            itembutton
+                .span()
+                .attr("class=\"badge ms-1 bg-light text-dark\"")
+                .write_str(condition)?;
+        }
         itemdiv
             .div()
             .attr(format!("id=\"collapse-{}\"", &resuuid.hyphenated()).as_str())
