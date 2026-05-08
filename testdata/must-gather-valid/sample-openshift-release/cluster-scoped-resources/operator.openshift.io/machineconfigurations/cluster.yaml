@@ -1,0 +1,21 @@
+apiVersion: operator.openshift.io/v1
+kind: MachineConfiguration
+metadata:
+  name: cluster
+spec:
+  logLevel: Normal
+  managementState: Managed
+  operatorLogLevel: Normal
+status:
+  conditions:
+  - lastTransitionTime: "2026-05-08T10:06:52Z"
+    message: Reconciled 2 of 2 MAPI MachineSets | Reconciled 0 of 0 ControlPlaneMachineSets
+    reason: ClusterVersionStable
+    status: "False"
+    type: BootImageUpdateProgressing
+  - lastTransitionTime: "2026-05-08T10:06:52Z"
+    message: 0 Degraded MAPI MachineSets | 0 Degraded ControlPlaneMachineSets
+    reason: ClusterVersionStable
+    status: "False"
+    type: BootImageUpdateDegraded
+  observedGeneration: 3

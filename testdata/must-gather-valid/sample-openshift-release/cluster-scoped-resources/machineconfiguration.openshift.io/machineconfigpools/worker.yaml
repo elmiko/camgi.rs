@@ -1,0 +1,32 @@
+apiVersion: machineconfiguration.openshift.io/v1
+kind: MachineConfigPool
+metadata:
+  name: worker
+spec:
+  machineConfigSelector:
+    matchLabels:
+      machineconfiguration.openshift.io/role: worker
+  nodeSelector:
+    matchLabels:
+      node-role.kubernetes.io/worker: ""
+status:
+  conditions:
+  - lastTransitionTime: "2023-01-01T00:00:00Z"
+    message: "Node worker-0 is reporting degraded"
+    reason: "NodeDegraded"
+    status: "True"
+    type: Degraded
+  - lastTransitionTime: "2023-01-01T00:00:00Z"
+    message: ""
+    reason: ""
+    status: "False"
+    type: Updated
+  - lastTransitionTime: "2023-01-01T00:00:00Z"
+    message: ""
+    reason: ""
+    status: "False"
+    type: Updating
+  machineCount: 3
+  readyMachineCount: 2
+  updatedMachineCount: 2
+  unavailableMachineCount: 1

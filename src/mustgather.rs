@@ -16,6 +16,9 @@ pub struct MustGather {
     pub clusteroperators: Vec<ClusterOperator>,
     pub machines: Vec<Machine>,
     pub machinesets: Vec<MachineSet>,
+    pub machineconfigurations: Vec<MachineConfiguration>,
+    pub machineconfigpools: Vec<MachineConfigPool>,
+    pub machineconfigs: Vec<MachineConfig>,
     pub nodes: Vec<Node>,
     pub csrs: Vec<CertificateSigningRequest>,
     pub clusterautoscalers: Vec<ClusterAutoscaler>,
@@ -61,6 +64,33 @@ impl MustGather {
             "machine.openshift.io",
         );
         let machinesets = get_resources::<MachineSet>(&manifestpath);
+
+        let manifestpath = build_manifest_path(
+            &path,
+            "",
+            "",
+            "machineconfigurations",
+            "operator.openshift.io",
+        );
+        let machineconfigurations = get_resources::<MachineConfiguration>(&manifestpath);
+
+        let manifestpath = build_manifest_path(
+            &path,
+            "",
+            "",
+            "machineconfigpools",
+            "machineconfiguration.openshift.io",
+        );
+        let machineconfigpools = get_resources::<MachineConfigPool>(&manifestpath);
+
+        let manifestpath = build_manifest_path(
+            &path,
+            "",
+            "",
+            "machineconfigs",
+            "machineconfiguration.openshift.io",
+        );
+        let machineconfigs = get_resources::<MachineConfig>(&manifestpath);
 
         let manifestpath = build_manifest_path(&path, "", "", "nodes", "core");
         let nodes = get_resources::<Node>(&manifestpath);
@@ -137,6 +167,9 @@ impl MustGather {
             clusteroperators,
             machines,
             machinesets,
+            machineconfigurations,
+            machineconfigpools,
+            machineconfigs,
             nodes,
             csrs,
             clusterautoscalers,

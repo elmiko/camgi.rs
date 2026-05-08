@@ -135,7 +135,18 @@ fn add_body(parent: &mut Node, mustgather: &MustGather) -> Result<()> {
 
     // nav entries for component sections
     add_navlist_entry(&mut navlist, "Machine API", &mustgather.mapipods)?;
-    add_navlist_entry(&mut navlist, "Machine Config", &mustgather.mcopods)?;
+    add_navlist_entry(&mut navlist, "Machine Config Pods", &mustgather.mcopods)?;
+    add_navlist_entry(
+        &mut navlist,
+        "MachineConfiguration",
+        &mustgather.machineconfigurations,
+    )?;
+    add_navlist_entry(
+        &mut navlist,
+        "MachineConfigPools",
+        &mustgather.machineconfigpools,
+    )?;
+    add_navlist_entry(&mut navlist, "MachineConfigs", &mustgather.machineconfigs)?;
     add_navlist_entry(&mut navlist, "CCM Operator", &mustgather.ccmopods)?;
     add_navlist_entry(&mut navlist, "CCMs", &mustgather.ccmpods)?;
 
@@ -174,7 +185,18 @@ fn add_body(parent: &mut Node, mustgather: &MustGather) -> Result<()> {
     add_summary_data(&mut body, mustgather)?;
     add_resource_data(&mut body, "Cluster Operators", &mustgather.clusteroperators)?;
     add_machine_api_data(&mut body, mustgather)?;
-    add_machine_config_data(&mut body, mustgather)?;
+    add_machine_config_pods_data(&mut body, mustgather)?;
+    add_resource_data(
+        &mut body,
+        "MachineConfiguration",
+        &mustgather.machineconfigurations,
+    )?;
+    add_resource_data(
+        &mut body,
+        "MachineConfigPools",
+        &mustgather.machineconfigpools,
+    )?;
+    add_resource_data(&mut body, "MachineConfigs", &mustgather.machineconfigs)?;
     add_ccmo_data(&mut body, mustgather)?;
     add_ccms_data(&mut body, mustgather)?;
     add_autoscaling_data(&mut body, mustgather)?;
@@ -244,8 +266,8 @@ fn add_machine_api_data(parent: &mut Node, mustgather: &MustGather) -> Result<()
     Ok(())
 }
 
-fn add_machine_config_data(parent: &mut Node, mustgather: &MustGather) -> Result<()> {
-    let mut data = parent.data().attr("id=\"machine_config-data\"");
+fn add_machine_config_pods_data(parent: &mut Node, mustgather: &MustGather) -> Result<()> {
+    let mut data = parent.data().attr("id=\"machine_config_pods-data\"");
 
     data.h1().write_str("Machine Config Operator Pods")?;
 
