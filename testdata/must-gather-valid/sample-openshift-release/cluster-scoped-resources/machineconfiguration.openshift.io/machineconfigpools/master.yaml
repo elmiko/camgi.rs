@@ -1,0 +1,32 @@
+apiVersion: machineconfiguration.openshift.io/v1
+kind: MachineConfigPool
+metadata:
+  name: master
+spec:
+  machineConfigSelector:
+    matchLabels:
+      machineconfiguration.openshift.io/role: master
+  nodeSelector:
+    matchLabels:
+      node-role.kubernetes.io/master: ""
+status:
+  conditions:
+  - lastTransitionTime: "2023-01-01T00:00:00Z"
+    message: ""
+    reason: ""
+    status: "False"
+    type: Degraded
+  - lastTransitionTime: "2023-01-01T00:00:00Z"
+    message: ""
+    reason: ""
+    status: "True"
+    type: Updated
+  - lastTransitionTime: "2023-01-01T00:00:00Z"
+    message: ""
+    reason: ""
+    status: "False"
+    type: Updating
+  machineCount: 3
+  readyMachineCount: 3
+  updatedMachineCount: 3
+  unavailableMachineCount: 0
