@@ -1,0 +1,289 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    k8s.ovn.org/pod-networks: '{"default":{"ip_addresses":["10.130.0.9/23"],"mac_address":"0a:58:0a:82:00:09","gateway_ips":["10.130.0.1"],"routes":[{"dest":"10.128.0.0/14","nextHop":"10.130.0.1"},{"dest":"172.30.0.0/16","nextHop":"10.130.0.1"},{"dest":"169.254.0.5/32","nextHop":"10.130.0.1"},{"dest":"100.64.0.0/16","nextHop":"10.130.0.1"}],"ip_address":"10.130.0.9/23","gateway_ip":"10.130.0.1","role":"primary"}}'
+    k8s.v1.cni.cncf.io/network-status: |-
+      [{
+          "name": "ovn-kubernetes",
+          "interface": "eth0",
+          "ips": [
+              "10.130.0.9"
+          ],
+          "mac": "0a:58:0a:82:00:09",
+          "default": true,
+          "dns": {}
+      }]
+    openshift.io/required-scc: restricted-v2
+  creationTimestamp: "2026-05-29T08:36:04Z"
+  generateName: capi-controllers-74b8964d87-
+  generation: 1
+  labels:
+    k8s-app: capi-controllers
+    topology.kubernetes.io/region: region-1
+    topology.kubernetes.io/zone: zone-1
+  name: capi-controllers-74b8964d87-l854p
+  namespace: openshift-cluster-api
+  ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: ReplicaSet
+      name: capi-controllers-74b8964d87
+      uid: 00000000-0000-0000-0000-000000000000
+  resourceVersion: "29439"
+  uid: 00000000-0000-0000-0000-000000000000
+spec:
+  containers:
+    - args:
+        - --diagnostics-address=:8443
+      command:
+        - /capi-controllers
+      env:
+        - name: RELEASE_VERSION
+          value: 5.0.0-0.ci-2026-05-29-081704-test-ci-op-k0d03pt8-latest
+      image: quay.io/openshift-release-dev/ocp-v4.0-fake
+      imagePullPolicy: IfNotPresent
+      name: capi-controllers
+      ports:
+        - containerPort: 9443
+          name: webhook-server
+          protocol: TCP
+        - containerPort: 8443
+          name: diagnostics-o
+          protocol: TCP
+        - containerPort: 9440
+          name: healthz-o
+          protocol: TCP
+      resources:
+        requests:
+          cpu: 10m
+          memory: 50Mi
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: FallbackToLogsOnError
+      volumeMounts:
+        - mountPath: /tmp/k8s-webhook-server/serving-certs
+          name: cert
+          readOnly: true
+        - mountPath: /tmp/k8s-metrics-server/serving-certs
+          name: metrics-cert
+          readOnly: true
+        - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+          name: kube-api-access-5zjxk
+          readOnly: true
+    - args:
+        - --diagnostics-address=:8442
+        - --health-addr=:9441
+      command:
+        - /machine-api-migration
+      env:
+        - name: RELEASE_VERSION
+          value: 5.0.0-0.ci-2026-05-29-081704-test-ci-op-k0d03pt8-latest
+      image: quay.io/openshift-release-dev/ocp-v4.0-fake
+      imagePullPolicy: IfNotPresent
+      name: machine-api-migration
+      ports:
+        - containerPort: 8442
+          name: diagnostics-m
+          protocol: TCP
+        - containerPort: 9441
+          name: healthz-m
+          protocol: TCP
+      resources:
+        requests:
+          cpu: 10m
+          memory: 50Mi
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: FallbackToLogsOnError
+      volumeMounts:
+        - mountPath: /tmp/k8s-metrics-server/serving-certs
+          name: metrics-cert
+          readOnly: true
+        - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+          name: kube-api-access-5zjxk
+          readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  nodeName: ip-10-0-23-213.region-1.compute.internal
+  nodeSelector:
+    node-role.kubernetes.io/control-plane: ""
+  preemptionPolicy: PreemptLowerPriority
+  priority: 2000001000
+  priorityClassName: system-node-critical
+  restartPolicy: Always
+  schedulerName: default-scheduler
+  securityContext: {}
+  serviceAccount: capi-controllers
+  serviceAccountName: capi-controllers
+  terminationGracePeriodSeconds: 30
+  tolerations:
+    - effect: NoSchedule
+      key: node-role.kubernetes.io/master
+      operator: Exists
+    - effect: NoSchedule
+      key: node-role.kubernetes.io/control-plane
+      operator: Exists
+    - effect: NoExecute
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+      tolerationSeconds: 300
+    - effect: NoExecute
+      key: node.kubernetes.io/unreachable
+      operator: Exists
+      tolerationSeconds: 300
+    - effect: NoSchedule
+      key: node.kubernetes.io/memory-pressure
+      operator: Exists
+  volumes:
+    - name: cert
+      secret:
+        defaultMode: 420
+        secretName: capi-controllers-webhook-service-cert
+    - name: metrics-cert
+      secret:
+        defaultMode: 420
+        secretName: capi-controllers-metrics-tls
+    - name: kube-api-access-5zjxk
+      projected:
+        defaultMode: 420
+        sources:
+          - serviceAccountToken:
+              expirationSeconds: 3607
+              path: token
+          - configMap:
+              items:
+                - key: ca.crt
+                  path: ca.crt
+              name: kube-root-ca.crt
+          - downwardAPI:
+              items:
+                - fieldRef:
+                    apiVersion: v1
+                    fieldPath: metadata.namespace
+                  path: namespace
+          - configMap:
+              items:
+                - key: service-ca.crt
+                  path: service-ca.crt
+              name: openshift-service-ca.crt
+status:
+  conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2026-05-29T08:39:51Z"
+      observedGeneration: 1
+      status: "True"
+      type: PodReadyToStartContainers
+    - lastProbeTime: null
+      lastTransitionTime: "2026-05-29T08:38:46Z"
+      observedGeneration: 1
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2026-05-29T09:07:31Z"
+      observedGeneration: 1
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2026-05-29T09:07:31Z"
+      observedGeneration: 1
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2026-05-29T08:38:46Z"
+      observedGeneration: 1
+      status: "True"
+      type: PodScheduled
+  containerStatuses:
+    - allocatedResources:
+        cpu: 10m
+        memory: 50Mi
+      containerID: cri-o://fake
+      image: quay.io/openshift-release-dev/ocp-v4.0-fake
+      imageID: quay.io/openshift-release-dev/ocp-v4.0-fake
+      lastState:
+        terminated:
+          containerID: cri-o://fake
+          exitCode: 1
+          finishedAt: "2026-05-29T08:54:52Z"
+          reason: Error
+          startedAt: "2026-05-29T08:52:52Z"
+      name: capi-controllers
+      ready: true
+      resources:
+        requests:
+          cpu: 10m
+          memory: 50Mi
+      restartCount: 6
+      started: true
+      state:
+        running:
+          startedAt: "2026-05-29T08:57:33Z"
+      user:
+        linux:
+          gid: 0
+          supplementalGroups:
+            - 0
+          uid: 0
+      volumeMounts:
+        - mountPath: /tmp/k8s-webhook-server/serving-certs
+          name: cert
+          readOnly: true
+          recursiveReadOnly: Disabled
+        - mountPath: /tmp/k8s-metrics-server/serving-certs
+          name: metrics-cert
+          readOnly: true
+          recursiveReadOnly: Disabled
+        - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+          name: kube-api-access-5zjxk
+          readOnly: true
+          recursiveReadOnly: Disabled
+    - allocatedResources:
+        cpu: 10m
+        memory: 50Mi
+      containerID: cri-o://fake
+      image: quay.io/openshift-release-dev/ocp-v4.0-fake
+      imageID: quay.io/openshift-release-dev/ocp-v4.0-fake
+      lastState:
+        terminated:
+          containerID: cri-o://fake
+          exitCode: 1
+          finishedAt: "2026-05-29T09:02:13Z"
+          reason: Error
+          startedAt: "2026-05-29T08:57:33Z"
+      name: machine-api-migration
+      ready: true
+      resources:
+        requests:
+          cpu: 10m
+          memory: 50Mi
+      restartCount: 7
+      started: true
+      state:
+        running:
+          startedAt: "2026-05-29T09:07:31Z"
+      user:
+        linux:
+          gid: 0
+          supplementalGroups:
+            - 0
+          uid: 0
+      volumeMounts:
+        - mountPath: /tmp/k8s-metrics-server/serving-certs
+          name: metrics-cert
+          readOnly: true
+          recursiveReadOnly: Disabled
+        - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+          name: kube-api-access-5zjxk
+          readOnly: true
+          recursiveReadOnly: Disabled
+  hostIP: 10.0.23.213
+  hostIPs:
+    - ip: 10.0.23.213
+  observedGeneration: 1
+  phase: Running
+  podIP: 10.130.0.9
+  podIPs:
+    - ip: 10.130.0.9
+  qosClass: Burstable
+  startTime: "2026-05-29T08:38:46Z"

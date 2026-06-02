@@ -1,0 +1,127 @@
+---
+apiVersion: cluster.x-k8s.io/v1beta2
+kind: Machine
+metadata:
+  creationTimestamp: "2026-05-29T09:11:17Z"
+  finalizers:
+    - machine.cluster.x-k8s.io
+  generation: 2
+  labels:
+    cluster.x-k8s.io/cluster-name: testdata
+    cluster.x-k8s.io/set-name: testdata-worker-region-1
+    machineconfiguration.openshift.io/osstream: rhel-9
+    node-role.kubernetes.io/worker: ""
+  name: testdata-worker-1
+  namespace: openshift-cluster-api
+  ownerReferences:
+    - apiVersion: cluster.x-k8s.io/v1beta2
+      blockOwnerDeletion: true
+      controller: true
+      kind: MachineSet
+      name: testdata-worker-region-1
+      uid: 00000000-0000-0000-0000-000000000000
+  resourceVersion: "35424"
+  uid: 00000000-0000-0000-0000-000000000000
+spec:
+  bootstrap:
+    dataSecretName: worker-user-data
+  clusterName: testdata
+  deletion:
+    nodeDeletionTimeoutSeconds: 10
+  failureDomain: zone-1
+  infrastructureRef:
+    apiGroup: infrastructure.cluster.x-k8s.io
+    kind: AWSMachine
+    name: testdata-worker-1
+  providerID: aws:///zone-1/i-02116218eccbef72f
+status:
+  addresses:
+    - address: ip-10-0-61-15.region-1.compute.internal
+      type: InternalDNS
+    - address: 10.0.61.15
+      type: InternalIP
+  conditions:
+    - lastTransitionTime: "2026-05-29T09:15:52Z"
+      message: ""
+      observedGeneration: 2
+      reason: Available
+      status: "True"
+      type: Available
+    - lastTransitionTime: "2026-05-29T09:15:52Z"
+      message: ""
+      observedGeneration: 2
+      reason: Ready
+      status: "True"
+      type: Ready
+    - lastTransitionTime: "2026-05-29T09:11:18Z"
+      message: ""
+      observedGeneration: 2
+      reason: DataSecretProvided
+      status: "True"
+      type: BootstrapConfigReady
+    - lastTransitionTime: "2026-05-29T09:11:52Z"
+      message: ""
+      observedGeneration: 2
+      reason: Ready
+      status: "True"
+      type: InfrastructureReady
+    - lastTransitionTime: "2026-05-29T09:15:52Z"
+      message: ""
+      observedGeneration: 2
+      reason: NodeHealthy
+      status: "True"
+      type: NodeHealthy
+    - lastTransitionTime: "2026-05-29T09:15:52Z"
+      message: ""
+      observedGeneration: 2
+      reason: NodeReady
+      status: "True"
+      type: NodeReady
+    - lastTransitionTime: "2026-05-29T09:11:18Z"
+      message: ""
+      observedGeneration: 2
+      reason: NotUpdating
+      status: "False"
+      type: Updating
+    - lastTransitionTime: "2026-05-29T09:11:18Z"
+      message: ""
+      observedGeneration: 2
+      reason: NotPaused
+      status: "False"
+      type: Paused
+    - lastTransitionTime: "2026-05-29T09:11:18Z"
+      message: ""
+      observedGeneration: 2
+      reason: NotDeleting
+      status: "False"
+      type: Deleting
+  deprecated:
+    v1beta1:
+      conditions:
+        - lastTransitionTime: "2026-05-29T09:11:52Z"
+          status: "True"
+          type: Ready
+        - lastTransitionTime: "2026-05-29T09:11:52Z"
+          status: "True"
+          type: InfrastructureReady
+        - lastTransitionTime: "2026-05-29T09:15:52Z"
+          status: "True"
+          type: NodeHealthy
+  initialization:
+    infrastructureProvisioned: true
+  lastUpdated: "2026-05-29T09:14:33Z"
+  nodeInfo:
+    architecture: amd64
+    bootID: f3068149-2fb0-4c7d-b0c1-5ead1db8c889
+    containerRuntimeVersion: cri-o://1.35.3-13.rhaos4.22.git5a749ba.el9
+    kernelVersion: 5.14.0-687.11.1.el9_8.x86_64
+    kubeProxyVersion: ""
+    kubeletVersion: v1.35.5
+    machineID: ec2a805f3f79919452cbecc18bb68e15
+    operatingSystem: linux
+    osImage: Red Hat Enterprise Linux CoreOS 9.8.20260526-0 (Plow)
+    systemUUID: ec2a805f-3f79-9194-52cb-ecc18bb68e15
+  nodeRef:
+    name: ip-10-0-61-15.region-1.compute.internal
+  observedGeneration: 2
+  phase: Running

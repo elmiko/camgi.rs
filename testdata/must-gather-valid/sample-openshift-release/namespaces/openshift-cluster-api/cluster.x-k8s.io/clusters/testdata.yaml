@@ -1,0 +1,141 @@
+---
+apiVersion: cluster.x-k8s.io/v1beta2
+kind: Cluster
+metadata:
+  creationTimestamp: "2026-05-29T09:11:17Z"
+  finalizers:
+    - cluster.cluster.x-k8s.io
+  generation: 1
+  name: testdata
+  namespace: openshift-cluster-api
+  resourceVersion: "44126"
+  uid: 00000000-0000-0000-0000-000000000000
+spec:
+  controlPlaneEndpoint:
+    host: api-int.testdata.XXXXXXXXXXXXXXXXXXXXXX
+    port: 6443
+  infrastructureRef:
+    apiGroup: infrastructure.cluster.x-k8s.io
+    kind: AWSCluster
+    name: testdata
+status:
+  conditions:
+    - lastTransitionTime: "2026-05-29T09:11:17Z"
+      message: '* ControlPlaneAvailable: Please check controller logs for errors'
+      observedGeneration: 1
+      reason: AvailableUnknown
+      status: Unknown
+      type: Available
+    - lastTransitionTime: "2026-05-29T09:11:17Z"
+      message: ""
+      observedGeneration: 1
+      reason: ProbeSucceeded
+      status: "True"
+      type: RemoteConnectionProbe
+    - lastTransitionTime: "2026-05-29T09:11:17Z"
+      message: ""
+      observedGeneration: 1
+      reason: Ready
+      status: "True"
+      type: InfrastructureReady
+    - lastTransitionTime: "2026-05-29T09:11:17Z"
+      message: ""
+      observedGeneration: 1
+      reason: Initialized
+      status: "True"
+      type: ControlPlaneInitialized
+    - lastTransitionTime: "2026-05-29T09:11:17Z"
+      message: Please check controller logs for errors
+      observedGeneration: 1
+      reason: InternalError
+      status: Unknown
+      type: ControlPlaneAvailable
+    - lastTransitionTime: "2026-05-29T09:11:17Z"
+      message: ""
+      observedGeneration: 1
+      reason: NoWorkers
+      status: "True"
+      type: WorkersAvailable
+    - lastTransitionTime: "2026-05-29T09:11:17Z"
+      message: ""
+      observedGeneration: 1
+      reason: NotRollingOut
+      status: "False"
+      type: RollingOut
+    - lastTransitionTime: "2026-05-29T09:11:17Z"
+      message: ""
+      observedGeneration: 1
+      reason: NotRemediating
+      status: "False"
+      type: Remediating
+    - lastTransitionTime: "2026-05-29T09:11:17Z"
+      message: ""
+      observedGeneration: 1
+      reason: NotScalingDown
+      status: "False"
+      type: ScalingDown
+    - lastTransitionTime: "2026-05-29T09:11:17Z"
+      message: ""
+      observedGeneration: 1
+      reason: NotScalingUp
+      status: "False"
+      type: ScalingUp
+    - lastTransitionTime: "2026-05-29T09:11:17Z"
+      message: ""
+      observedGeneration: 1
+      reason: NoReplicas
+      status: "True"
+      type: ControlPlaneMachinesReady
+    - lastTransitionTime: "2026-05-29T09:11:17Z"
+      message: ""
+      observedGeneration: 1
+      reason: Ready
+      status: "True"
+      type: WorkerMachinesReady
+    - lastTransitionTime: "2026-05-29T09:11:17Z"
+      message: ""
+      observedGeneration: 1
+      reason: NoReplicas
+      status: "True"
+      type: ControlPlaneMachinesUpToDate
+    - lastTransitionTime: "2026-05-29T09:31:20Z"
+      message: '* Machines testdata-worker-0, testdata-worker-1, testdata-worker-2: Condition UpToDate not yet reported'
+      observedGeneration: 1
+      reason: UpToDateUnknown
+      status: Unknown
+      type: WorkerMachinesUpToDate
+    - lastTransitionTime: "2026-05-29T09:11:17Z"
+      message: ""
+      observedGeneration: 1
+      reason: NotPaused
+      status: "False"
+      type: Paused
+    - lastTransitionTime: "2026-05-29T09:11:17Z"
+      message: ""
+      observedGeneration: 1
+      reason: NotDeleting
+      status: "False"
+      type: Deleting
+  controlPlane: {}
+  deprecated:
+    v1beta1:
+      conditions:
+        - lastTransitionTime: "2026-05-29T09:11:17Z"
+          status: "True"
+          type: Ready
+        - lastTransitionTime: "2026-05-29T09:11:17Z"
+          status: "True"
+          type: ControlPlaneInitialized
+        - lastTransitionTime: "2026-05-29T09:11:17Z"
+          status: "True"
+          type: InfrastructureReady
+  initialization:
+    infrastructureProvisioned: true
+  observedGeneration: 1
+  phase: Provisioned
+  workers:
+    availableReplicas: 3
+    desiredReplicas: 3
+    readyReplicas: 3
+    replicas: 3
+    upToDateReplicas: 0

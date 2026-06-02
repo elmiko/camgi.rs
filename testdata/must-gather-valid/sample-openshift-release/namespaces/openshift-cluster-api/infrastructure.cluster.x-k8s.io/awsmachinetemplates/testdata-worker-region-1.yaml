@@ -1,0 +1,76 @@
+---
+apiVersion: infrastructure.cluster.x-k8s.io/v1beta2
+kind: AWSMachineTemplate
+metadata:
+  creationTimestamp: "2026-05-29T09:02:35Z"
+  generation: 1
+  labels:
+    cluster.x-k8s.io/cluster-name: testdata
+  name: testdata-worker-region-1
+  namespace: openshift-cluster-api
+  ownerReferences:
+    - apiVersion: cluster.x-k8s.io/v1beta2
+      kind: Cluster
+      name: testdata
+      uid: 00000000-0000-0000-0000-000000000000
+  resourceVersion: "31589"
+  uid: 00000000-0000-0000-0000-000000000000
+spec:
+  template:
+    metadata: {}
+    spec:
+      additionalSecurityGroups:
+        - filters:
+            - name: tag:Name
+              values:
+                - testdata-node
+        - filters:
+            - name: tag:Name
+              values:
+                - testdata-lb
+      additionalTags:
+        ci-nat-replace: "true"
+        clusterName: testdata
+        expirationDate: 2026-05-29T16:19+00:00
+        keyA: valueA
+        keyB: valueB
+        keyC: valueC
+        kubernetes.io/cluster/testdata: owned
+      ami:
+        id: ami-089c98e2d700adb1e
+      cloudInit: {}
+      hostAffinity: default
+      iamInstanceProfile: testdata-worker-profile
+      ignition:
+        storageType: UnencryptedUserData
+        version: "3.2"
+      instanceMetadataOptions:
+        httpEndpoint: enabled
+        httpProtocolIpv6: disabled
+        httpPutResponseHopLimit: 1
+        httpTokens: optional
+        instanceMetadataTags: disabled
+      instanceType: m6a.xlarge
+      publicIP: false
+      rootVolume:
+        encrypted: true
+        size: 120
+        type: gp3
+      sshKeyName: ""
+      subnet:
+        filters:
+          - name: tag:Name
+            values:
+              - testdata-subnet-private-zone-1
+status:
+  capacity:
+    cpu: "4"
+    memory: 16Gi
+  conditions:
+    - lastTransitionTime: "2026-05-29T09:11:17Z"
+      reason: NotPaused
+      status: "False"
+      type: Paused
+  nodeInfo:
+    architecture: amd64
+    operatingSystem: linux
