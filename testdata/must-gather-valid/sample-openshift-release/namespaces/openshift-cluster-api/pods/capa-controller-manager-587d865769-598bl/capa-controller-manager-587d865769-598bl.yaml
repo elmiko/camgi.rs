@@ -1,0 +1,255 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    iam.amazonaws.com/role: ""
+    k8s.ovn.org/pod-networks: '{"default":{"ip_addresses":["10.129.0.49/23"],"mac_address":"0a:58:0a:81:00:31","gateway_ips":["10.129.0.1"],"routes":[{"dest":"10.128.0.0/14","nextHop":"10.129.0.1"},{"dest":"172.30.0.0/16","nextHop":"10.129.0.1"},{"dest":"169.254.0.5/32","nextHop":"10.129.0.1"},{"dest":"100.64.0.0/16","nextHop":"10.129.0.1"}],"ip_address":"10.129.0.49/23","gateway_ip":"10.129.0.1","role":"primary"}}'
+    k8s.v1.cni.cncf.io/network-status: |-
+      [{
+          "name": "ovn-kubernetes",
+          "interface": "eth0",
+          "ips": [
+              "10.129.0.49"
+          ],
+          "mac": "0a:58:0a:81:00:31",
+          "default": true,
+          "dns": {}
+      }]
+    openshift.io/required-scc: restricted-v2
+  creationTimestamp: "2026-05-29T09:06:16Z"
+  generateName: capa-controller-manager-587d865769-
+  generation: 1
+  labels:
+    cluster.x-k8s.io/provider: infrastructure-aws
+    control-plane: capa-controller-manager
+    topology.kubernetes.io/region: region-1
+    topology.kubernetes.io/zone: zone-1
+  name: capa-controller-manager-587d865769-598bl
+  namespace: openshift-cluster-api
+  ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: ReplicaSet
+      name: capa-controller-manager-587d865769
+      uid: 00000000-0000-0000-0000-000000000000
+  resourceVersion: "26836"
+  uid: 00000000-0000-0000-0000-000000000000
+spec:
+  affinity:
+    nodeAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - preference:
+            matchExpressions:
+              - key: node-role.kubernetes.io/control-plane
+                operator: Exists
+          weight: 10
+        - preference:
+            matchExpressions:
+              - key: node-role.kubernetes.io/master
+                operator: Exists
+          weight: 10
+  containers:
+    - args:
+        - --leader-elect
+        - --feature-gates=EKS=true,EKSEnableIAM=false,EKSAllowAddRoles=false,EKSFargate=false,MachinePool=false,MachinePoolMachines=false,EventBridgeInstanceState=false,AutoControllerIdentityCreator=true,BootstrapFormatIgnition=true,ExternalResourceGC=true,AlternativeGCStrategy=false,TagUnmanagedNetworkResources=true,ROSA=false
+        - --v=0
+        - --diagnostics-address=:8443
+        - --insecure-diagnostics=false
+        - --tls-min-version=VersionTLS12
+        - --tls-cipher-suites=TLS_AES_128_GCM_SHA256,TLS_AES_256_GCM_SHA384,TLS_CHACHA20_POLY1305_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256,TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256
+      env:
+        - name: AWS_SHARED_CREDENTIALS_FILE
+          value: /home/.aws/credentials
+      image: quay.io/openshift-release-dev/ocp-v4.0-fake
+      imagePullPolicy: Always
+      livenessProbe:
+        failureThreshold: 3
+        httpGet:
+          path: /healthz
+          port: healthz
+          scheme: HTTP
+        periodSeconds: 10
+        successThreshold: 1
+        timeoutSeconds: 1
+      name: manager
+      ports:
+        - containerPort: 9443
+          name: webhook-server
+          protocol: TCP
+        - containerPort: 9440
+          name: healthz
+          protocol: TCP
+        - containerPort: 8443
+          name: metrics
+          protocol: TCP
+      readinessProbe:
+        failureThreshold: 3
+        httpGet:
+          path: /readyz
+          port: healthz
+          scheme: HTTP
+        periodSeconds: 10
+        successThreshold: 1
+        timeoutSeconds: 1
+      resources:
+        requests:
+          cpu: 10m
+          memory: 50Mi
+      securityContext:
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+            - ALL
+        runAsGroup: 65532
+        runAsUser: 65532
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: FallbackToLogsOnError
+      volumeMounts:
+        - mountPath: /tmp/k8s-webhook-server/serving-certs
+          name: cert
+          readOnly: true
+        - mountPath: /home/.aws
+          name: credentials
+        - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+          name: kube-api-access-r7q68
+          readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  nodeName: ip-10-0-33-182.region-1.compute.internal
+  preemptionPolicy: PreemptLowerPriority
+  priority: 2000000000
+  priorityClassName: system-cluster-critical
+  restartPolicy: Always
+  schedulerName: default-scheduler
+  securityContext:
+    fsGroup: 1000
+    runAsNonRoot: true
+    seccompProfile:
+      type: RuntimeDefault
+  serviceAccount: capa-controller-manager
+  serviceAccountName: capa-controller-manager
+  terminationGracePeriodSeconds: 10
+  tolerations:
+    - effect: NoSchedule
+      key: node-role.kubernetes.io/master
+    - effect: NoSchedule
+      key: node-role.kubernetes.io/control-plane
+    - effect: NoExecute
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+      tolerationSeconds: 300
+    - effect: NoExecute
+      key: node.kubernetes.io/unreachable
+      operator: Exists
+      tolerationSeconds: 300
+    - effect: NoSchedule
+      key: node.kubernetes.io/memory-pressure
+      operator: Exists
+  volumes:
+    - name: cert
+      secret:
+        defaultMode: 420
+        secretName: capa-webhook-service-cert
+    - name: credentials
+      secret:
+        defaultMode: 420
+        secretName: capa-manager-bootstrap-credentials
+    - name: kube-api-access-r7q68
+      projected:
+        defaultMode: 420
+        sources:
+          - serviceAccountToken:
+              expirationSeconds: 3607
+              path: token
+          - configMap:
+              items:
+                - key: ca.crt
+                  path: ca.crt
+              name: kube-root-ca.crt
+          - downwardAPI:
+              items:
+                - fieldRef:
+                    apiVersion: v1
+                    fieldPath: metadata.namespace
+                  path: namespace
+          - configMap:
+              items:
+                - key: service-ca.crt
+                  path: service-ca.crt
+              name: openshift-service-ca.crt
+status:
+  conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2026-05-29T09:06:24Z"
+      observedGeneration: 1
+      status: "True"
+      type: PodReadyToStartContainers
+    - lastProbeTime: null
+      lastTransitionTime: "2026-05-29T09:06:16Z"
+      observedGeneration: 1
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2026-05-29T09:06:24Z"
+      observedGeneration: 1
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2026-05-29T09:06:24Z"
+      observedGeneration: 1
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2026-05-29T09:06:16Z"
+      observedGeneration: 1
+      status: "True"
+      type: PodScheduled
+  containerStatuses:
+    - allocatedResources:
+        cpu: 10m
+        memory: 50Mi
+      containerID: cri-o://fake
+      image: quay.io/openshift-release-dev/ocp-v4.0-fake
+      imageID: quay.io/openshift-release-dev/ocp-v4.0-fake
+      lastState: {}
+      name: manager
+      ready: true
+      resources:
+        requests:
+          cpu: 10m
+          memory: 50Mi
+      restartCount: 0
+      started: true
+      state:
+        running:
+          startedAt: "2026-05-29T09:06:23Z"
+      user:
+        linux:
+          gid: 65532
+          supplementalGroups:
+            - 65532
+            - 1000
+          uid: 65532
+      volumeMounts:
+        - mountPath: /tmp/k8s-webhook-server/serving-certs
+          name: cert
+          readOnly: true
+          recursiveReadOnly: Disabled
+        - mountPath: /home/.aws
+          name: credentials
+        - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+          name: kube-api-access-r7q68
+          readOnly: true
+          recursiveReadOnly: Disabled
+  hostIP: 10.0.33.182
+  hostIPs:
+    - ip: 10.0.33.182
+  observedGeneration: 1
+  phase: Running
+  podIP: 10.129.0.49
+  podIPs:
+    - ip: 10.129.0.49
+  qosClass: Burstable
+  startTime: "2026-05-29T09:06:16Z"

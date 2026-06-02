@@ -1,0 +1,12 @@
+---
+apiVersion: infrastructure.cluster.x-k8s.io/v1beta2
+kind: AWSMachine
+metadata:
+  creationTimestamp: "2022-01-01T00:00:00Z"
+  name: testdata-worker-not-ready
+  namespace: openshift-cluster-api
+  resourceVersion: "16606"
+  uid: 00000000-0000-0000-0000-000000000000
+spec: {}
+status:
+  ready: false
