@@ -158,6 +158,7 @@ fn add_body(parent: &mut Node, mustgather: &MustGather) -> Result<()> {
     add_navlist_entry(&mut navlist, "BareMetalHosts", &mustgather.baremetalhosts)?;
     add_navlist_entry(&mut navlist, "Nodes", &mustgather.nodes)?;
     add_navlist_entry(&mut navlist, "CSRs", &mustgather.csrs)?;
+    add_capi_navlist_entry(&mut navlist, mustgather)?;
 
     // github link should go last
     navlist
@@ -207,6 +208,9 @@ fn add_body(parent: &mut Node, mustgather: &MustGather) -> Result<()> {
     add_resource_data(&mut body, "CPMSs", &mustgather.controlplanemachinesets)?;
     add_resource_data(&mut body, "CSRs", &mustgather.csrs)?;
 
+    // Cluster API data section
+    add_cluster_api_data(&mut body, mustgather)?;
+
     // scripts
     body.script()
         .attr("src=\"https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js\"")
@@ -216,6 +220,52 @@ fn add_body(parent: &mut Node, mustgather: &MustGather) -> Result<()> {
         .attr("src=\"https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js\"");
     body.script()
         .write_str(include_str!("files/index_script.js"))?;
+
+    Ok(())
+}
+
+fn add_cluster_api_data(parent: &mut Node, mustgather: &MustGather) -> Result<()> {
+    let mut data = parent.data().attr("id=\"cluster_api-data\"");
+
+    data.h1().write_str("Cluster API Pods")?;
+    add_pod_accordions(&mut data, &mustgather.capipods)?;
+
+    data.div().attr("class=\"p-2\"");
+    add_accordion_section(&mut data, "Clusters", &mustgather.capiclusters)?;
+
+    if !mustgather.awsclusters.is_empty() {
+        data.div().attr("class=\"p-2\"");
+        add_accordion_section(&mut data, "AWSClusters", &mustgather.awsclusters)?;
+    }
+
+    data.div().attr("class=\"p-2\"");
+    add_accordion_section(&mut data, "MachineSets", &mustgather.capimachinesets)?;
+
+    data.div().attr("class=\"p-2\"");
+    add_accordion_section(
+        &mut data,
+        "MachineDeployments",
+        &mustgather.capimachinedeployments,
+    )?;
+
+    data.div().attr("class=\"p-2\"");
+    add_accordion_section(&mut data, "Machines", &mustgather.capimachines)?;
+
+    if !mustgather.awsmachines.is_empty() {
+        data.div().attr("class=\"p-2\"");
+        add_accordion_section(&mut data, "AWSMachines", &mustgather.awsmachines)?;
+    }
+
+    if !mustgather.awsmachinetemplates.is_empty() {
+        data.div().attr("class=\"p-2\"");
+        add_accordion_section(
+            &mut data,
+            "AWSMachineTemplates",
+            &mustgather.awsmachinetemplates,
+        )?;
+    }
+
+    data.div().attr("class=\"p-2\"");
 
     Ok(())
 }
@@ -273,6 +323,118 @@ fn add_machine_config_pods_data(parent: &mut Node, mustgather: &MustGather) -> R
 
     add_pod_accordions(&mut data, &mustgather.mcopods)?;
 
+    Ok(())
+}
+
+fn add_capi_navlist_entry(parent: &mut Node, mustgather: &MustGather) -> Result<()> {
+    let has_capi = !mustgather.capipods.is_empty()
+        || !mustgather.capiclusters.is_empty()
+        || !mustgather.capimachinesets.is_empty()
+        || !mustgather.capimachinedeployments.is_empty()
+        || !mustgather.capimachines.is_empty()
+        || !mustgather.awsclusters.is_empty()
+        || !mustgather.awsmachines.is_empty()
+        || !mustgather.awsmachinetemplates.is_empty();
+    let mut aclass = "class=\"list-group-item list-group-item-action\"";
+    let mut clickattr = String::from("v-on:click=\"changeContent('cluster_api')\"");
+    if !has_capi {
+        aclass = "class=\"list-group-item list-group-item-action disabled\"";
+        clickattr = String::new();
+    }
+    let mut button = parent.button().attr(aclass).attr(clickattr.as_str());
+    button.write_str("Cluster API")?;
+
+    if has_capi {
+        let errors = mustgather.capipods.iter().filter(|r| r.is_error()).count()
+            + mustgather
+                .capiclusters
+                .iter()
+                .filter(|r| r.is_error())
+                .count()
+            + mustgather
+                .capimachinesets
+                .iter()
+                .filter(|r| r.is_error())
+                .count()
+            + mustgather
+                .capimachinedeployments
+                .iter()
+                .filter(|r| r.is_error())
+                .count()
+            + mustgather
+                .capimachines
+                .iter()
+                .filter(|r| r.is_error())
+                .count()
+            + mustgather
+                .awsclusters
+                .iter()
+                .filter(|r| r.is_error())
+                .count()
+            + mustgather
+                .awsmachines
+                .iter()
+                .filter(|r| r.is_error())
+                .count()
+            + mustgather
+                .awsmachinetemplates
+                .iter()
+                .filter(|r| r.is_error())
+                .count();
+        if errors > 0 {
+            button
+                .span()
+                .attr("class=\"badge bg-danger float-right\"")
+                .write_str(format!("{}", errors).as_str())?;
+        }
+
+        let warnings = mustgather
+            .capipods
+            .iter()
+            .filter(|r| r.is_warning())
+            .count()
+            + mustgather
+                .capiclusters
+                .iter()
+                .filter(|r| r.is_warning())
+                .count()
+            + mustgather
+                .capimachinesets
+                .iter()
+                .filter(|r| r.is_warning())
+                .count()
+            + mustgather
+                .capimachinedeployments
+                .iter()
+                .filter(|r| r.is_warning())
+                .count()
+            + mustgather
+                .capimachines
+                .iter()
+                .filter(|r| r.is_warning())
+                .count()
+            + mustgather
+                .awsclusters
+                .iter()
+                .filter(|r| r.is_warning())
+                .count()
+            + mustgather
+                .awsmachines
+                .iter()
+                .filter(|r| r.is_warning())
+                .count()
+            + mustgather
+                .awsmachinetemplates
+                .iter()
+                .filter(|r| r.is_warning())
+                .count();
+        if warnings > 0 {
+            button
+                .span()
+                .attr("class=\"badge bg-warning float-right\"")
+                .write_str(format!("{}", warnings).as_str())?;
+        }
+    }
     Ok(())
 }
 
