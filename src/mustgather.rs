@@ -25,10 +25,18 @@ pub struct MustGather {
     pub machineautoscalers: Vec<MachineAutoscaler>,
     pub baremetalhosts: Vec<BareMetalHost>,
     pub controlplanemachinesets: Vec<ControlPlaneMachineSet>,
+    pub capiclusters: Vec<CAPICluster>,
+    pub capimachines: Vec<CAPIMachine>,
+    pub capimachinesets: Vec<CAPIMachineSet>,
+    pub capimachinedeployments: Vec<CAPIMachineDeployment>,
+    pub awsclusters: Vec<AWSCluster>,
+    pub awsmachines: Vec<AWSMachine>,
+    pub awsmachinetemplates: Vec<AWSMachineTemplate>,
     pub mapipods: Vec<Pod>,
     pub mcopods: Vec<Pod>,
     pub ccmopods: Vec<Pod>,
     pub ccmpods: Vec<Pod>,
+    pub capipods: Vec<Pod>,
 }
 
 impl MustGather {
@@ -140,6 +148,69 @@ impl MustGather {
         );
         let controlplanemachinesets = get_resources::<ControlPlaneMachineSet>(&manifestpath);
 
+        let manifestpath = build_manifest_path(
+            &path,
+            "",
+            "openshift-cluster-api",
+            "clusters",
+            "cluster.x-k8s.io",
+        );
+        let capiclusters = get_resources::<CAPICluster>(&manifestpath);
+
+        let manifestpath = build_manifest_path(
+            &path,
+            "",
+            "openshift-cluster-api",
+            "machines",
+            "cluster.x-k8s.io",
+        );
+        let capimachines = get_resources::<CAPIMachine>(&manifestpath);
+
+        let manifestpath = build_manifest_path(
+            &path,
+            "",
+            "openshift-cluster-api",
+            "machinesets",
+            "cluster.x-k8s.io",
+        );
+        let capimachinesets = get_resources::<CAPIMachineSet>(&manifestpath);
+
+        let manifestpath = build_manifest_path(
+            &path,
+            "",
+            "openshift-cluster-api",
+            "machinedeployments",
+            "cluster.x-k8s.io",
+        );
+        let capimachinedeployments = get_resources::<CAPIMachineDeployment>(&manifestpath);
+
+        let manifestpath = build_manifest_path(
+            &path,
+            "",
+            "openshift-cluster-api",
+            "awsclusters",
+            "infrastructure.cluster.x-k8s.io",
+        );
+        let awsclusters = get_resources::<AWSCluster>(&manifestpath);
+
+        let manifestpath = build_manifest_path(
+            &path,
+            "",
+            "openshift-cluster-api",
+            "awsmachines",
+            "infrastructure.cluster.x-k8s.io",
+        );
+        let awsmachines = get_resources::<AWSMachine>(&manifestpath);
+
+        let manifestpath = build_manifest_path(
+            &path,
+            "",
+            "openshift-cluster-api",
+            "awsmachinetemplates",
+            "infrastructure.cluster.x-k8s.io",
+        );
+        let awsmachinetemplates = get_resources::<AWSMachineTemplate>(&manifestpath);
+
         let manifestpath = build_manifest_path(&path, "", "openshift-machine-api", "pods", "");
         let mapipods = get_pods(&manifestpath);
 
@@ -160,6 +231,9 @@ impl MustGather {
             build_manifest_path(&path, "", "openshift-cloud-controller-manager", "pods", "");
         let ccmpods = get_pods(&manifestpath);
 
+        let manifestpath = build_manifest_path(&path, "", "openshift-cluster-api", "pods", "");
+        let capipods = get_pods(&manifestpath);
+
         Ok(MustGather {
             title,
             version,
@@ -176,10 +250,18 @@ impl MustGather {
             machineautoscalers,
             baremetalhosts,
             controlplanemachinesets,
+            capiclusters,
+            capimachines,
+            capimachinesets,
+            capimachinedeployments,
+            awsclusters,
+            awsmachines,
+            awsmachinetemplates,
             mapipods,
             mcopods,
             ccmopods,
             ccmpods,
+            capipods,
         })
     }
 }
