@@ -1,0 +1,31 @@
+---
+apiVersion: cluster.x-k8s.io/v1beta2
+kind: Machine
+metadata:
+  creationTimestamp: "2022-01-01T00:00:00Z"
+  labels:
+    cluster.x-k8s.io/cluster-name: testdata
+    cluster.x-k8s.io/set-name: testdata-worker-region-1
+    node-role.kubernetes.io/worker: ""
+  name: testdata-worker-failed
+  namespace: openshift-cluster-api
+  resourceVersion: "16606"
+  uid: 00000000-0000-0000-0000-000000000000
+spec:
+  bootstrap:
+    dataSecretName: worker-user-data
+  clusterName: testdata
+  failureDomain: zone-1
+  infrastructureRef:
+    apiGroup: infrastructure.cluster.x-k8s.io
+    kind: AWSMachine
+    name: testdata-worker-failed
+status:
+  conditions:
+  - lastTransitionTime: "2022-01-01T00:00:00Z"
+    status: "False"
+    type: Ready
+  - lastTransitionTime: "2022-01-01T00:00:00Z"
+    status: "False"
+    type: InfrastructureReady
+  phase: Failed

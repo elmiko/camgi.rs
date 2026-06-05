@@ -1,0 +1,98 @@
+---
+apiVersion: infrastructure.cluster.x-k8s.io/v1beta2
+kind: AWSMachine
+metadata:
+  annotations:
+    cluster.x-k8s.io/cloned-from-groupkind: AWSMachineTemplate.infrastructure.cluster.x-k8s.io
+    cluster.x-k8s.io/cloned-from-name: testdata-worker-region-1
+    sigs.k8s.io/cluster-api-provider-aws-last-applied-security-groups: '{"sg-02506528be4344646":{},"sg-087bd474fe5805319":{}}'
+    sigs.k8s.io/cluster-api-provider-aws-last-applied-tags: '{"ci-nat-replace":"true","clusterName":"testdata","expirationDate":"2026-05-29T16:19+00:00","keyA":"valueA","keyB":"valueB","keyC":"valueC","kubernetes.io/cluster/testdata":"owned"}'
+    sigs.k8s.io/cluster-api-provider-last-applied-tags-on-volumes: '{"vol-01e733bd313c0e4e6":{"ci-nat-replace":"true","clusterName":"testdata","expirationDate":"2026-05-29T16:19+00:00","keyA":"valueA","keyB":"valueB","keyC":"valueC","kubernetes.io/cluster/testdata":"owned"}}'
+  creationTimestamp: "2026-05-29T09:11:17Z"
+  finalizers:
+    - awsmachine.infrastructure.cluster.x-k8s.io
+  generation: 2
+  labels:
+    cluster.x-k8s.io/cluster-name: testdata
+    cluster.x-k8s.io/set-name: testdata-worker-region-1
+    machineconfiguration.openshift.io/osstream: rhel-9
+    node-role.kubernetes.io/worker: ""
+  name: testdata-worker-1
+  namespace: openshift-cluster-api
+  ownerReferences:
+    - apiVersion: cluster.x-k8s.io/v1beta2
+      blockOwnerDeletion: true
+      controller: true
+      kind: Machine
+      name: testdata-worker-1
+      uid: 00000000-0000-0000-0000-000000000000
+  resourceVersion: "31917"
+  uid: 00000000-0000-0000-0000-000000000000
+spec:
+  additionalSecurityGroups:
+    - filters:
+        - name: tag:Name
+          values:
+            - testdata-node
+    - filters:
+        - name: tag:Name
+          values:
+            - testdata-lb
+  additionalTags:
+    ci-nat-replace: "true"
+    clusterName: testdata
+    expirationDate: 2026-05-29T16:19+00:00
+    keyA: valueA
+    keyB: valueB
+    keyC: valueC
+    kubernetes.io/cluster/testdata: owned
+  ami:
+    id: ami-089c98e2d700adb1e
+  cloudInit: {}
+  hostAffinity: default
+  iamInstanceProfile: testdata-worker-profile
+  ignition:
+    storageType: UnencryptedUserData
+    version: "3.2"
+  instanceID: i-02116218eccbef72f
+  instanceMetadataOptions:
+    httpEndpoint: enabled
+    httpProtocolIpv6: disabled
+    httpPutResponseHopLimit: 1
+    httpTokens: optional
+    instanceMetadataTags: disabled
+  instanceType: m6a.xlarge
+  providerID: aws:///zone-1/i-02116218eccbef72f
+  publicIP: false
+  rootVolume:
+    encrypted: true
+    size: 120
+    type: gp3
+  sshKeyName: ""
+  subnet:
+    filters:
+      - name: tag:Name
+        values:
+          - testdata-subnet-private-zone-1
+status:
+  addresses:
+    - address: ip-10-0-61-15.region-1.compute.internal
+      type: InternalDNS
+    - address: 10.0.61.15
+      type: InternalIP
+  conditions:
+    - lastTransitionTime: "2026-05-29T09:11:52Z"
+      status: "True"
+      type: Ready
+    - lastTransitionTime: "2026-05-29T09:11:52Z"
+      status: "True"
+      type: InstanceReady
+    - lastTransitionTime: "2026-05-29T09:11:18Z"
+      reason: NotPaused
+      status: "False"
+      type: Paused
+    - lastTransitionTime: "2026-05-29T09:11:21Z"
+      status: "True"
+      type: SecurityGroupsReady
+  instanceState: running
+  ready: true

@@ -1,0 +1,61 @@
+---
+apiVersion: infrastructure.cluster.x-k8s.io/v1beta2
+kind: AWSCluster
+metadata:
+  annotations:
+    cluster.x-k8s.io/managed-by: cluster-capi-operator-infracluster-controller
+  creationTimestamp: "2026-05-29T09:01:52Z"
+  generation: 2
+  labels:
+    cluster.x-k8s.io/cluster-name: testdata
+  name: testdata
+  namespace: openshift-cluster-api
+  ownerReferences:
+    - apiVersion: cluster.x-k8s.io/v1beta2
+      blockOwnerDeletion: true
+      controller: true
+      kind: Cluster
+      name: testdata
+      uid: 00000000-0000-0000-0000-000000000000
+  resourceVersion: "31558"
+  uid: 00000000-0000-0000-0000-000000000000
+spec:
+  bastion:
+    allowedCIDRBlocks:
+      - 0.0.0.0/0
+      - ::/0
+    enabled: false
+  controlPlaneEndpoint:
+    host: api-int.testdata.XXXXXXXXXXXXXXXXXXXXXX
+    port: 6443
+  controlPlaneLoadBalancer:
+    crossZoneLoadBalancing: false
+    loadBalancerType: nlb
+    name: testdata-int
+    scheme: internal
+  identityRef:
+    kind: AWSClusterControllerIdentity
+    name: default
+  network:
+    cni:
+      cniIngressRules:
+        - description: bgp (calico)
+          fromPort: 179
+          protocol: tcp
+          toPort: 179
+        - description: IP-in-IP (calico)
+          fromPort: -1
+          protocol: "4"
+          toPort: 65535
+    vpc:
+      availabilityZoneSelection: Ordered
+      availabilityZoneUsageLimit: 3
+      subnetSchema: PreferPrivate
+  region: region-1
+  secondaryControlPlaneLoadBalancer:
+    crossZoneLoadBalancing: false
+    loadBalancerType: nlb
+    name: testdata-ext
+    scheme: internet-facing
+status:
+  ready: true

@@ -1,0 +1,111 @@
+---
+apiVersion: cluster.x-k8s.io/v1beta2
+kind: MachineSet
+metadata:
+  creationTimestamp: "2026-05-29T08:44:23Z"
+  finalizers:
+    - cluster.x-k8s.io/machineset
+  generation: 1
+  labels:
+    cluster.x-k8s.io/cluster-name: testdata
+    machineconfiguration.openshift.io/osstream: rhel-9
+  name: testdata-worker-region-1
+  namespace: openshift-cluster-api
+  ownerReferences:
+    - apiVersion: cluster.x-k8s.io/v1beta2
+      kind: Cluster
+      name: testdata
+      uid: 00000000-0000-0000-0000-000000000000
+  resourceVersion: "47923"
+  uid: 00000000-0000-0000-0000-000000000000
+spec:
+  clusterName: testdata
+  replicas: 3
+  selector:
+    matchLabels:
+      cluster.x-k8s.io/cluster-name: testdata
+      cluster.x-k8s.io/set-name: testdata-worker-region-1
+  template:
+    metadata:
+      labels:
+        cluster.x-k8s.io/cluster-name: testdata
+        cluster.x-k8s.io/set-name: testdata-worker-region-1
+        machineconfiguration.openshift.io/osstream: rhel-9
+        node-role.kubernetes.io/worker: ""
+    spec:
+      bootstrap:
+        dataSecretName: worker-user-data
+      clusterName: testdata
+      failureDomain: zone-1
+      infrastructureRef:
+        apiGroup: infrastructure.cluster.x-k8s.io
+        kind: AWSMachineTemplate
+        name: testdata-worker-region-1
+status:
+  availableReplicas: 3
+  conditions:
+    - lastTransitionTime: "2026-05-29T09:11:18Z"
+      message: ""
+      observedGeneration: 1
+      reason: NotRemediating
+      status: "False"
+      type: Remediating
+    - lastTransitionTime: "2026-05-29T09:11:18Z"
+      message: ""
+      observedGeneration: 1
+      reason: NotScalingDown
+      status: "False"
+      type: ScalingDown
+    - lastTransitionTime: "2026-05-29T09:11:18Z"
+      message: ""
+      observedGeneration: 1
+      reason: NotScalingUp
+      status: "False"
+      type: ScalingUp
+    - lastTransitionTime: "2026-05-29T09:16:00Z"
+      message: ""
+      observedGeneration: 1
+      reason: Ready
+      status: "True"
+      type: MachinesReady
+    - lastTransitionTime: "2026-05-29T09:11:33Z"
+      message: '* Machines testdata-worker-0, testdata-worker-1, testdata-worker-2: Condition UpToDate not yet reported'
+      observedGeneration: 1
+      reason: UpToDateUnknown
+      status: Unknown
+      type: MachinesUpToDate
+    - lastTransitionTime: "2026-05-29T09:11:17Z"
+      message: ""
+      observedGeneration: 1
+      reason: NotPaused
+      status: "False"
+      type: Paused
+    - lastTransitionTime: "2026-05-29T09:11:18Z"
+      message: ""
+      observedGeneration: 1
+      reason: NotDeleting
+      status: "False"
+      type: Deleting
+  deprecated:
+    v1beta1:
+      availableReplicas: 3
+      conditions:
+        - lastTransitionTime: "2026-05-29T09:16:00Z"
+          status: "True"
+          type: Ready
+        - lastTransitionTime: "2026-05-29T09:11:18Z"
+          status: "True"
+          type: MachinesCreated
+        - lastTransitionTime: "2026-05-29T09:11:52Z"
+          status: "True"
+          type: MachinesReady
+        - lastTransitionTime: "2026-05-29T09:16:00Z"
+          status: "True"
+          type: Resized
+      fullyLabeledReplicas: 3
+      readyReplicas: 3
+  observedGeneration: 1
+  readyReplicas: 3
+  replicas: 3
+  selector: cluster.x-k8s.io/cluster-name=testdata,cluster.x-k8s.io/set-name=testdata-worker-region-1
+  upToDateReplicas: 0
