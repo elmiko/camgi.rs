@@ -14,6 +14,7 @@ pub struct MustGather {
     pub version: String,
     pub platformtype: String,
     pub clusteroperators: Vec<ClusterOperator>,
+    pub featuregates: Vec<FeatureGate>,
     pub machines: Vec<Machine>,
     pub machinesets: Vec<MachineSet>,
     pub machineconfigurations: Vec<MachineConfiguration>,
@@ -54,6 +55,10 @@ impl MustGather {
         let manifestpath =
             build_manifest_path(&path, "", "", "clusteroperators", "config.openshift.io");
         let clusteroperators = get_resources::<ClusterOperator>(&manifestpath);
+
+        let manifestpath =
+            build_manifest_path(&path, "", "", "featuregates", "config.openshift.io");
+        let featuregates = get_resources::<FeatureGate>(&manifestpath);
 
         let manifestpath = build_manifest_path(
             &path,
@@ -239,6 +244,7 @@ impl MustGather {
             version,
             platformtype,
             clusteroperators,
+            featuregates,
             machines,
             machinesets,
             machineconfigurations,
@@ -590,6 +596,13 @@ mod tests {
         let path = PathBuf::from("testdata/must-gather-valid/sample-openshift-release");
         let manifestpath = build_manifest_path(&path, "", "", "nodes", "core");
         assert_eq!(get_resources::<Node>(&manifestpath).len(), 4)
+    }
+
+    #[test]
+    fn test_get_featuregates_success() {
+        let mg = MustGather::from("testdata/must-gather-valid/sample-openshift-release").unwrap();
+        assert_eq!(mg.featuregates.len(), 1);
+        assert_eq!(mg.featuregates[0].feature_set, "DevPreviewNoUpgrade");
     }
 
     #[test]
