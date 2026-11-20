@@ -132,6 +132,7 @@ fn add_body(parent: &mut Node, mustgather: &MustGather) -> Result<()> {
         "Cluster Operators",
         &mustgather.clusteroperators,
     )?;
+    add_navlist_entry(&mut navlist, "Feature Gates", &mustgather.featuregates)?;
 
     // nav entries for component sections
     add_navlist_entry(&mut navlist, "Machine API", &mustgather.mapipods)?;
@@ -185,6 +186,7 @@ fn add_body(parent: &mut Node, mustgather: &MustGather) -> Result<()> {
     // in the div#main-content element.
     add_summary_data(&mut body, mustgather)?;
     add_resource_data(&mut body, "Cluster Operators", &mustgather.clusteroperators)?;
+    add_feature_gates_data(&mut body, mustgather)?;
     add_machine_api_data(&mut body, mustgather)?;
     add_machine_config_pods_data(&mut body, mustgather)?;
     add_resource_data(
@@ -288,6 +290,75 @@ fn add_ccms_data(parent: &mut Node, mustgather: &MustGather) -> Result<()> {
 
     add_pod_accordions(&mut data, &mustgather.ccmpods)?;
 
+    Ok(())
+}
+
+fn add_feature_gates_data(parent: &mut Node, mustgather: &MustGather) -> Result<()> {
+    let mut data = parent.data().attr("id=\"feature_gates-data\"");
+    data.h1().write_str("Feature Gates")?;
+
+    for gate in &mustgather.featuregates {
+        add_table(
+            &mut data,
+            Vec::new(),
+            vec![
+                vec!["Resource", gate.name()],
+                vec!["Feature Set", gate.feature_set.as_str()],
+            ],
+        )?;
+
+        if gate.feature_set == "CustomNoUpgrade" {
+            data.h2().write_str("Requested Custom Overrides")?;
+            add_feature_gate_groups(&mut data, &gate.custom_enabled, &gate.custom_disabled)?;
+        }
+
+        if gate.feature_gates.is_empty() {
+            data.p().write_str("Observed gate states unavailable")?;
+        }
+        for details in &gate.feature_gates {
+            let versionuuid = Uuid::new_v4();
+            let mut accordion = data.div().attr("class=\"accordion mb-2\"");
+            let mut item = accordion.div().attr("class=\"accordion-item\"");
+            item.h2()
+                .attr("class=\"accordion-header\"")
+                .attr(format!("id=\"heading-{}\"", versionuuid.hyphenated()).as_str())
+                .button()
+                .attr("class=\"accordion-button p-2 font-monospace text-break fs-6\"")
+                .attr("type=\"button\"")
+                .attr("data-bs-toggle=\"collapse\"")
+                .attr(format!("data-bs-target=\"#collapse-{}\"", versionuuid.hyphenated()).as_str())
+                .attr("aria-expanded=\"true\"")
+                .attr(format!("aria-controls=\"collapse-{}\"", versionuuid.hyphenated()).as_str())
+                .write_str(format!("Version: {}", details.version).as_str())?;
+            let mut panel = item
+                .div()
+                .attr(format!("id=\"collapse-{}\"", versionuuid.hyphenated()).as_str())
+                .attr("class=\"accordion-collapse collapse show\"")
+                .attr(format!("aria-labelledby=\"heading-{}\"", versionuuid.hyphenated()).as_str());
+            let mut body = panel.div().attr("class=\"accordion-body fs-6\"");
+            add_feature_gate_groups(&mut body, &details.enabled, &details.disabled)?;
+        }
+    }
+
+    add_accordion_section(&mut data, "Manifests", &mustgather.featuregates)?;
+    Ok(())
+}
+
+fn add_feature_gate_groups(
+    parent: &mut Node,
+    enabled: &[String],
+    disabled: &[String],
+) -> Result<()> {
+    for (title, gates) in [("Enabled", enabled), ("Disabled", disabled)] {
+        parent.h3().attr("class=\"h5\"").write_str(title)?;
+        let mut names: Vec<&str> = gates.iter().map(|name| name.as_str()).collect();
+        names.sort_unstable();
+        add_table(
+            parent,
+            Vec::new(),
+            names.iter().map(|name| vec![*name]).collect(),
+        )?;
+    }
     Ok(())
 }
 
@@ -589,6 +660,15 @@ fn add_summary_data(parent: &mut Node, mustgather: &MustGather) -> Result<()> {
         vec![
             vec!["OpenShift Version", mustgather.version.as_str()],
             vec!["Platform Type", mustgather.platformtype.as_str()],
+            vec![
+                "Feature Set",
+                mustgather
+                    .featuregates
+                    .iter()
+                    .find(|gate| gate.name() == "cluster")
+                    .map(|gate| gate.feature_set.as_str())
+                    .unwrap_or("Unavailable"),
+            ],
         ],
     )?;
 
